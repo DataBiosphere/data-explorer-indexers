@@ -1,5 +1,9 @@
-"""Loads BigQuery table into Elasticsearch."""
+"""Loads BigQuery table into Elasticsearch.
 
+Note: Elasticsearch index is deleted before indexing.
+"""
+
+import argparse
 import csv
 import json
 import logging
@@ -18,6 +22,21 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger('indexer.bigquery')
 
 
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--elasticsearch_url',
+      type=str,
+      help='Elasticsearch url. Must start with http://',
+      default='http://localhost:9200')
+  parser.add_argument(
+      '--config_dir',
+      type=str,
+      help='Directory containing config files. Can be relative or absolute.',
+      default='config/platinum_genomes')
+  return parser.parse_args()
+
+
 def open_and_return_json(file_path):
   """Opens and returns JSON contents.
 
@@ -28,13 +47,15 @@ def open_and_return_json(file_path):
     Parsed JSON.
   """
   with open(file_path,'r') as f:
-    # Remove JSON comments.
+    # JSON doesn't support comments
+    # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr). Remove
+    # comments before parsing.
     jsonDict = json.loads('\n'.join([row for row in f.readlines() if len(row.split('//')) == 1]))
   return jsonDict
 
 
-def init_elasticsearch(index_name):
-  es = Elasticsearch(['http://localhost:9200'], timeout=600)
+def init_elasticsearch(elasticsearch_url, index_name):
+  es = Elasticsearch([elasticsearch_url])
   logger.info('Deleting and recreating %s index.' % index_name)
   try:
     es.indices.delete(index=index_name)
@@ -92,13 +113,16 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
 
 
 def main():
-  dataset_config = open_and_return_json('config/dataset.json')
+  args = parse_args()
+
+  json_path = os.path.join(args.config_dir, 'dataset.json')
+  dataset_config = open_and_return_json(json_path)
   index_name = dataset_config['name']
   primary_key = dataset_config['primary_key']
 
-  es = init_elasticsearch(index_name)
+  es = init_elasticsearch(args.elasticsearch_url, index_name)
 
-  f = open('config/facet_fields.csv')
+  f = open(os.path.join(args.config_dir, 'facet_fields.csv'))
   rows = csv.DictReader(filter(lambda row: row[0]!='#', f),
       # field_name is BigQuery field name.
       # readable_field_name is used in index and Data Explorer UI.

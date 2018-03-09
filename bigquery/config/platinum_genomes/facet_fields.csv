@@ -1,0 +1,6 @@
+# Facet fields, one field per line
+# Format: project id, dataset id, table name, BigQuery field name, field name for indexing/UI
+
+google.com:api-project-360728701457, platinum_genomes, sample_info, gender, Gender
+google.com:api-project-360728701457, platinum_genomes, sample_info, race, Race
+google.com:api-project-360728701457, platinum_genomes, sample_info, relationship_to_proband, Relationship
