@@ -1,19 +1,23 @@
 ## BigQuery indexer
 
-We use docker to run Elasticsearch. We run indexer.py directly (not using
-docker) because it's trickier to authenticate to Google Cloud Platform with
-docker.
+Run Elasticsearch via docker. We run indexer.py directly (not using
+docker) because it's trickier to authenticate to Google Cloud Platform from
+within docker.
 
 ### Quickstart
 
-* [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
+* If you want to use [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
+  * [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
 if you haven't done so already.
-* Copy a simple public dataset to your project.
+  * Copy dataset to your project.
     ```
     bq --project_id <myproject> mk platinum_genomes
     bq --project_id <myproject> cp google.com:biggene:platinum_genomes.sample_info  <myproject>:platinum_genomes.sample_info
     ```
-* Change project names in `config/platinum_genomes/facet_fields.csv`.
+  * Change project names in `config/platinum_genomes/facet_fields.csv`.
+* If you want to use your own dataset:
+  * Make a new directory under `config` and copy `config/template/*` to it.
+  * Edit config files; instructions are in the files.
 * Run Elasticsearch.
 
     ```
@@ -25,11 +29,13 @@ if you haven't done so already.
     virtualenv ~/virtualenv/indexer-bigquery
     source ~/virtualenv/indexer-bigquery/bin/activate
     pip install requirements.txt
-    python indexer.py
+    python indexer.py                            # If using default dataset
+    python indexer.py --config_dir <config_dir>  # If using your own dataset
     ```
 
 * View Elasticsearch index at
- `http://localhost:9200/platinum_genomes/_search?pretty=true`.
+ `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
+ own dataset, change `platinum_genomes` to your dataset name.
 
 ### Overview
 
