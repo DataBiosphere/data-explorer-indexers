@@ -1,0 +1,2 @@
+# Facet fields, one field per line
+# Format: project id, dataset id, table name, BigQuery field name, field name for indexing/UI
