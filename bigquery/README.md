@@ -6,7 +6,7 @@ within docker.
 
 ### Quickstart
 
-* If you want to use [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
+* If you want to use a [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
   * [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
 if you haven't done so already.
   * Copy dataset to your project.
