@@ -5,6 +5,7 @@ Note: Elasticsearch index is deleted before indexing.
 
 import argparse
 import csv
+import jsmin
 import json
 import logging
 import os
@@ -47,11 +48,10 @@ def open_and_return_json(file_path):
     Parsed JSON.
   """
   with open(file_path,'r') as f:
-    # JSON doesn't support comments
-    # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr). Remove
-    # comments before parsing.
-    jsonDict = json.loads('\n'.join([row for row in f.readlines() if len(row.split('//')) == 1]))
-  return jsonDict
+    # Remove comments using jsmin, as recommended by JSON creator
+    # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr).
+    jsonDict = json.loads(jsmin.jsmin(f.read()))
+    return jsonDict
 
 
 def init_elasticsearch(elasticsearch_url, index_name):
@@ -123,13 +123,11 @@ def main():
   es = init_elasticsearch(args.elasticsearch_url, index_name)
 
   f = open(os.path.join(args.config_dir, 'facet_fields.csv'))
-  rows = csv.DictReader(filter(lambda row: row[0]!='#', f),
-      # field_name is BigQuery field name.
-      # readable_field_name is used in index and Data Explorer UI.
-      fieldnames=['project_id', 'dataset_id', 'table_name', 'field_name', 'readable_field_name'],
-      skipinitialspace=True)
+  # Remove comments using jsmin.
+  csvString = jsmin.jsmin(f.read())
+  rows = csv.DictReader(iter(csvString.splitlines()), skipinitialspace=True)
   for row in rows:
-    print(row)
+    print('row: %s' % row)
     index_facet_field(es, index_name, primary_key, row['project_id'],
         row['dataset_id'], row['table_name'], row['field_name'], row['readable_field_name'])
   f.close()
