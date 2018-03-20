@@ -1,4 +1,7 @@
-// Facet fields, one field per line
+// Facet fields, one facet per line
+// project_id: Google Cloud project ID
+// dataset_id: BigQuery dataset ID
+// table_name: BigQuery table name
 // field_name: BigQuery field name
 // readable_field_name: Field will have this name in Elasticsearch index and
 //     Data explorer UI
