@@ -140,8 +140,8 @@ def main():
 
   f = open(os.path.join(args.config_dir, 'facet_fields.csv'))
   # Remove comments using jsmin.
-  csvString = jsmin.jsmin(f.read())
-  rows = csv.DictReader(iter(csvString.splitlines()), skipinitialspace=True)
+  csv_string = jsmin.jsmin(f.read())
+  rows = csv.DictReader(iter(csv_string.splitlines()), skipinitialspace=True)
   for row in rows:
     print('row: %s' % row)
     index_facet_field(es, index_name, primary_key, row['project_id'],
