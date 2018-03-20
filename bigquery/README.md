@@ -39,21 +39,48 @@ if you haven't done so already.
 
 ### Overview
 
-Index BigQuery tables into Elasticsearch. Only specified facet fields will be indexed.
+A Data explorer UI allows for faceted search. For example,
+[Boardwalk](https://ucsc-cgp.org/boardwalk) has facets: Analysis Type, Center
+Name, etc. A dataset may have hundreds of fields (weight, height, etc); the
+dataset owner must curate a list of facets that they think will be interesting.
+For [Project Baseline](https://www.projectbaseline.com/), facets may include
+age, weight, height, etc.
 
-Given this BigQuery table:
+To set up Data explorer for a new dataset:
 
-  participant_id | age | weight
-  --- | --- |---
-  1 | 23 | 140
-  2 | 33 | 150
+* Setup `config` directory. This includes specifying facet fields.
+* Run indexer to index BigQuery tables into Elasticsearch.
+* Using https://github.com/DataBiosphere/data-explorer repo, run Data explorer
+and point to `config` directory from first step.
 
-Elasticsearch index will contain 2 documents. First document has id `1` and contains:
+A Dataset has a notion of `primary_key`. For a dataset that tracks 1000
+participants, `primary_key` could be `participant_id`. For a dataset that
+contains 1000 samples from a single person, `primary_key` could be `sample_id`.
 
-	{
-	  "age": "23",
-	  "weight": "140",
-	}
+`primary_key` is used to tie information together from different BigQuery
+tables. Say there are facets for age and weight; age and weight are
+stored in separate BigQuery tables; and `primary_key` is `participant_id`.
+First, age table is indexed. An Elasticsearch document is created for each
+`participant_id` and has document id = `participant_id`. A document would look
+like:
+
+```
+{
+  "age": "30",
+}
+```
+
+Then, the weight table is indexed. The Elasticsearch documents will get a new
+weight field:
+
+```
+{
+  "age": "30",
+  "weight": "140",
+}
+```
+
+`participant_id` will be used to figure out which document to update.
 
 ### Generating `requirements.txt`
 
