@@ -17,7 +17,9 @@ if you haven't done so already.
   * Change project names in `config/platinum_genomes/facet_fields.csv`.
 * If you want to use your own dataset:
   * Make a new directory under `config` and copy `config/template/*` to it.
-  * Edit config files; instructions are in the files.
+  * Edit config files; instructions are in the files. Read
+  [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
+  for some background information.
 * Run Elasticsearch.
 
     ```
