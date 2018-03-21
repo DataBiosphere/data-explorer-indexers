@@ -30,7 +30,7 @@ if you haven't done so already.
     ```
     virtualenv ~/virtualenv/indexer-bigquery
     source ~/virtualenv/indexer-bigquery/bin/activate
-    pip install requirements.txt
+    pip install -r requirements.txt
     python indexer.py                            # If using default dataset
     python indexer.py --config_dir <config_dir>  # If using your own dataset
     ```
