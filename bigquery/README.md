@@ -16,7 +16,9 @@ if you haven't done so already.
     ```
   * Change project ids in `config/platinum_genomes/facet_fields.csv`.
 * If you want to use your own dataset:
-  * Make a new directory under `config` and copy `config/template/*` to it.
+  * Create a `config/private` directory. (Files in `config/private` won't be
+added to this git repo.) Make a new directory under `config/private` and copy
+`config/template/*` to it.
   * Edit config files; instructions are in the files. Read
   [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
   for some background information.
