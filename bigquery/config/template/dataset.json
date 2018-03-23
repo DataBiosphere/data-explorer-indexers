@@ -1,8 +1,15 @@
 {
+<<<<<<< HEAD
   // Dataset name. For Project Baseline (https://www.projectbaseline.com/),
   // could be "Project Baseline". This name will be displayed in
   // the Data Explorer UI. Also, the Elasticsearch index will be given this
   // name.
+=======
+  // Dataset name. This name will be displayed in the Data Explorer UI. Also,
+  // the Elasticsearch index will be given this name.
+  // The name must be lowercase and not have spaces.
+  // TODO(#5): Allow arbitrary dataset names.
+>>>>>>> Pandas and review comments
   "name": "",
   // Name of BigQuery column that represents primary key. See
   // https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview
