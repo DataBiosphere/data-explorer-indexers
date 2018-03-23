@@ -69,6 +69,12 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     table_name, field_name, readable_field_name):
   """Indexes a facet field.
 
+  I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
+
+  - BigQuery -> pandas dataframe
+  - Convert datafrom to dict
+  - dict -> Elasticsearch
+
   Args:
     es: Elasticsearch object.
     index_name: Name of Elasticsearch index.
