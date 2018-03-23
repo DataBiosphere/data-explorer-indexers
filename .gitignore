@@ -1,3 +1,6 @@
+# Don't check in private dataset configs.
+**/config/private
+
 # Allow developers to symlink their preferred configuration.
 /docker-compose.yml
 
