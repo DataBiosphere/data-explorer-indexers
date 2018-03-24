@@ -1,6 +1,6 @@
 {
   // Elasticsearch index will be given this name.
-  "name": "platinum_genomes",
+  "name": "Platinum Genomes",
   // Name of BigQuery field that is primary key. Elasticsearch documents will
   // have this ID.
   "primary_key": "catalog_id"
