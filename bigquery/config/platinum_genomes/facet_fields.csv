@@ -3,6 +3,6 @@
 // readable_field_name: Field will have this name in Elasticsearch index and
 //     Data explorer UI
 project_id, dataset_id, table_name, field_name, readable_field_name
-google.com:api-project-360728701457, platinum_genomes, sample_info, gender, Gender
-google.com:api-project-360728701457, platinum_genomes, sample_info, race, Race
-google.com:api-project-360728701457, platinum_genomes, sample_info, relationship_to_proband, Relationship
+MY_GOOGLE_CLOUD_PROJECT, platinum_genomes, sample_info, gender, Gender
+MY_GOOGLE_CLOUD_PROJECT, platinum_genomes, sample_info, race, Race
+MY_GOOGLE_CLOUD_PROJECT, platinum_genomes, sample_info, relationship_to_proband, Relationship
