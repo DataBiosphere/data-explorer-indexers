@@ -1,6 +1,7 @@
 ## BigQuery indexer
 
-Run Elasticsearch via docker. We run indexer.py directly (not using
+Follow the instructions below to create an Elasticsearch index in an
+Elasticsearch docker container. Note that we run indexer.py directly (not using
 docker) because it's trickier to authenticate to Google Cloud Platform from
 within docker.
 
