@@ -54,6 +54,22 @@ def open_and_return_json(file_path):
     return jsonDict
 
 
+# Keep in sync with convert_to_index_name() in data-explorer repo.
+def convert_to_index_name(s):
+  """Converts a string to an Elasticsearch index name."""
+  # For Elasticsearch index name restrictions, see
+  # https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
+  prohibited_chars = [' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
+  for char in prohibited_chars:
+    s = s.replace(char, '_');
+  s = s.lower()
+  # Remove leading underscore.
+  if s.find('_', 0, 1) == 0:
+    s = s.lstrip('_')
+  print('Index name: %s' % s)
+  return s
+
+
 def init_elasticsearch(elasticsearch_url, index_name):
   es = Elasticsearch([elasticsearch_url])
   logger.info('Deleting and recreating %s index.' % index_name)
@@ -117,7 +133,7 @@ def main():
 
   json_path = os.path.join(args.config_dir, 'dataset.json')
   dataset_config = open_and_return_json(json_path)
-  index_name = dataset_config['name']
+  index_name = convert_to_index_name(dataset_config['name'])
   primary_key = dataset_config['primary_key']
 
   es = init_elasticsearch(args.elasticsearch_url, index_name)
