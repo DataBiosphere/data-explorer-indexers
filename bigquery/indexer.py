@@ -59,17 +59,13 @@ def convert_to_index_name(s):
   """Converts a string to an Elasticsearch index name."""
   # For Elasticsearch index name restrictions, see
   # https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
-  s = s.replace(' ', '_')
-  s = s.replace('"', '_')
-  s = s.replace('*', '_')
-  s = s.replace('\\', '_')
-  s = s.replace('<', '_')
-  s = s.replace('|', '_')
-  s = s.replace('\,', '_')
-  s = s.replace('>', '_')
-  s = s.replace('/', '_')
-  s = s.replace('?', '_')
+  prohibited_chars = [' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
+  for char in prohibited_chars:
+    s = s.replace(char, '_');
   s = s.lower()
+  # Remove leading underscore.
+  if s.find('_', 0, 1) == 0:
+    s = s.lstrip('_')
   print('Index name: %s' % s)
   return s
 
