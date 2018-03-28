@@ -85,6 +85,12 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     table_name, field_name, readable_field_name):
   """Indexes a facet field.
 
+  I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
+
+  - BigQuery -> pandas dataframe
+  - Convert datafrom to dict
+  - dict -> Elasticsearch
+
   Args:
     es: Elasticsearch object.
     index_name: Name of Elasticsearch index.
@@ -140,8 +146,8 @@ def main():
 
   f = open(os.path.join(args.config_dir, 'facet_fields.csv'))
   # Remove comments using jsmin.
-  csvString = jsmin.jsmin(f.read())
-  rows = csv.DictReader(iter(csvString.splitlines()), skipinitialspace=True)
+  csv_str = jsmin.jsmin(f.read())
+  rows = csv.DictReader(iter(csv_str.splitlines()), skipinitialspace=True)
   for row in rows:
     print('row: %s' % row)
     index_facet_field(es, index_name, primary_key, row['project_id'],

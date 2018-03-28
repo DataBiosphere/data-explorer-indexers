@@ -1,4 +1,9 @@
-// Facet fields, one field per line
+// List the facet fields you want. Each facet will go on one line.
+// In the Data Explorer UI, facets will appear in the order they appear in this
+// file.
+// project_id: Google Cloud project ID
+// dataset_id: BigQuery dataset ID
+// table_name: BigQuery table name
 // field_name: BigQuery field name
 // readable_field_name: Field will have this name in Elasticsearch index and
 //     Data explorer UI

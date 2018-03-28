@@ -1,6 +1,7 @@
 ## BigQuery indexer
 
-Run Elasticsearch via docker. We run indexer.py directly (not using
+Follow the instructions below to create an Elasticsearch index in an
+Elasticsearch docker container. Note that we run indexer.py directly (not using
 docker) because it's trickier to authenticate to Google Cloud Platform from
 within docker.
 
@@ -16,8 +17,12 @@ if you haven't done so already.
     ```
   * Change project ids in `config/platinum_genomes/facet_fields.csv`.
 * If you want to use your own dataset:
-  * Make a new directory under `config` and copy `config/template/*` to it.
-  * Edit config files; instructions are in the files.
+  * Create a `config/private` directory. (Files in `config/private` won't be
+added to this git repo.) Make a new directory under `config/private` and copy
+`config/template/*` to it.
+  * Edit config files; instructions are in the files. Read
+  [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
+  for some background information.
 * Run Elasticsearch.
 
     ```
@@ -28,7 +33,7 @@ if you haven't done so already.
     ```
     virtualenv ~/virtualenv/indexer-bigquery
     source ~/virtualenv/indexer-bigquery/bin/activate
-    pip install requirements.txt
+    pip install -r requirements.txt
     python indexer.py                            # If using default dataset
     python indexer.py --config_dir <config_dir>  # If using your own dataset
     ```
@@ -39,21 +44,48 @@ if you haven't done so already.
 
 ### Overview
 
-Index BigQuery tables into Elasticsearch. Only specified facet fields will be indexed.
+A Data explorer UI allows for faceted search. For example,
+[Boardwalk](https://ucsc-cgp.org/boardwalk) has facets: Analysis Type, Center
+Name, etc. A dataset may have hundreds of fields (weight, height, etc); the
+dataset owner must curate a list of facets that they think will be interesting.
+For [Project Baseline](https://www.projectbaseline.com/), facets may include
+age, weight, height, etc.
 
-Given this BigQuery table:
+To set up Data explorer for a new dataset:
 
-  participant_id | age | weight
-  --- | --- |---
-  1 | 23 | 140
-  2 | 33 | 150
+* Setup `config` directory. This includes specifying facet fields.
+* Run indexer to index BigQuery tables into Elasticsearch.
+* Using https://github.com/DataBiosphere/data-explorer repo, run Data explorer
+and point to `config` directory from first step.
 
-Elasticsearch index will contain 2 documents. First document has id `1` and contains:
+A Dataset has a notion of `primary_key`. For a dataset that tracks 1000
+participants, `primary_key` could be `participant_id`. For a dataset that
+contains 1000 samples from a single person, `primary_key` could be `sample_id`.
 
-	{
-	  "age": "23",
-	  "weight": "140",
-	}
+`primary_key` is used to tie information together from different BigQuery
+tables. Say there are facets for age and weight; age and weight are
+stored in separate BigQuery tables; and `primary_key` is `participant_id`.
+First, age table is indexed. An Elasticsearch document is created for each
+`participant_id` and has document id = `participant_id`. A document would look
+like:
+
+```
+{
+  "age": "30",
+}
+```
+
+Then, the weight table is indexed. The Elasticsearch documents will get a new
+weight field:
+
+```
+{
+  "age": "30",
+  "weight": "140",
+}
+```
+
+`participant_id` will be used to figure out which document to update.
 
 ### Generating `requirements.txt`
 
