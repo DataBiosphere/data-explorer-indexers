@@ -1,5 +1,10 @@
 ## BigQuery indexer
 
+Follow the instructions below to create an Elasticsearch index in an
+Elasticsearch docker container. Note that we run indexer.py directly (not using
+docker) because it's trickier to authenticate to Google Cloud Platform from
+within docker.
+
 ### Quickstart
 
 Index a BigQuery table into an Elasticsearch container on your local machine.

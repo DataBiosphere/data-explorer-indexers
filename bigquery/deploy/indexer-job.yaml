@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bq-indexer
+spec:
+  template:
+    metadata:
+      name: bq-indexer
+    spec:
+      containers:
+      - name: bq-indexer
+        image: gcr.io/MY_GOOGLE_CLOUD_PROJECT/es-indexer-base
+        volumeMounts:
+        - name: indexer
+          mountPath: /indexer
+        - name: config
+          mountPath: config
+        - name: indexer-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        command: ["python", "/indexer/indexer.py"]
+        args: [
+        "--elasticsearch_url", "http://LOAD_BALANCER_IP:9200/",
+        "--config_dir", "/app/config/CONFIG_DIR"]
+
+      restartPolicy: Never
+
+      volumes:
+      - name: indexer
+        configMap:
+          name: indexer
+          defaultMode: 0744
+      - name: config
+        configMap:
+          name: config
+      - name: indexer-key
+        secret:
+          secretName: indexer-key

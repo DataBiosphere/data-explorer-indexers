@@ -126,7 +126,7 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name, field_name))
     df = pd.read_gbq(
         'SELECT * FROM `%s.%s.%s`' % (project_id, dataset_id, table_name),
-        project_id=project_id, dialect='standard')
+        project_id=project_id, private_key=os.environ['GOOGLE_APPLICATION_CREDENTIALS'], dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
