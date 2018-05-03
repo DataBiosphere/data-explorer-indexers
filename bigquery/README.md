@@ -29,6 +29,7 @@ added to this git repo.) Make a new directory under `config/private` and copy
     docker run -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
     ```
 * Run indexer.
+  * [Install virtualenv](https://pypi.python.org/pypi/virtualenv) if you haven't done so already.
 
     ```
     virtualenv ~/virtualenv/indexer-bigquery
