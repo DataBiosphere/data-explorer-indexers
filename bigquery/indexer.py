@@ -1,4 +1,5 @@
 """Loads BigQuery table into Elasticsearch.
+
 Note: Elasticsearch index is deleted before indexing.
 """
 
@@ -13,7 +14,6 @@ import time
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 import pandas as pd
-
 
 # Log to stderr.
 logging.basicConfig(level=logging.INFO,
@@ -39,12 +39,14 @@ def parse_args():
 
 def open_and_return_json(file_path):
     """Opens and returns JSON contents.
-    Args:
-      file_path: Relative path of JSON file.
-    Returns:
-      Parsed JSON.
-    """
-    with open(file_path,'r') as f:
+
+  Args:
+    file_path: Relative path of JSON file.
+
+  Returns:
+    Parsed JSON.
+  """
+    with open(file_path, 'r') as f:
         # Remove comments using jsmin, as recommended by JSON creator
         # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr).
         jsonDict = json.loads(jsmin.jsmin(f.read()))
@@ -74,32 +76,35 @@ def init_elasticsearch(elasticsearch_url, index_name):
         es.indices.delete(index=index_name)
     except Exception:
         pass
-    es.indices.create(index=index_name,body={})
+    es.indices.create(index=index_name, body={})
     return es
 
 
 def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
                       table_name, field_name, readable_field_name):
     """Indexes a facet field.
-    I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
-    - BigQuery -> pandas dataframe
-    - Convert datafrom to dict
-    - dict -> Elasticsearch
-    Args:
-      es: Elasticsearch object.
-      index_name: Name of Elasticsearch index.
-      primary_key: Name of primary key field.
-      project_id: BigQuery project ID.
-      dataset_id: BigQuery dataset ID.
-      table_name: BigQuery table name.
-      field_name: BigQuery field name.
-      readable_field_name: Field name for index and Data Explorer UI
-    """
+
+  I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
+
+  - BigQuery -> pandas dataframe
+  - Convert datafrom to dict
+  - dict -> Elasticsearch
+
+  Args:
+    es: Elasticsearch object.
+    index_name: Name of Elasticsearch index.
+    primary_key: Name of primary key field.
+    project_id: BigQuery project ID.
+    dataset_id: BigQuery dataset ID.
+    table_name: BigQuery table name.
+    field_name: BigQuery field name.
+    readable_field_name: Field name for index and Data Explorer UI
+  """
     start_time = time.time()
     logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name, field_name))
     df = pd.read_gbq(
         'SELECT * FROM `%s.%s.%s`' % (project_id, dataset_id, table_name),
-        project_id=project_id, private_key=os.environ['GOOGLE_APPLICATION_CREDENTIALS'], dialect='standard')
+        project_id=project_id, dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
@@ -114,8 +119,8 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
         '_index': index_name,
         # type will go away in future versions of Elasticsearch. Just use any string
         # here.
-        '_type' : 'type',
-        '_id'   : row[primary_key],
+        '_type': 'type',
+        '_id': row[primary_key],
         'doc': {
             readable_field_name: row[field_name]
         },
@@ -147,6 +152,7 @@ def main():
         index_facet_field(es, index_name, primary_key, row['project_id'],
                           row['dataset_id'], row['table_name'], row['field_name'], row['readable_field_name'])
     f.close()
+
 
 if __name__ == '__main__':
     main()
