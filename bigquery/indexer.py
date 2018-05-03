@@ -1,5 +1,4 @@
 """Loads BigQuery table into Elasticsearch.
-
 Note: Elasticsearch index is deleted before indexing.
 """
 
@@ -40,10 +39,8 @@ def parse_args():
 
 def open_and_return_json(file_path):
     """Opens and returns JSON contents.
-
     Args:
       file_path: Relative path of JSON file.
-
     Returns:
       Parsed JSON.
     """
@@ -84,13 +81,10 @@ def init_elasticsearch(elasticsearch_url, index_name):
 def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
                       table_name, field_name, readable_field_name):
     """Indexes a facet field.
-
     I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
-
     - BigQuery -> pandas dataframe
     - Convert datafrom to dict
     - dict -> Elasticsearch
-
     Args:
       es: Elasticsearch object.
       index_name: Name of Elasticsearch index.
@@ -155,7 +149,4 @@ def main():
     f.close()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception:
-        pass
+    main()
