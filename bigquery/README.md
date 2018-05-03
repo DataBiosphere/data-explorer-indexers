@@ -9,7 +9,6 @@ within docker.
 * If you want to use a [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
   * [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
 if you haven't done so already.
-  * [Install virtualenv](https://pypi.python.org/pypi/virtualenv).
   * Copy dataset to your project.
     ```
     bq --project_id <myproject> mk platinum_genomes
@@ -25,6 +24,7 @@ if you haven't done so already.
     docker run -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
     ```
 * Run indexer.
+  * [Install virtualenv](https://pypi.python.org/pypi/virtualenv) if you haven't done so already.
 
     ```
     virtualenv ~/virtualenv/indexer-bigquery
