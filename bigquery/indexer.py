@@ -12,6 +12,7 @@ import os
 import time
 
 from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
 from elasticsearch.helpers import bulk
 import pandas as pd
 
@@ -22,18 +23,21 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger('indexer.bigquery')
 
 
+ES_TIMEOUT_SEC = 20
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--elasticsearch_url',
         type=str,
         help='Elasticsearch url. Must start with http://',
-        default='http://localhost:9200')
+        default=os.environ.get('ELASTICSEARCH_URL'))
     parser.add_argument(
-        '--config_dir',
+        '--dataset_config_dir',
         type=str,
         help='Directory containing config files. Can be relative or absolute.',
-        default='config/platinum_genomes')
+        default=os.environ.get('DATASET_CONFIG_DIR'))
     return parser.parse_args()
 
 
@@ -71,6 +75,24 @@ def convert_to_index_name(s):
 
 def init_elasticsearch(elasticsearch_url, index_name):
     es = Elasticsearch([elasticsearch_url])
+
+    # Wait for Elasticsearch to come up.
+    # Don't print NewConnectionError's while we're waiting for Elasticsearch
+    # to come up.
+    start = time.time()
+    logging.getLogger("elasticsearch").setLevel(logging.ERROR)
+    for _ in range(0, ES_TIMEOUT_SEC):
+      try:
+        es.cluster.health(wait_for_status='yellow')
+        print('Elasticsearch took %d seconds to come up.' % (time.time()-start))
+        break
+      except ConnectionError:
+        print('Elasticsearch not up yet, will try again.')
+        time.sleep(1)
+    else:
+      raise EnvironmentError("Elasticsearch failed to start.")
+    logging.getLogger("elasticsearch").setLevel(logging.INFO)
+
     logger.info('Deleting and recreating %s index.' % index_name)
     try:
         es.indices.delete(index=index_name)
@@ -136,14 +158,14 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
 def main():
     args = parse_args()
 
-    json_path = os.path.join(args.config_dir, 'dataset.json')
+    json_path = os.path.join(args.dataset_config_dir, 'dataset.json')
     dataset_config = open_and_return_json(json_path)
     index_name = convert_to_index_name(dataset_config['name'])
     primary_key = dataset_config['primary_key']
 
     es = init_elasticsearch(args.elasticsearch_url, index_name)
 
-    f = open(os.path.join(args.config_dir, 'facet_fields.csv'))
+    f = open(os.path.join(args.dataset_config_dir, 'facet_fields.csv'))
     # Remove comments using jsmin.
     csv_str = jsmin.jsmin(f.read())
     rows = csv.DictReader(iter(csv_str.splitlines()), skipinitialspace=True)
