@@ -39,7 +39,7 @@
     ```
     gcloud container clusters get-credentials elasticsearch-cluster
     ```
-  This will make `kubectl` use this cluster.
+    This will make `kubectl` use this cluster.
   * Run [kubectl commands](https://github.com/pires/kubernetes-elasticsearch-cluster#deploy)
   * Test that Elasticsearch is up
     ```
