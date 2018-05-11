@@ -35,16 +35,17 @@
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
     * Expand `More` -> Click on `Set access for each API` -> Change `BigQuery` to enabled.
     * Click `Create`
-  * In terminal, run:
+  * After cluster has finished creating, run:
     ```
-    gcloud container clusters get-credentials elasticsearch-cluster
+    gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     This will make `kubectl` use this cluster.
   * Run [kubectl commands](https://github.com/pires/kubernetes-elasticsearch-cluster#deploy)
-  * Test that Elasticsearch is up
+  * Test that Elasticsearch is up. ES_CLIENT_POD is something like
+  `es-client-595585f9d4-7jw9v`; it doesn't have the `pod/` prefix.
     ```
     kubectl get svc,pods
-    kubectl ES_CLIENT_POD exec -it  -- /bin/bash
+    kubectl exec -it ES_CLIENT_POD -- /bin/bash
     curl EXTERNAL_IP:9200
     ```
 
@@ -55,8 +56,8 @@
     docker build -t gcr.io/PROJECT_ID/bq-indexer ..
     docker push gcr.io/PROJECT_ID/bq-indexer
     ```
-  * Update `bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT,
-  LOAD_BALANCER_IP and CONFIG_DIR.
+  * Update `bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
+  LOAD_BALANCER_IP.
   * Run the indexer:
     ```
     kubectl create configmap dataset-config --from-file=DATASET_CONFIG_DIR
@@ -65,6 +66,6 @@
   * Verify the indexer was successful:
     ```
     kubectl get svc,pods
-    kubectl ES_CLIENT_POD exec -it  -- /bin/bash
+    kubectl exec -it ES_CLIENT_POD -- /bin/bash
     curl EXTERNAL_IP:9200/_cat/indices?v
     ```
