@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bq-indexer
+spec:
+  template:
+    metadata:
+      name: bq-indexer
+    spec:
+      containers:
+      - name: bq-indexer
+        image: gcr.io/google.com/api-project-360728701457/bq-indexer
+        # Uncomment to force repulling image. This is useful if you're modifying
+        # indexer.py and want to test on GKE.
+# DO NOT SUBMIT
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: dataset-config
+          mountPath: /app/dataset_config
+# DO NOT SUBMIT
+#        command: ["/bin/sh"]
+#        args: ["sleep 600"]
+        command: ["python", "/app/indexer.py"]
+        args: [
+          "--elasticsearch_url", "http://10.138.0.10:9200/",
+          "--config_dir", "/app/dataset_config"
+        ]
+
+      restartPolicy: Never
+
+      volumes:
+#      - name: indexer
+#        configMap:
+#          name: indexer
+#          defaultMode: 0744
+      - name: dataset-config
+        configMap:
+          name: dataset-config
