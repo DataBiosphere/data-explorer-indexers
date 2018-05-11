@@ -1,12 +1,15 @@
 ## Running on GKE
 
 * Run Elasticsearch on GKE
-  *  
-  ```
-  git clone https://github.com/pires/kubernetes-elasticsearch-cluster.git
-  cd kubernetes-elasticsearch-cluster
-  ```
-  * Set up [Internal Load Balancer](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing). Note: This is not needed for indexing. This will be needed for having API server on App Engine Flex talk to Elasticsearch in GKE; might as well set up now. Change `es-svc.yaml` to:
+  * Clone `kubernetes-elasticsearch-cluster` repo.
+    ```
+    git clone https://github.com/pires/kubernetes-elasticsearch-cluster.git
+    cd kubernetes-elasticsearch-cluster
+    ```
+  * Set up [Internal Load Balancer](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing).
+  Note: This is not needed for indexing. This will be needed for having API
+  server on App Engine Flex talk to Elasticsearch in GKE; might as well set up
+  now. Change `es-svc.yaml` to:
     ```
     apiVersion: v1
     kind: Service
