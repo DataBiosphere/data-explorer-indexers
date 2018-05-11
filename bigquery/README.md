@@ -1,19 +1,16 @@
 ## BigQuery indexer
 
-Follow the instructions below to create an Elasticsearch index in an
-Elasticsearch docker container. Note that we run indexer.py directly (not using
-docker) because it's trickier to authenticate to Google Cloud Platform from
-within docker.
-
 ### Quickstart
+
+Index a BigQuery table into an Elasticsearch container on your local machine.
 
 * If you want to use a [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
   * [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
 if you haven't done so already.
   * Copy dataset to your project.
     ```
-    bq --project_id <myproject> mk platinum_genomes
-    bq --project_id <myproject> cp google.com:biggene:platinum_genomes.sample_info  <myproject>:platinum_genomes.sample_info
+    bq --project_id MY_GOOGLE_CLOUD_PROJECT mk platinum_genomes
+    bq --project_id MY_GOOGLE_CLOUD_PROJECT cp google.com:biggene:platinum_genomes.sample_info  MY_GOOGLE_CLOUD_PROJECT:platinum_genomes.sample_info
     ```
   * Change project ids in `config/platinum_genomes/facet_fields.csv`.
 * If you want to use your own dataset:
@@ -23,21 +20,9 @@ added to this git repo.) Make a new directory under `config/private` and copy
   * Edit config files; instructions are in the files. Read
   [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
   for some background information.
-* Run Elasticsearch.
-
-    ```
-    docker run -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
-    ```
-* Run indexer.
-
-    ```
-    virtualenv ~/virtualenv/indexer-bigquery
-    source ~/virtualenv/indexer-bigquery/bin/activate
-    pip install -r requirements.txt
-    python indexer.py                            # If using default dataset
-    python indexer.py --config_dir <config_dir>  # If using your own dataset
-    ```
-
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
+* If using default dataset: `docker-compose up --build`  
+  If using custom dataset: `DATASET_CONFIG_DIR=config/private/MY_DATASET docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
  own dataset, change `platinum_genomes` to your dataset name.
