@@ -26,8 +26,8 @@
       type: LoadBalancer
     ```
   * Create cluster
-    * Go to https://pantheon.corp.google.com/kubernetes/list
-    * Change name to elasticsearch-cluster
+    * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
+    * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
     * Expand `More` -> Click on `Set access for each API` -> Change `BigQuery` to enabled.
     * Click `Create`
