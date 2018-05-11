@@ -1,7 +1,8 @@
 ## Running on GKE
 
 * Run Elasticsearch on GKE
-  * ```
+  *  
+  ```
   git clone https://github.com/pires/kubernetes-elasticsearch-cluster.git
   cd kubernetes-elasticsearch-cluster
   ```
