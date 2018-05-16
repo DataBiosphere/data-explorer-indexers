@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:2.7-stretch
+    steps:
+      - checkout
+      - run:
+          name: Run the yapf python linter
+          command: |
+            pip install yapf
+            yapf -dr .
