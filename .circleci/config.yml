@@ -10,11 +10,11 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
-            virtualenv yapf
-            source yapf/bin/activate
+            virtualenv ~/yapf
+            source ~/yapf/bin/activate
             pip install yapf
             yapf -dr .
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
           paths:
-            - "yapf"
+            - "~/yapf"
