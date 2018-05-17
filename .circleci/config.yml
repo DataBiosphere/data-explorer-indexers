@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:2.7-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
+      - run:
+          name: Run the yapf python linter
+          command: |
+            virtualenv ~/yapf
+            source ~/yapf/bin/activate
+            pip install yapf
+            yapf -dr .
+      - save_cache:
+          key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
+          paths:
+            - "~/yapf"

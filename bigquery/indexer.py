@@ -17,11 +17,11 @@ from elasticsearch.helpers import bulk
 import pandas as pd
 
 # Log to stderr.
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(filename)10s:%(lineno)s %(levelname)s %(message)s',
-                    datefmt='%Y%m%d%H:%M:%S')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(filename)10s:%(lineno)s %(levelname)s %(message)s',
+    datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
-
 
 ES_TIMEOUT_SEC = 20
 
@@ -64,7 +64,7 @@ def convert_to_index_name(s):
     # https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
     prohibited_chars = [' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
     for char in prohibited_chars:
-        s = s.replace(char, '_');
+        s = s.replace(char, '_')
     s = s.lower()
     # Remove leading underscore.
     if s.find('_', 0, 1) == 0:
@@ -82,15 +82,16 @@ def init_elasticsearch(elasticsearch_url, index_name):
     start = time.time()
     logging.getLogger("elasticsearch").setLevel(logging.ERROR)
     for _ in range(0, ES_TIMEOUT_SEC):
-      try:
-        es.cluster.health(wait_for_status='yellow')
-        print('Elasticsearch took %d seconds to come up.' % (time.time()-start))
-        break
-      except ConnectionError:
-        print('Elasticsearch not up yet, will try again.')
-        time.sleep(1)
+        try:
+            es.cluster.health(wait_for_status='yellow')
+            print('Elasticsearch took %d seconds to come up.' %
+                  (time.time() - start))
+            break
+        except ConnectionError:
+            print('Elasticsearch not up yet, will try again.')
+            time.sleep(1)
     else:
-      raise EnvironmentError("Elasticsearch failed to start.")
+        raise EnvironmentError("Elasticsearch failed to start.")
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
     logger.info('Deleting and recreating %s index.' % index_name)
@@ -123,10 +124,12 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     readable_field_name: Field name for index and Data Explorer UI
   """
     start_time = time.time()
-    logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name, field_name))
+    logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name,
+                                           field_name))
     df = pd.read_gbq(
         'SELECT * FROM `%s.%s.%s`' % (project_id, dataset_id, table_name),
-        project_id=project_id, dialect='standard')
+        project_id=project_id,
+        dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
@@ -136,18 +139,19 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     documents = df.to_dict(orient='records')
     # Use generator so we can index large tables without having to load into
     # memory.
-    k = ({
-        '_op_type': 'update',
-        '_index': index_name,
-        # type will go away in future versions of Elasticsearch. Just use any string
-        # here.
-        '_type': 'type',
-        '_id': row[primary_key],
-        'doc': {
-            readable_field_name: row[field_name]
-        },
-        'doc_as_upsert': True
-    } for _, row in df.iterrows())
+    k = (
+        {
+            '_op_type': 'update',
+            '_index': index_name,
+            # type will go away in future versions of Elasticsearch. Just use any string
+            # here.
+            '_type': 'type',
+            '_id': row[primary_key],
+            'doc': {
+                readable_field_name: row[field_name]
+            },
+            'doc_as_upsert': True
+        } for _, row in df.iterrows())
 
     bulk(es, k)
     elapsed_time = time.time() - start_time
@@ -172,7 +176,8 @@ def main():
     for row in rows:
         print('row: %s' % row)
         index_facet_field(es, index_name, primary_key, row['project_id'],
-                          row['dataset_id'], row['table_name'], row['field_name'], row['readable_field_name'])
+                          row['dataset_id'], row['table_name'],
+                          row['field_name'], row['readable_field_name'])
     f.close()
 
 
