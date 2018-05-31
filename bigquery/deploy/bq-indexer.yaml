@@ -18,7 +18,7 @@ spec:
           mountPath: /app/dataset_config
         command: ["python", "/app/indexer.py"]
         args: [
-          "--elasticsearch_url", "http://LOAD_BALANCER_IP:9200/",
+          "--elasticsearch_url", "http://EXTERNAL_IP:9200/",
           "--dataset_config_dir", "/app/dataset_config"
         ]
 
