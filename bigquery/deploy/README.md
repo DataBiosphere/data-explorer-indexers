@@ -75,8 +75,8 @@ don't forget to [copy to your project and set project IDs in facet_fields.csv](h
 
 ## Bringing down Elasticsearch
 
-* If you no longer need this Elasticsearch deployment:
-  ```
-  kubectl config get-clusters
-  kubectl config delete-cluster CLUSTER_NAME
-  ```
+If you no longer need this Elasticsearch deployment:
+```
+kubectl config get-clusters
+kubectl config delete-cluster CLUSTER_NAME
+```
