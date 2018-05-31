@@ -73,9 +73,10 @@ don't forget to [copy to your project and set project IDs in facet_fields.csv](h
     curl EXTERNAL_IP:9200/_cat/indices?v
     ```
 
-* Delete cluster
-  * If you no longer need this Elasticsearch deployment:
-    ```
-    kubectl config get-clusters
-    kubectl config delete-cluster CLUSTER_NAME
-    ```
+## Bringing down Elasticsearch
+
+* If you no longer need this Elasticsearch deployment:
+  ```
+  kubectl config get-clusters
+  kubectl config delete-cluster CLUSTER_NAME
+  ```
