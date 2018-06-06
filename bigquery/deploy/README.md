@@ -16,8 +16,7 @@
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch:
     ```
-    cd bigquery/deploy/k8s_es_deploy/
-    sh deploy.sh
+    ./bigquery/deploy/kubernetes-elasticsearch-cluster/deploy.sh
     ```
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
   `es-client-595585f9d4-7jw9v`; it doesn't have the `pod/` prefix.
