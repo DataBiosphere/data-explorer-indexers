@@ -1,34 +1,6 @@
 ## Running on GKE
 
-* Run Elasticsearch on GKE
-  * Clone `kubernetes-elasticsearch-cluster` repo.
-    ```
-    git clone https://github.com/pires/kubernetes-elasticsearch-cluster.git
-    cd kubernetes-elasticsearch-cluster
-    ```
-  * Set up [Internal Load Balancer](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing).
-  Note: This is not needed for indexing. This will be needed for having API
-  server on App Engine Flex talk to Elasticsearch in GKE; might as well set up
-  now. Change `es-svc.yaml` to:
-    ```
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: elasticsearch
-      labels:
-        component: elasticsearch
-        role: client
-      annotations:
-        cloud.google.com/load-balancer-type: "Internal"
-    spec:
-      selector:
-        component: elasticsearch
-        role: client
-      ports:
-      - name: http
-        port: 9200
-      type: LoadBalancer
-    ```
+* Set up the Kubernetes environment
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
@@ -40,7 +12,13 @@
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     This will make `kubectl` use this cluster.
-  * Run [kubectl commands](https://github.com/pires/kubernetes-elasticsearch-cluster#deploy)
+
+* Run Elasticsearch on GKE
+  * Deploy Elasticsearch:
+    ```
+    cd bigquery/deploy/kubernetes-elasticsearch-cluster/
+    ./deploy.sh
+    ```
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
   `es-client-595585f9d4-7jw9v`; it doesn't have the `pod/` prefix.
     ```
@@ -51,7 +29,7 @@
 
 * Run indexer on GKE
   * If you are using the default [platinum_genomes dataset](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery/config/platinum_genomes),
-don't forget to [copy to your project and set project IDs in facet_fields.csv](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart)
+don't forget to [copy to your project and set project IDs in facet_fields.csv](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart).
   * Build, tag, and upload the base docker image to GCR:
     ```
     cd bigquery
