@@ -29,10 +29,6 @@
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
     * Expand `More` and select the service account you just created.
-      * If referencing a bigquery dataset outside of your current project,
-      under Project access, set Service account to the one you just created.
-      * If not, click on `Set access for each API` -> Change `BigQuery` to
-      enabled.
     * Click `Create`
   * After cluster has finished creating, run:
     ```
