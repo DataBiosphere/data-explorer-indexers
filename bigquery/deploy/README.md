@@ -1,11 +1,26 @@
 ## Running on GKE
 
+* Create a service account with access to your table
+  * If your bigquery table resides in the same project you are deploying this
+  instance is, ignore this step. Otherwise, navigate to `IAM & Admin >
+  Service Accounts > Create Service Account` to create a new service account.
+    * Grant the `Storage > Storage Object Viewer` role to the Service account.
+    * Grant the `BigQuery > BigQuery Job User` role to the Service account
+  * Switch projects to the one containing your bigquery table and add an IAM
+  role for your new service account
+    * Grant the `BigQuery > BigQuery Job Viewer` role to the Service account
+  permissions.
+
 * Set up the Kubernetes environment
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
-    * Expand `More` -> Click on `Set access for each API` -> Change `BigQuery` to enabled.
+    * Expand `More`
+      * If referencing a bigquery dataset outside of your current project,
+      under Project access, set Service account to the one you just created.
+      * If not, click on `Set access for each API` -> Change `BigQuery` to
+      enabled.
     * Click `Create`
   * After cluster has finished creating, run:
     ```
@@ -33,7 +48,7 @@ don't forget to [copy to your project and set project IDs in facet_fields.csv](h
   * Build, tag, and upload the base docker image to GCR:
     ```
     cd bigquery
-    docker build -t gcr.io/PROJECT_ID/bq-indexer
+    docker build -t gcr.io/PROJECT_ID/bq-indexer .
     docker push gcr.io/PROJECT_ID/bq-indexer
     ```
   * Update `bigquery/deploy/bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
