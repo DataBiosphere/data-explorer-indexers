@@ -3,6 +3,7 @@
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
   dataset
+    * Navigate to the project where you will deploy Data explorer.
     * [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
     we create a service account and give it only the necessary permissions,
     rather than use the default Compute Engine service account. At the end of
