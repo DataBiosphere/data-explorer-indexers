@@ -1,17 +1,16 @@
 ## Running on GKE
 
-* Create a service account with access to your table
-  * If your bigquery table resides in the same project you are deploying this
-  instance is, ignore this step. Otherwise, navigate to `IAM & Admin >
-  Service Accounts > Create Service Account` to create a new service account.
-    * Grant the `Storage > Storage Object Viewer` role to the Service account.
-    * Grant the `BigQuery > BigQuery Job User` role to the Service account
-  * Switch projects to the one containing your bigquery table and add an IAM
-  role for your new service account
-    * Grant the `BigQuery > BigQuery Job Viewer` role to the Service account
-  permissions.
-
 * Set up the Kubernetes environment
+  * Create a service account with access to your table
+    * If your bigquery table resides in the same project you are deploying this
+    instance is, ignore this step. Otherwise, navigate to `IAM & Admin >
+    Service Accounts > Create Service Account` to create a new service account.
+      * Grant the `Storage > Storage Object Viewer` role to the Service account.
+      * Grant the `BigQuery > BigQuery Job User` role to the Service account
+    * Switch projects to the one containing your bigquery table and add an IAM
+    role for your new service account
+      * Grant the `BigQuery > BigQuery Job Viewer` role to the Service account
+  permissions.
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
