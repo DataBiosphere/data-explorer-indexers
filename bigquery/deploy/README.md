@@ -1,21 +1,32 @@
 ## Running on GKE
 
 * Set up the Kubernetes environment
-  * Create a service account with access to your table
-    * If your bigquery table resides in the same project you are deploying this
-    instance is, ignore this step. Otherwise, navigate to `IAM & Admin >
-    Service Accounts > Create Service Account` to create a new service account.
-      * Grant the `Storage > Storage Object Viewer` role to the Service account.
-      * Grant the `BigQuery > BigQuery Job User` role to the Service account
-    * Switch projects to the one containing your bigquery table and add an IAM
-    role for your new service account
-      * Grant the `BigQuery > BigQuery Job Viewer` role to the Service account
-  permissions.
+  * Create a service account and give it access to the BigQuery tables for your
+  dataset
+    * [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
+    we create a service account and give it only the necessary permissions,
+    rather than use the default Compute Engine service account. At the end of
+    this section, the new service account will have access to the BigQuery
+    tables for your dataset. Before creating the service account, you must
+    ensure that everyone who could use this service account already has access
+    to the BigQuery tables. To see who could use this service account, navigate
+    to `IAM & Admin` and look for `Owner`, `Editor`, and `Service Account User`
+    roles.
+    * Create the service account
+      * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
+      * We suggest the name `DATASET-data-explorer-indexer` to make it clear
+      what this service account does.
+      * Add the `Storage > Storage Object Viewer` role. This is for reading
+      docker images from GCR.
+      * Add the `BigQuery > BigQuery Job User` role. This allows the service
+      account to run a BigQuery query, which takes place while indexing the BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131) for the BigQuery query, not the project containing the BigQuery tables.
+    * Add the service account to the Google Group with read-only access to the
+    dataset
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
-    * Expand `More`
+    * Expand `More` and select the service account you just created.
       * If referencing a bigquery dataset outside of your current project,
       under Project access, set Service account to the one you just created.
       * If not, click on `Set access for each API` -> Change `BigQuery` to
