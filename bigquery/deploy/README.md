@@ -19,7 +19,9 @@
       * Add the `Storage > Storage Object Viewer` role. This is for reading
       docker images from GCR.
       * Add the `BigQuery > BigQuery Job User` role. This allows the service
-      account to run a BigQuery query, which takes place while indexing the BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131) for the BigQuery query, not the project containing the BigQuery tables.
+      account to run a BigQuery query, which takes place while indexing the
+      BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
+      for the BigQuery query, not the project containing the BigQuery tables.
     * Add the service account to the Google Group with read-only access to the
     dataset
   * Create cluster
