@@ -9,7 +9,7 @@ services:
       context: .
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-      # For convenience, includ platinum_genomes by default.
+      # For convenience, include platinum_genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/platinum_genomes}
     volumes:
       # Expose gcloud credentials for pandas_gbq. This is only needed for
