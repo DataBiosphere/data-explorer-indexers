@@ -23,8 +23,9 @@
       account to run a BigQuery query, which takes place while indexing the
       BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
       for the BigQuery query, not the project containing the BigQuery tables.
-    * Add the service account to the Google Group with read-only access to the
-    dataset
+    * Work with the Dataset owner to identity a Google Group with read-only
+    access to the dataset, that the service account can be added to. Add the
+    service account to the Google Group.
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
@@ -54,7 +55,7 @@
 * Run indexer on GKE
   * If you are using the default [platinum_genomes dataset](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery/config/platinum_genomes),
 don't forget to [copy to your project and set project IDs in facet_fields.csv](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart).
-  * Build, tag, and upload the base docker image to GCR:
+  * Build, tag, and upload the docker image to GCR:
     ```
     cd bigquery
     docker build -t gcr.io/PROJECT_ID/bq-indexer .

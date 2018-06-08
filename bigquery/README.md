@@ -12,20 +12,22 @@ if you haven't done so already.
     bq --project_id MY_GOOGLE_CLOUD_PROJECT mk platinum_genomes
     bq --project_id MY_GOOGLE_CLOUD_PROJECT cp google.com:biggene:platinum_genomes.sample_info  MY_GOOGLE_CLOUD_PROJECT:platinum_genomes.sample_info
     ```
-  * Change project ids in `config/platinum_genomes/facet_fields.csv`.
+  * Change project ids in `dataset_config/platinum_genomes/facet_fields.csv`.
 * If you want to use your own dataset:
-  * Create a `config/private` directory. (Files in `config/private` won't be
-added to this git repo.) Make a new directory under `config/private` and copy
-`config/template/*` to it.
+  * Create a config directory for your dataset, e.g. `dataset_config/amp_pd`.
+  Copy `dataset_config/template/*` to this directory.
   * Edit config files; instructions are in the files. Read
   [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
   for some background information.
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
-* If using default dataset: `docker-compose up --build`  
-  If using custom dataset: `DATASET_CONFIG_DIR=config/private/MY_DATASET docker-compose up --build`
+* If using default dataset: `docker-compose up --build`
+  If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
  own dataset, change `platinum_genomes` to your dataset name.
+
+If using your own dataset: Now that your dataset is indexed, follow
+https://github.com/DataBiosphere/data-explorer to bring up a Data explorer UI.
 
 ### Overview
 
@@ -35,13 +37,6 @@ Name, etc. A dataset may have hundreds of fields (weight, height, etc); the
 dataset owner must curate a list of facets that they think will be interesting.
 For [Project Baseline](https://www.projectbaseline.com/), facets may include
 age, weight, height, etc.
-
-To set up Data explorer for a new dataset:
-
-* Setup `config` directory. This includes specifying facet fields.
-* Run indexer to index BigQuery tables into Elasticsearch.
-* Using https://github.com/DataBiosphere/data-explorer repo, run Data explorer
-and point to `config` directory from first step.
 
 A Dataset has a notion of `primary_key`. For a dataset that tracks 1000
 participants, `primary_key` could be `participant_id`. For a dataset that
