@@ -9,7 +9,8 @@ spec:
     spec:
       containers:
       - name: bq-indexer
-        image: gcr.io/MY_GOOGLE_CLOUD_PROJECT/bq-indexer
+        # This is where we maintain the the latest version of the BigQuery ES indexer
+        image: gcr.io/data-explorer-images/bq-indexer
         # Uncomment to force repulling image. This is useful if you're modifying
         # indexer.py and want to test on GKE.
         # imagePullPolicy: Always
