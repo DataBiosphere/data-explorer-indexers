@@ -22,15 +22,19 @@ if you haven't done so already.
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
 * Run Elasticsearch.
   * If you intend to run the Data Explorer UI from the [data-explorer repo](https://github.com/DataBiosphere/data-explorer/)
-    after this, run inside the data-explorer repo: `docker-compose up --build elasticsearch'
+    after this, run inside the data-explorer repo:
+    ```
+    docker-compose up --build elasticsearch
+    ```
   * If you do not intend to run the Data Explorer UI after this, and just want
     to inspect the index in Elasticsearch, run:
     ```
     docker run -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
     ```
     In `docker-compose.yml`, change ELASTICSEARCH_URL to `localhost:9200`.
-* If using default dataset: `docker-compose up --build`
-  If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build`
+* Run the indexer.
+  * If using default dataset: `docker-compose up --build`
+  * If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
  own dataset, change `platinum_genomes` to your dataset name.
