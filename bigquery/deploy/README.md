@@ -55,14 +55,7 @@
 * Run indexer on GKE
   * If you are using the default [platinum_genomes dataset](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery/config/platinum_genomes),
 don't forget to [copy to your project and set project IDs in facet_fields.csv](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart).
-  * Build, tag, and upload the docker image to GCR:
-    ```
-    cd bigquery
-    docker build -t gcr.io/PROJECT_ID/bq-indexer .
-    docker push gcr.io/PROJECT_ID/bq-indexer
-    ```
-  * Update `bigquery/deploy/bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
-  EXTERNAL_IP.
+  * Update EXTERNAL_IP in `bigquery/deploy/bq-indexer.yaml`
   * Run the indexer:
     ```
     cd bigquery/deploy
@@ -82,4 +75,12 @@ If you no longer need this Elasticsearch deployment:
 ```
 kubectl config get-clusters
 kubectl config delete-cluster CLUSTER_NAME
+```
+
+## Re-building the indexer image on GCR
+
+```
+cd bigquery
+docker build -t gcr.io/data-explorer-images/bq-indexer .
+docker push gcr.io/data-explorer-images/bq-indexer
 ```
