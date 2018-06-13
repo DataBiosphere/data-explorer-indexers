@@ -31,7 +31,6 @@ if you haven't done so already.
     ```
     docker-compose up -d elasticsearch
     ```
-    In `docker-compose.yml`, change ELASTICSEARCH_URL to `localhost:9200`.
 * Run the indexer.
   * If using default dataset: `docker-compose up --build indexer`
   * If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer`
