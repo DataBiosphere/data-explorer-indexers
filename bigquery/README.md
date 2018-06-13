@@ -24,17 +24,17 @@ if you haven't done so already.
   * If you intend to run the Data Explorer UI from the [data-explorer repo](https://github.com/DataBiosphere/data-explorer/)
     after this, run inside the data-explorer repo:
     ```
-    docker-compose up --build elasticsearch
+    docker-compose up -d elasticsearch
     ```
   * If you do not intend to run the Data Explorer UI after this, and just want
-    to inspect the index in Elasticsearch, run:
+    to inspect the index in Elasticsearch, run inside this repo:
     ```
-    docker run -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    docker-compose up -d elasticsearch
     ```
     In `docker-compose.yml`, change ELASTICSEARCH_URL to `localhost:9200`.
 * Run the indexer.
-  * If using default dataset: `docker-compose up --build`
-  * If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build`
+  * If using default dataset: `docker-compose up --build indexer`
+  * If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
  own dataset, change `platinum_genomes` to your dataset name.
