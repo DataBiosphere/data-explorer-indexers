@@ -1,33 +1,36 @@
 ## BigQuery indexer
 
-### Quickstart
+## Quickstart
 
-Index a BigQuery table into an Elasticsearch container on your local machine.
-
-* If you want to use a [sample public dataset](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info):
-  * [Install bq](https://cloud.google.com/bigquery/docs/bq-command-line-tool#installation)
-if you haven't done so already.
-  * Copy dataset to your project.
-    ```
-    bq --project_id MY_GOOGLE_CLOUD_PROJECT mk platinum_genomes
-    bq --project_id MY_GOOGLE_CLOUD_PROJECT cp google.com:biggene:platinum_genomes.sample_info  MY_GOOGLE_CLOUD_PROJECT:platinum_genomes.sample_info
-    ```
-  * Change project ids in `dataset_config/platinum_genomes/facet_fields.csv`.
-* If you want to use your own dataset:
-  * Create a config directory for your dataset, e.g. `dataset_config/amp_pd`.
-  Copy `dataset_config/template/*` to this directory.
-  * Edit config files; instructions are in the files. Read
-  [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
-  for some background information.
-* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
-* If using default dataset: `docker-compose up --build`
-  If using custom dataset: `DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build`
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
+create it by running `gcloud auth application-default login`.
+* Providing a GCP Project ID that you can use as the billing project, run the
+indexer:
+  `GOOGLE_CLOUD_PROJECT_ID=<project_id> docker-compose up --build`
 * View Elasticsearch index at
- `http://localhost:9200/platinum_genomes/_search?pretty=true`. If using your
- own dataset, change `platinum_genomes` to your dataset name.
+ `http://localhost:9200/platinum_genomes/_search?pretty=true`.
+ 
+## Stand up your own dataset
 
-If using your own dataset: Now that your dataset is indexed, follow
-https://github.com/DataBiosphere/data-explorer to bring up a Data explorer UI.
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
+* Run Elasticsearch:
+  * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/) after this, run inside the data-explorer repo:
+    ```
+    docker-compose up -d elasticsearch
+    ```
+  * If you do not intend to run the Data Explorer UI after this, and just want to inspect the index in Elasticsearch, run inside this repo:
+    ```
+    docker-compose up -d elasticsearch
+    ```
+* Create a config directory for your dataset, e.g. `dataset_config/MY_DATASET`. Copy `dataset_config/template/*` to this directory.
+* Edit config files; instructions are in the files. See [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview) for some background information.
+* Run the indexer:
+  ```
+  DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
+  ```
+* View Elasticsearch index at
+ `http://localhost:9200/MY_DATASET_NAME/_search?pretty=true`. 
+* Optionally, [bring up a Data Explorer UI](https://github.com/DataBiosphere/data-explorer).
 
 ### Overview
 

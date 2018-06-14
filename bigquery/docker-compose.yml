@@ -11,9 +11,16 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include platinum_genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/platinum_genomes}
+      - BILLING_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
     volumes:
       # Expose gcloud credentials for pandas_gbq. This is only needed for
       # local runs, which are authenticated as a user. This is not needed for
       # GKE runs, which are authenticated as service account. (The service
       # account credentials are automatically picked up.)
       - ~/.config/gcloud:/root/.config/gcloud
+networks:
+  default:
+    external:
+      # This is only needed for indexing data into an Elasticsearch container
+      # from the data-explorer repo. Use the network from that repo.
+      name: dataexplorer_default
