@@ -42,7 +42,7 @@ def parse_args():
         '--billing_project_id',
         type=str,
         help=
-        'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permissions on this project.',
+        'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
         default=os.environ.get('BILLING_PROJECT_ID'),
         required=True)
     return parser.parse_args()
