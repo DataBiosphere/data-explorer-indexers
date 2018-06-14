@@ -12,11 +12,11 @@ if you haven't done so already.
   bq --project_id MY_GOOGLE_CLOUD_PROJECT mk platinum_genomes
   bq --project_id MY_GOOGLE_CLOUD_PROJECT cp google.com:biggene:platinum_genomes.sample_info  MY_GOOGLE_CLOUD_PROJECT:platinum_genomes.sample_info
   ```
-* Change project ids in `dataset_config/platinum_genomes/facet_fields.csv`.
-* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
+* Change project ids in `dataset_config/platinum_genomes/facet_fields.csv`
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`
 * `docker-compose up --build`
 * View Elasticsearch index:
- `http://localhost:9200/platinum_genomes/_search?pretty=true`.
+ `http://localhost:9200/platinum_genomes/_search?pretty=true`
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions
 below. Note that you will have to reindex the data into an Elasticsearch
@@ -24,7 +24,7 @@ container from the [data-explorer repo](https://github.com/DataBiosphere/data-ex
 
 ### Index a custom dataset locally
 
-* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`
 * Setup config files.
   * Create `dataset_config/<my_dataset>`. Copy `dataset_config/template/*` to this directory.
   * Edit config files; instructions are in the files. Read
@@ -44,7 +44,7 @@ container from the [data-explorer repo](https://github.com/DataBiosphere/data-ex
 * Run the indexer:
 `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
 * List Elasticsearch indices: `http://localhost:9200/_cat/indices?v`  
-  View Elasticsearch index: `http://localhost:9200/MY_DATASET/_search?pretty=true`.
+  View Elasticsearch index: `http://localhost:9200/MY_DATASET/_search?pretty=true`
 * If you want to see local Data Explorer UI, [follow these instructions](https://github.com/DataBiosphere/data-explorer/blob/5441559c57ab7a2e0813e8e4fe7e19a9394f1bdf/README.md#run-local-data-explorer-with-a-specific-dataset).
 
 ### Overview
