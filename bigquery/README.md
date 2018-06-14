@@ -7,7 +7,7 @@ create it by running `gcloud auth application-default login`.
 * Providing a GCP Project ID that you can use as the billing project, run the
 indexer:
   `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
-* View Elasticsearch index at
+* View the Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions
@@ -35,8 +35,8 @@ create it by running `gcloud auth application-default login`.
     docker-compose up -d elasticsearch
     ```
 * Determine the project that will be billed for querying the BigQuery tables.
-You must have `bigquery.jobs.create` on this project; for example, any project
-where you are Viewer/Editor/Owner.
+Minimally, your account must have `bigquery.jobs.create` permissions on this
+project.
 * Run the indexer:
   ```
   BILLING_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
