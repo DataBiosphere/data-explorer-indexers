@@ -41,9 +41,10 @@ def parse_args():
     parser.add_argument(
         '--billing_project_id',
         type=str,
-        help='The ID of the GCP Project to bill, if separate from the project'
-        ' containing the BigQuery table(s)',
-        default=os.environ.get('BILLING_PROJECT_ID'))
+        help=
+        'The project to be billed for GCP operations. The account running this script must have bigquery.jobs.create on this project.',
+        default=os.environ.get('BILLING_PROJECT_ID'),
+        required=True)
     return parser.parse_args()
 
 

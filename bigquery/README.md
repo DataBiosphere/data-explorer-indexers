@@ -6,27 +6,35 @@
 create it by running `gcloud auth application-default login`.
 * Providing a GCP Project ID that you can use as the billing project, run the
 indexer:
-  `GOOGLE_CLOUD_PROJECT_ID=<billing_project_id> docker-compose up --build`
+  `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
  
 ### Stand up your own dataset
 
-* If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
+create it by running `gcloud auth application-default login`.
 * Run Elasticsearch:
-  * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/) after this, run inside the data-explorer repo:
+  * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/)
+  after this, run inside the data-explorer repo:
     ```
     docker-compose up -d elasticsearch
     ```
-  * If you do not intend to run the Data Explorer UI after this, and just want to inspect the index in Elasticsearch, run inside this repo:
+  * If you do not intend to run the Data Explorer UI after this, and just want
+  to inspect the index in Elasticsearch, run inside this repo:
     ```
     docker-compose up -d elasticsearch
     ```
-* Create a config directory for your dataset, e.g. `dataset_config/MY_DATASET`. Copy `dataset_config/template/*` to this directory.
-* Edit config files; instructions are in the files. See [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview) for some background information.
+* Create a config directory for your dataset, e.g. `dataset_config/MY_DATASET`.
+Copy `dataset_config/template/*` to this directory.
+* Edit config files; instructions are in the files. See [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
+for some background information.
+* Determine the project that will be billed for querying the BigQuery tables.
+You must have `bigquery.jobs.create` on this project; for example, any project
+where you are Viewer/Editor/Owner.
 * Run the indexer:
   ```
-  GOOGLE_CLOUD_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
+  BILLING_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
   ```
 * View Elasticsearch index at
  `http://localhost:9200/MY_DATASET_NAME/_search?pretty=true`. 

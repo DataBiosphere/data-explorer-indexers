@@ -53,8 +53,10 @@
     ```
 
 * Run indexer on GKE
-  * Unless you are using the platinum genomes sample dataset, [set up the DATASET_CONFIG_DIR](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery).
-  * Build, tag, and upload the docker image to GCR:
+  * Make sure the config in `bigquery/dataset_config/MY_DATASET` is filled out.
+  If you don't yet have config for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
+  to set them up.
+  * Upload the docker image to GCR
     ```
     cd bigquery
     docker build -t gcr.io/PROJECT_ID/bq-indexer .
