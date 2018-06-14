@@ -5,8 +5,8 @@
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
 * Determine the project that will be billed for querying the BigQuery tables.
-Minimally, your account must have `bigquery.jobs.create` permissions on this
-project.
+Your account must have `bigquery.jobs.create` permissions this project; this
+includes any project where you have the Viewer/Editor/Owner role.
 * Run the indexer:
   `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
 * View the Elasticsearch index at
@@ -37,15 +37,15 @@ create it by running `gcloud auth application-default login`.
     docker-compose up -d elasticsearch
     ```
 * Determine the project that will be billed for querying the BigQuery tables.
-Minimally, your account must have `bigquery.jobs.create` permissions on this
-project.
+Your account must have `bigquery.jobs.create` permissions this project; this
+includes any project where you have the Viewer/Editor/Owner role.
 * Run the indexer:
   ```
-  BILLING_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
+  BILLING_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/<my-dataset> docker-compose up --build indexer
   ```
 * List Elasticsearch indices: `http://localhost:9200/_cat/indices?v`  
   View Elasticsearch index: `http://localhost:9200/MY_DATASET/_search?pretty=true`
-* Optionally, [bring up the Data Explorer UI](https://github.com/DataBiosphere/data-explorer).
+* Optionally, [bring up a local Data Explorer UI](https://github.com/DataBiosphere/data-explorer/blob/5441559c57ab7a2e0813e8e4fe7e19a9394f1bdf/README.md#run-local-data-explorer-with-a-specific-dataset).
 
 ### Overview
 

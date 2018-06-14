@@ -42,7 +42,7 @@ def parse_args():
         '--billing_project_id',
         type=str,
         help=
-        'The project to be billed for GCP operations. The account running this script must have bigquery.jobs.create on this project.',
+        'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permissions on this project.',
         default=os.environ.get('BILLING_PROJECT_ID'),
         required=True)
     return parser.parse_args()
@@ -130,7 +130,7 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     table_name: BigQuery table name.
     field_name: BigQuery field name.
     readable_field_name: Field name for index and Data Explorer UI
-    billing_project_id: GCP Project ID to bill
+    billing_project_id: GCP project ID to bill
   """
     start_time = time.time()
     logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name,
