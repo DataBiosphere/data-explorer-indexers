@@ -19,7 +19,8 @@ spec:
         command: ["python", "/app/indexer.py"]
         args: [
           "--elasticsearch_url", "http://EXTERNAL_IP:9200/",
-          "--dataset_config_dir", "/app/dataset_config"
+          "--dataset_config_dir", "/app/dataset_config",
+          "--billing_project_id", "MY_GOOGLE_CLOUD_PROJECT"
         ]
 
       restartPolicy: Never

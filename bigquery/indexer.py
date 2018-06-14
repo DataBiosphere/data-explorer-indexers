@@ -38,6 +38,13 @@ def parse_args():
         type=str,
         help='Directory containing config files. Can be relative or absolute.',
         default=os.environ.get('DATASET_CONFIG_DIR'))
+    parser.add_argument(
+        '--billing_project_id',
+        type=str,
+        help=
+        'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
+        default=os.environ.get('BILLING_PROJECT_ID'),
+        required=True)
     return parser.parse_args()
 
 
@@ -104,7 +111,8 @@ def init_elasticsearch(elasticsearch_url, index_name):
 
 
 def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
-                      table_name, field_name, readable_field_name):
+                      table_name, field_name, readable_field_name,
+                      billing_project_id):
     """Indexes a facet field.
 
   I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
@@ -122,13 +130,14 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     table_name: BigQuery table name.
     field_name: BigQuery field name.
     readable_field_name: Field name for index and Data Explorer UI
+    billing_project_id: GCP project ID to bill
   """
     start_time = time.time()
     logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name,
                                            field_name))
     df = pd.read_gbq(
         'SELECT * FROM `%s.%s.%s`' % (project_id, dataset_id, table_name),
-        project_id=project_id,
+        project_id=billing_project_id,
         dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
@@ -177,7 +186,8 @@ def main():
         print('row: %s' % row)
         index_facet_field(es, index_name, primary_key, row['project_id'],
                           row['dataset_id'], row['table_name'],
-                          row['field_name'], row['readable_field_name'])
+                          row['field_name'], row['readable_field_name'],
+                          args.billing_project_id)
     f.close()
 
 
