@@ -5,15 +5,14 @@
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
 * Determine the project that will be billed for querying the BigQuery tables.
-Your account must have `bigquery.jobs.create` permissions this project; this
+Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
-* Run the indexer:
-  `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
-* View the Elasticsearch index at
- `http://localhost:9200/platinum_genomes/_search?pretty=true`.
+* `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
+* View the Elasticsearch index:
+`http://localhost:9200/platinum_genomes/_search?pretty=true`.
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions
-below. Note that you will have to re-index the data into an Elasticsearch
+below. Note that you will have to reindex the data into an Elasticsearch
 container from the [data-explorer repo](https://github.com/DataBiosphere/data-explorer/).
 
 ### Index a custom dataset locally
@@ -37,14 +36,15 @@ create it by running `gcloud auth application-default login`.
     docker-compose up -d elasticsearch
     ```
 * Determine the project that will be billed for querying the BigQuery tables.
-Your account must have `bigquery.jobs.create` permissions this project; this
+Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
 * Run the indexer:
   ```
   BILLING_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/<my-dataset> docker-compose up --build indexer
   ```
 * List Elasticsearch indices: `http://localhost:9200/_cat/indices?v`  
-  View Elasticsearch index: `http://localhost:9200/MY_DATASET/_search?pretty=true`
+  View the Elasticsearch index:
+  `http://localhost:9200/MY_DATASET/_search?pretty=true`
 * Optionally, [bring up a local Data Explorer UI](https://github.com/DataBiosphere/data-explorer/blob/5441559c57ab7a2e0813e8e4fe7e19a9394f1bdf/README.md#run-local-data-explorer-with-a-specific-dataset).
 
 ### Overview

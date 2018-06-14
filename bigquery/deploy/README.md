@@ -55,7 +55,7 @@
 * Run indexer on GKE
   * Make sure the config files in `bigquery/dataset_config/MY_DATASET` are
   filled out.
-  If you don't yet have config for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
+  If you don't yet have config files for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
   to set them up.
   * Upload the docker image to GCR
     ```
