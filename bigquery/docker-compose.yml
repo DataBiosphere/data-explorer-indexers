@@ -17,3 +17,9 @@ services:
       # GKE runs, which are authenticated as service account. (The service
       # account credentials are automatically picked up.)
       - ~/.config/gcloud:/root/.config/gcloud
+networks:
+  default:
+    external:
+      # This is only needed for indexing data into an Elasticsearch container
+      # from the data-explorer repo. Use the network from that repo.
+      name: dataexplorer_default
