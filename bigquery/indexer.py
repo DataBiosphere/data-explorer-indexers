@@ -42,7 +42,7 @@ def parse_args():
         '--billing_project_id',
         type=str,
         help='The ID of the GCP Project to bill, if separate from the project'
-             ' containing the BigQuery table(s)',
+        ' containing the BigQuery table(s)',
         default=os.environ.get('BILLING_PROJECT_ID'))
     return parser.parse_args()
 
@@ -110,7 +110,8 @@ def init_elasticsearch(elasticsearch_url, index_name):
 
 
 def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
-                      table_name, field_name, readable_field_name, billing_project_id):
+                      table_name, field_name, readable_field_name,
+                      billing_project_id):
     """Indexes a facet field.
 
   I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
