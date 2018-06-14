@@ -4,8 +4,10 @@
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
-* Providing a GCP Project ID that you can use as the billing project, run the
-indexer:
+* Determine the project that will be billed for querying the BigQuery tables.
+Minimally, your account must have `bigquery.jobs.create` permissions on this
+project.
+* Run the indexer:
   `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
 * View the Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
