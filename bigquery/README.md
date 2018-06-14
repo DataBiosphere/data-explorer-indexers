@@ -1,6 +1,6 @@
 ## BigQuery indexer
 
-## Quickstart
+### Quickstart
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
@@ -10,7 +10,7 @@ indexer:
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
  
-## Stand up your own dataset
+### Stand up your own dataset
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist, create it by running `gcloud auth application-default login`.
 * Run Elasticsearch:

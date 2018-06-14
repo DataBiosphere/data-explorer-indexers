@@ -182,13 +182,10 @@ def main():
     rows = csv.DictReader(iter(csv_str.splitlines()), skipinitialspace=True)
     for row in rows:
         print('row: %s' % row)
-        billing_project_id = args.billing_project_id
-        if not billing_project_id:
-            billing_project_id = row['project_id']
         index_facet_field(es, index_name, primary_key, row['project_id'],
                           row['dataset_id'], row['table_name'],
                           row['field_name'], row['readable_field_name'],
-                          billing_project_id)
+                          args.billing_project_id)
     f.close()
 
 
