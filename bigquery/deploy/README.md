@@ -53,8 +53,7 @@
     ```
 
 * Run indexer on GKE
-  * If you are using the default [platinum_genomes dataset](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery/config/platinum_genomes),
-don't forget to [copy to your project and set project IDs in facet_fields.csv](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart).
+  * Unless you are using the platinum genomes sample dataset, [set up the DATASET_CONFIG_DIR](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery).
   * Build, tag, and upload the docker image to GCR:
     ```
     cd bigquery

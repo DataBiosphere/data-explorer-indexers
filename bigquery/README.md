@@ -6,7 +6,7 @@
 create it by running `gcloud auth application-default login`.
 * Providing a GCP Project ID that you can use as the billing project, run the
 indexer:
-  `GOOGLE_CLOUD_PROJECT_ID=<project_id> docker-compose up --build`
+  `GOOGLE_CLOUD_PROJECT_ID=<billing_project_id> docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
  
@@ -26,7 +26,7 @@ indexer:
 * Edit config files; instructions are in the files. See [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview) for some background information.
 * Run the indexer:
   ```
-  DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
+  GOOGLE_CLOUD_PROJECT_ID=<billing_project_id> DATASET_CONFIG_DIR=dataset_config/MY_DATASET docker-compose up --build indexer
   ```
 * View Elasticsearch index at
  `http://localhost:9200/MY_DATASET_NAME/_search?pretty=true`. 
