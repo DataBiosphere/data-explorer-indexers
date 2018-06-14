@@ -9,8 +9,12 @@ indexer:
   `BILLING_PROJECT_ID=<billing_project_id> docker-compose up --build`
 * View Elasticsearch index at
  `http://localhost:9200/platinum_genomes/_search?pretty=true`.
- 
-### Stand up your own dataset
+
+If you want to run the Data Explorer UI on this dataset, follow the instructions
+below. Note that you will have to reindex the data into an Elasticsearch
+container from the [data-explorer repo](https://github.com/DataBiosphere/data-explorer/).
+
+### Index a custom dataset locally
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
