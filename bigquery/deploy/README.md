@@ -2,17 +2,17 @@
 
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
-  dataset
-    * Navigate to the project where you will deploy Data explorer.
-    * [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
-    we create a service account and give it only the necessary permissions,
-    rather than use the default Compute Engine service account. At the end of
-    this section, the new service account will have access to the BigQuery
-    tables for your dataset. Before creating the service account, you must
-    ensure that everyone who could use this service account already has access
-    to the BigQuery tables. To see who could use this service account, navigate
-    to `IAM & Admin` and look for `Owner`, `Editor`, and `Service Account User`
-    roles.
+  dataset  
+  [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
+  we recommend using a service account with only the necessary permissions,
+  rather than the default Compute Engine service account.
+    * Create a project for deploying Data Explorer. We recommend creating a
+      project because all project Editors/Owners will indirectly have
+      access to the BigQuery tables. (Project Editors/Owners by default have
+      permission to act as service accounts, and the indexer service account will be
+      given permission to read the BigQuery tables.)
+      * Ensure that anyone who is
+      granted Editor/Owner roles in this project, already has access to the BigQuery tables.
     * Create the service account
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
       * We suggest the name `DATASET-data-explorer-indexer` to make it clear
