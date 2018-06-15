@@ -2,23 +2,26 @@
 
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
-  dataset
-    * Navigate to the project where you will deploy Data explorer.
-    * [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
-    we create a service account and give it only the necessary permissions,
-    rather than use the default Compute Engine service account. At the end of
-    this section, the new service account will have access to the BigQuery
-    tables for your dataset. Before creating the service account, you must
-    ensure that everyone who could use this service account already has access
-    to the BigQuery tables. To see who could use this service account, navigate
-    to `IAM & Admin` and look for `Owner`, `Editor`, and `Service Account User`
-    roles.
+  dataset  
+  [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
+  we recommend using a service account with only the necessary permissions,
+  rather than the default Compute Engine service account (which has the Editor
+  role).
+    * Create a project for deploying Data Explorer. We recommend creating a
+      project because all project Editors/Owners will indirectly have
+      access to the BigQuery tables. (Project Editors/Owners by default have
+      permission to act as service accounts, and the indexer service account will be
+      given permission to read the BigQuery tables.)
+      * Ensure that anyone who is
+      granted Editor/Owner roles in this project, already has access to the BigQuery tables.
     * Create the service account
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
       * We suggest the name `DATASET-data-explorer-indexer` to make it clear
       what this service account does.
       * Add the `Storage > Storage Object Viewer` role. This is for reading
-      docker images from GCR.
+      docker images from GCR. Note that this will give the service account access to
+      all GCS buckets for this project, so we recommend not storing any
+      sensitive data in those buckets.
       * Add the `BigQuery > BigQuery Job User` role. This allows the service
       account to run a BigQuery query, which takes place while indexing the
       BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
