@@ -2,7 +2,9 @@
 
 ### Quickstart
 
-Index the default [public BigQuery table](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info) into a local Elasticsearch container.
+Index the default
+[public BigQuery table](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info) 
+into a local Elasticsearch container.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
