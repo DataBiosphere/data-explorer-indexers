@@ -5,7 +5,8 @@
   dataset  
   [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
   we recommend using a service account with only the necessary permissions,
-  rather than the default Compute Engine service account.
+  rather than the default Compute Engine service account (which has the Editor
+  role).
     * Create a project for deploying Data Explorer. We recommend creating a
       project because all project Editors/Owners will indirectly have
       access to the BigQuery tables. (Project Editors/Owners by default have
