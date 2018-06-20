@@ -76,10 +76,11 @@ def _wait_elasticsearch_healthy(es):
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
-def init_elasticsearch(elasticsearch_url, index_name):
-    """Performs Elasticsearch initialization.
+def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
+    """Maybe create Elasticsearch index.
 
-    Waits for Elasticsearch to be healthy, and creates index.
+    - Waits for Elasticsearch to be healthy
+    - Creates index only if it doesn't already exist
 
     Args:
         elasticsearch_url: Elasticsearch url
@@ -90,10 +91,9 @@ def init_elasticsearch(elasticsearch_url, index_name):
 
     _wait_elasticsearch_healthy(es)
 
-    logger.info('Deleting and recreating %s index.' % index_name)
-    try:
-        es.indices.delete(index=index_name)
-    except Exception:
-        pass
-    es.indices.create(index=index_name, body={})
+    if es.indices.exists(index=index_name):
+        logger.info('%s index already exists at %s.' % (index_name, elasticsearch_url))
+    else:
+        logger.info('Creating %s index at %s.' % (index_name, elasticsearch_url))
+        es.indices.create(index=index_name, body={})
     return es
