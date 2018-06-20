@@ -98,6 +98,6 @@ latter lists only direct dependencies. To regenerate run:
 virtualenv ~/virtualenv/indexer-bigquery
 source ~/virtualenv/indexer-bigquery/bin/activate
 pip install -r requirements-to-freeze.txt
-pip freeze | sort -f > requirements.txt
+pip freeze | sort -f | sed 's/^indexer-util.*/\.\.\/indexer_util/g' > requirements.txt
 deactivate
 ```
