@@ -1,5 +1,5 @@
-# Must be run from project root, in order to pick up indexer_util.
-# See bigquery/docker-compose.yml for how to run this.
+# When running this Dockerfile context must be project root, in order to pick
+# up indexer_util.
 
 FROM python:2
 

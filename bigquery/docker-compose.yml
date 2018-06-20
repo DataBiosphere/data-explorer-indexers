@@ -8,7 +8,7 @@ services:
     build:
       # Context is project root, to pick up indexer_util
       context: ../
-      dockerfile: Dockerfile.bigquery
+      dockerfile: bigquery/Dockerfile
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include platinum_genomes by default.

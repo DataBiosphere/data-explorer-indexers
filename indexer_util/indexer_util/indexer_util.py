@@ -52,14 +52,12 @@ def convert_to_index_name(s):
     return s
 
 
-def init_elasticsearch(elasticsearch_url, index_name):
-    """Performs Elasticsearch initialization.
+def _wait_elasticsearch_healthy(es):
+    """Waits for Elasticsearch to be healthy.
 
-    Waits for Elasticsearch to be healthy, and creates index.
+    Args:
+        es: An Elasticsearch instance.
     """
-    es = Elasticsearch([elasticsearch_url])
-
-    # Wait for Elasticsearch to come up.
     # Don't print NewConnectionError's while we're waiting for Elasticsearch
     # to come up.
     start = time.time()
@@ -76,6 +74,21 @@ def init_elasticsearch(elasticsearch_url, index_name):
     else:
         raise EnvironmentError("Elasticsearch failed to start.")
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
+
+
+def init_elasticsearch(elasticsearch_url, index_name):
+    """Performs Elasticsearch initialization.
+
+    Waits for Elasticsearch to be healthy, and creates index.
+
+    Args:
+        elasticsearch_url: Elasticsearch url
+        index_name: Index name. For Elasticsearch index name restrictions, see
+            https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
+    """
+    es = Elasticsearch([elasticsearch_url])
+
+    _wait_elasticsearch_healthy(es)
 
     logger.info('Deleting and recreating %s index.' % index_name)
     try:
