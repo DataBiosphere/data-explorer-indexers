@@ -26,6 +26,14 @@ logger = logging.getLogger('indexer.bigquery')
 ES_TIMEOUT_SEC = 20
 
 
+# Copied from https://stackoverflow.com/a/45392259
+def environ_or_required(key):
+    if os.environ.get(key):
+        return {'default': os.environ.get(key)}
+    else:
+        return {'required': True}
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -43,8 +51,7 @@ def parse_args():
         type=str,
         help=
         'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
-        default=os.environ.get('BILLING_PROJECT_ID'),
-        required=True)
+        **environ_or_required('BILLING_PROJECT_ID'))
     return parser.parse_args()
 
 
