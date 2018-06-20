@@ -122,7 +122,8 @@ def main():
     dataset_config = indexer_util.open_and_return_json(json_path)
     index_name = indexer_util.convert_to_index_name(dataset_config['name'])
 
-    es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url, index_name)
+    es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
+                                                       index_name)
 
     primary_key = dataset_config['primary_key']
     f = open(os.path.join(args.dataset_config_dir, 'facet_fields.csv'))
