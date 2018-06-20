@@ -20,14 +20,6 @@ logger = logging.getLogger('indexer.util')
 ES_TIMEOUT_SEC = 20
 
 
-# Copied from https://stackoverflow.com/a/45392259
-def environ_or_required(key):
-    if os.environ.get(key):
-        return {'default': os.environ.get(key)}
-    else:
-        return {'required': True}
-
-
 def open_and_return_json(file_path):
     """Opens and returns JSON contents.
 
@@ -63,7 +55,7 @@ def convert_to_index_name(s):
 def init_elasticsearch(elasticsearch_url, index_name):
     """Performs Elasticsearch initialization.
 
-    Starts Elasticsearch, waits for it to be healthy, and creates index.
+    Waits for Elasticsearch to be healthy, and creates index.
     """
     es = Elasticsearch([elasticsearch_url])
 
