@@ -1,0 +1,13 @@
+# Must be run from project root, in order to pick up indexer_util.
+# See bigquery/docker-compose.yml for how to run this.
+
+FROM python:2
+
+WORKDIR /app
+COPY indexer_util /app/indexer_util
+COPY bigquery/requirements.txt /app
+RUN pip install -r /app/requirements.txt
+
+COPY bigquery /app
+
+CMD python indexer.py

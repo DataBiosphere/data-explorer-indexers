@@ -16,6 +16,8 @@ from elasticsearch.exceptions import ConnectionError
 from elasticsearch.helpers import bulk
 import pandas as pd
 
+from indexer_util import indexer_util
+
 # Log to stderr.
 logging.basicConfig(
     level=logging.INFO,
@@ -24,14 +26,6 @@ logging.basicConfig(
 logger = logging.getLogger('indexer.bigquery')
 
 ES_TIMEOUT_SEC = 20
-
-
-# Copied from https://stackoverflow.com/a/45392259
-def environ_or_required(key):
-    if os.environ.get(key):
-        return {'default': os.environ.get(key)}
-    else:
-        return {'required': True}
 
 
 def parse_args():
@@ -51,70 +45,8 @@ def parse_args():
         type=str,
         help=
         'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
-        **environ_or_required('BILLING_PROJECT_ID'))
+        **indexer_util.environ_or_required('BILLING_PROJECT_ID'))
     return parser.parse_args()
-
-
-def open_and_return_json(file_path):
-    """Opens and returns JSON contents.
-
-  Args:
-    file_path: Relative path of JSON file.
-
-  Returns:
-    Parsed JSON.
-  """
-    with open(file_path, 'r') as f:
-        # Remove comments using jsmin, as recommended by JSON creator
-        # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr).
-        jsonDict = json.loads(jsmin.jsmin(f.read()))
-        return jsonDict
-
-
-# Keep in sync with convert_to_index_name() in data-explorer repo.
-def convert_to_index_name(s):
-    """Converts a string to an Elasticsearch index name."""
-    # For Elasticsearch index name restrictions, see
-    # https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
-    prohibited_chars = [' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
-    for char in prohibited_chars:
-        s = s.replace(char, '_')
-    s = s.lower()
-    # Remove leading underscore.
-    if s.find('_', 0, 1) == 0:
-        s = s.lstrip('_')
-    print('Index name: %s' % s)
-    return s
-
-
-def init_elasticsearch(elasticsearch_url, index_name):
-    es = Elasticsearch([elasticsearch_url])
-
-    # Wait for Elasticsearch to come up.
-    # Don't print NewConnectionError's while we're waiting for Elasticsearch
-    # to come up.
-    start = time.time()
-    logging.getLogger("elasticsearch").setLevel(logging.ERROR)
-    for _ in range(0, ES_TIMEOUT_SEC):
-        try:
-            es.cluster.health(wait_for_status='yellow')
-            print('Elasticsearch took %d seconds to come up.' %
-                  (time.time() - start))
-            break
-        except ConnectionError:
-            print('Elasticsearch not up yet, will try again.')
-            time.sleep(1)
-    else:
-        raise EnvironmentError("Elasticsearch failed to start.")
-    logging.getLogger("elasticsearch").setLevel(logging.INFO)
-
-    logger.info('Deleting and recreating %s index.' % index_name)
-    try:
-        es.indices.delete(index=index_name)
-    except Exception:
-        pass
-    es.indices.create(index=index_name, body={})
-    return es
 
 
 def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
@@ -179,11 +111,11 @@ def main():
     args = parse_args()
 
     json_path = os.path.join(args.dataset_config_dir, 'dataset.json')
-    dataset_config = open_and_return_json(json_path)
-    index_name = convert_to_index_name(dataset_config['name'])
+    dataset_config = indexer_util.open_and_return_json(json_path)
+    index_name = indexer_util.convert_to_index_name(dataset_config['name'])
     primary_key = dataset_config['primary_key']
 
-    es = init_elasticsearch(args.elasticsearch_url, index_name)
+    es = indexer_util.init_elasticsearch(args.elasticsearch_url, index_name)
 
     f = open(os.path.join(args.dataset_config_dir, 'facet_fields.csv'))
     # Remove comments using jsmin.
