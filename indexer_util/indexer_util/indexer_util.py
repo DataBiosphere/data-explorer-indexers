@@ -61,6 +61,10 @@ def convert_to_index_name(s):
 
 
 def init_elasticsearch(elasticsearch_url, index_name):
+    """Performs Elasticsearch initialization.
+
+    Starts Elasticsearch, waits for it to be healthy, and creates index.
+    """
     es = Elasticsearch([elasticsearch_url])
 
     # Wait for Elasticsearch to come up.
