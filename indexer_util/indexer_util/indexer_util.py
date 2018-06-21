@@ -76,24 +76,17 @@ def _wait_elasticsearch_healthy(es):
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
-def init_elasticsearch(elasticsearch_url, index_name):
-    """Performs Elasticsearch initialization.
-
-    Waits for Elasticsearch to be healthy, and creates index.
-
-    Args:
-        elasticsearch_url: Elasticsearch url
-        index_name: Index name. For Elasticsearch index name restrictions, see
-            https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
-    """
+def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
+    """Creates Elasticsearchindex if it doesn't already exist."""
     es = Elasticsearch([elasticsearch_url])
 
     _wait_elasticsearch_healthy(es)
 
-    logger.info('Deleting and recreating %s index.' % index_name)
-    try:
-        es.indices.delete(index=index_name)
-    except Exception:
-        pass
-    es.indices.create(index=index_name, body={})
+    if es.indices.exists(index=index_name):
+        logger.info(
+            'Using existing %s index at %s.' % (index_name, elasticsearch_url))
+    else:
+        logger.info(
+            'Creating %s index at %s.' % (index_name, elasticsearch_url))
+        es.indices.create(index=index_name, body={})
     return es

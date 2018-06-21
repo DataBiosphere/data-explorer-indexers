@@ -56,6 +56,12 @@
     ```
 
 * Run indexer on GKE
+  * We recommend you delete the index, to start from a clean slate.
+    ```
+    kubectl get svc,pods
+    kubectl exec -it ES_CLIENT_POD -- /bin/bash
+    curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
+    ```
   * Make sure the config files in `bigquery/dataset_config/MY_DATASET` are
   filled out.
   If you don't yet have config files for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
