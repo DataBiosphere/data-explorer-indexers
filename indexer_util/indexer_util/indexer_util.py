@@ -77,23 +77,14 @@ def _wait_elasticsearch_healthy(es):
 
 
 def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
-    """Maybe create Elasticsearch index.
-
-    - Waits for Elasticsearch to be healthy
-    - Creates index only if it doesn't already exist
-
-    Args:
-        elasticsearch_url: Elasticsearch url
-        index_name: Index name. For Elasticsearch index name restrictions, see
-            https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
-    """
+    """Creates Elasticsearchindex if it doesn't already exist."""
     es = Elasticsearch([elasticsearch_url])
 
     _wait_elasticsearch_healthy(es)
 
     if es.indices.exists(index=index_name):
         logger.info(
-            '%s index already exists at %s.' % (index_name, elasticsearch_url))
+            'Using existing %s index at %s.' % (index_name, elasticsearch_url))
     else:
         logger.info(
             'Creating %s index at %s.' % (index_name, elasticsearch_url))
