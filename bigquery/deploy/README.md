@@ -69,7 +69,6 @@
   * Upload the docker image to GCR. From `bigquery` directory:
     ```
     docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile ..
-    docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile.bigquery .
     docker push gcr.io/PROJECT_ID/bq-indexer
     ```
   * Update `bigquery/deploy/bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
