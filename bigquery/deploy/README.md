@@ -56,13 +56,8 @@
     ```
 
 * Run indexer on GKE
-  * If you did the "Run Elasticsearch on GKE" step a while ago, you can run
-    these commands to see if `gcloud` and `kubectl` are configured correctly.
-    ```
-    gcloud config get-value project
-    kubectl config current-context
-    ```
-    If needed, point `gcloud` and `kubectl` to the right project:
+  * If you did the "Run Elasticsearch on GKE" step a while ago, run
+    these commands to point `gcloud` and `kubectl` to the right project:
     ```
     gcloud config set project MY_PROJECT
     # This will make kubectl use this cluster.
