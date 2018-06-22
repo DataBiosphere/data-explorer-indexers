@@ -56,16 +56,29 @@
     ```
 
 * Run indexer on GKE
+  * If you did the "Run Elasticsearch on GKE" step a while ago, you can run
+    these commands to see if `gcloud` and `kubectl` are configured correctly.
+    ```
+    gcloud config get-value project
+    kubectl config current-context
+    ```
+    If needed, point `gcloud` and `kubectl` to the right project:
+    ```
+    gcloud config set project MY_PROJECT
+    # This will make kubectl use this cluster.
+    gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
+    ```
   * We recommend you delete the index, to start from a clean slate.
     ```
     kubectl get svc,pods
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
     curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
     ```
-  * Make sure the config files in `bigquery/dataset_config/MY_DATASET` are
-  filled out.
-  If you don't yet have config files for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
-  to set them up.
+  * Make sure the files in `dataset_config/MY_DATASET` are filled out.
+    * If you don't have config files for your dataset, follow [these
+      instructions](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
+      to set them up.
+    * Make sure `dataset_config/MY_DATASET/deploy.json` is filled out.
   * Upload the docker image to GCR. From `bigquery` directory:
     ```
     docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile ..
