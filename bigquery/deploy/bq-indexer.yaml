@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: bq-indexer
-        image: gcr.io/melchang-test-project-2/bq-indexer
+        image: gcr.io/MY_GOOGLE_CLOUD_PROJECT/bq-indexer
         # Uncomment to force repulling image. This is useful if you're modifying
         # indexer.py and want to test on GKE.
         # imagePullPolicy: Always
@@ -18,11 +18,9 @@ spec:
           mountPath: /app/dataset_config
         command: ["python", "/app/indexer.py"]
         args: [
-          "--elasticsearch_url", "http://10.128.0.7:9200/",
-          # Note: This is different from local deployment. With local
-          # deployment, this ends in MY_DATASET (dataset_config/MY_DATASET).
+          "--elasticsearch_url", "http://EXTERNAL_IP:9200/",
           "--dataset_config_dir", "/app/dataset_config",
-          "--billing_project_id", "melchang-test-project-2"
+          "--billing_project_id", "MY_GOOGLE_CLOUD_PROJECT"
         ]
 
       restartPolicy: Never
