@@ -78,7 +78,6 @@
     * If you don't have config files for your dataset, follow [these
       instructions](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
       to set them up.
-    * Make sure `dataset_config/MY_DATASET/deploy.json` is filled out.
   * Upload the docker image to GCR. From `bigquery` directory:
     ```
     docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile ..
