@@ -66,9 +66,9 @@
   filled out.
   If you don't yet have config files for your dataset, follow the [instructions for local deployment](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
   to set them up.
-  * Upload the docker image to GCR. From project root:
+  * Upload the docker image to GCR. From `bigquery` directory:
     ```
-    docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile.bigquery .
+    docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile ..
     docker push gcr.io/PROJECT_ID/bq-indexer
     ```
   * Update `bigquery/deploy/bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
