@@ -73,19 +73,9 @@
     * If you don't have config files for your dataset, follow [these
       instructions](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
       to set them up.
-  * Upload the docker image to GCR. From `bigquery` directory:
-    ```
-    docker build -t gcr.io/PROJECT_ID/bq-indexer -f Dockerfile ..
-    docker push gcr.io/PROJECT_ID/bq-indexer
-    ```
-  * Update `bigquery/deploy/bq-indexer.yaml` with the desired MY_GOOGLE_CLOUD_PROJECT and
-  EXTERNAL_IP.
-  * Run the indexer:
-    ```
-    cd bigquery/deploy
-    kubectl create configmap dataset-config --from-file=DATASET_CONFIG_DIR
-    kubectl create -f bq-indexer.yaml
-    ```
+    * Make sure `dataset_config/MY_DATASET/deploy.json` is filled out.
+  * From project root, run `bigquery/deploy/deploy-indexer.sh MY_DATASET`, where
+  MY_DATASET is the name of the config directory in `dataset_config`.
   * Verify the indexer was successful:
     ```
     kubectl get svc,pods
