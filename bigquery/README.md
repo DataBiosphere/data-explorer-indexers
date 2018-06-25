@@ -11,9 +11,10 @@ create it by running `gcloud auth application-default login`.
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
-* `BILLING_PROJECT_ID=<billing project id> docker-compose up --build`
+* From `bigquery` directory, run:
+ `BILLING_PROJECT_ID=<billing project id> docker-compose up --build`
 * View the Elasticsearch index:
-`http://localhost:9200/platinum_genomes/_search?pretty=true`.
+`http://localhost:9200/platinum_genomes/_search?pretty=true`
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions
 below. Note that you will have to reindex the data into an Elasticsearch
@@ -43,7 +44,7 @@ create it by running `gcloud auth application-default login`.
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
-* Run the indexer:
+* Run the indexer. From `bigquery` directory, run:
   ```
   BILLING_PROJECT_ID=<billing project id> DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer
   ```
