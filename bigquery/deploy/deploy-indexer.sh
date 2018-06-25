@@ -13,7 +13,7 @@ then
 fi
 
 dataset=$1
-project_id=$(jq --raw-output '.project_id' bigquery/dataset_config/${dataset}/deploy.json)
+project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
 
 echo "Deploying ${dataset} API Server to project ${project_id}"
 echo
@@ -36,6 +36,6 @@ docker push gcr.io/${project_id}/bq-indexer
 # Deploy indexer
 cd deploy
 kubectl delete configmap dataset-config
-kubectl create configmap dataset-config --from-file=../dataset_config/${dataset}
+kubectl create configmap dataset-config --from-file=../../dataset_config/${dataset}
 kubectl delete -f bq-indexer.yaml
 kubectl create -f bq-indexer.yaml

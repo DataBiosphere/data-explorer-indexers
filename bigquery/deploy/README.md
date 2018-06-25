@@ -90,3 +90,12 @@ If you no longer need this Elasticsearch deployment:
 kubectl config get-clusters
 kubectl config delete-cluster CLUSTER_NAME
 ```
+
+## Developer tips
+
+Determine what project/cluster `gcloud` and `kubectl` are currently configured
+for.
+```
+gcloud config get-value project
+kubectl config current-context
+```
