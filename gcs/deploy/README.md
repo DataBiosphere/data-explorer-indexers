@@ -33,9 +33,7 @@
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
-    * Expand `More`
-      * Select the service account you just created
-      * `Set access for each API` -> Change `BigQuery` to enabled
+    * Expand `More` and select the service account you just created.
     * Click `Create`
   * After cluster has finished creating, run:
     ```
@@ -44,9 +42,9 @@
     This will make `kubectl` use this cluster.
 
 * Run Elasticsearch on GKE
-  * Deploy Elasticsearch. From project root:
+  * Deploy Elasticsearch:
     ```
-    cd kubernetes-elasticsearch-cluster
+    cd bigquery/deploy/kubernetes-elasticsearch-cluster/
     ./deploy.sh
     ```
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
