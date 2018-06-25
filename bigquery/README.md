@@ -30,12 +30,13 @@ create it by running `gcloud auth application-default login`.
   for some background information.
 * Run Elasticsearch:
   * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/)
-  after this, run inside the data-explorer repo:
+  after this, run inside the *data-explorer* repo:
     ```
     docker-compose up -d elasticsearch
     ```
   * If you do not intend to run the Data Explorer UI after this, and just want
-  to inspect the index in Elasticsearch, run inside this repo:
+  to inspect the index in Elasticsearch, run inside this repo from the
+  `bigquery` directory:
     ```
     docker-compose up -d elasticsearch
     ```

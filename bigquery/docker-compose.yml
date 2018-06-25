@@ -6,7 +6,7 @@ services:
       - 127.0.0.1:9200:9200
   indexer:
     build:
-      # Context is project root, to pick up indexer_util
+      # Context is project root, to pick up indexer_util and dataset_config
       context: ../
       dockerfile: bigquery/Dockerfile
     environment:
