@@ -1,7 +1,4 @@
-"""Loads BigQuery table into Elasticsearch.
-
-Note: Elasticsearch index is deleted before indexing.
-"""
+"""Indexes BigQuery tables."""
 
 import argparse
 import csv
