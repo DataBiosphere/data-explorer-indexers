@@ -5,6 +5,8 @@
 Index [Platinum Genomes GCS files](https://pantheon.corp.google.com/storage/browser/genomics-public-data/platinum-genomes)
 into a local Elasticsearch container.
 
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
+create it by running `gcloud auth application-default login`.
 * From `gcs` directory, run: `docker-compose up --build`
 * View Elasticsearch index:
   ```
@@ -18,6 +20,8 @@ container from the [data-explorer repo](https://github.com/DataBiosphere/data-ex
 
 ### Index a custom dataset locally
 
+* If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
+create it by running `gcloud auth application-default login`.
 * Setup config files.
   * Create `dataset_config/<my dataset>`. Copy `dataset_config/template/*` to this directory.
   * Edit config files; instructions are in the files
