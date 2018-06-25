@@ -42,9 +42,9 @@
     This will make `kubectl` use this cluster.
 
 * Run Elasticsearch on GKE
-  * Deploy Elasticsearch:
+  * Deploy Elasticsearch. From project root:
     ```
-    cd bigquery/deploy/kubernetes-elasticsearch-cluster/
+    cd kubernetes-elasticsearch-cluster
     ./deploy.sh
     ```
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
