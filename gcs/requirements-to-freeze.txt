@@ -1,5 +1,0 @@
-../indexer_util
-elasticsearch==6.1.1
-jsmin==2.2.2
-pandas==0.22.0
-pandas_gbq==0.3.1
