@@ -89,8 +89,8 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     logger.info('%s has %d rows' % (table_name, len(df)))
 
     if not primary_key in df.columns:
-        logger.error('Primary key %s not found in %s.%s' %
-                     (primary_key, dataset_id, table_name))
+        raise ValueError('Primary key %s not found in BigQuery dataset %s.%s' %
+                         (primary_key, dataset_id, table_name))
 
     start_time = time.time()
     documents = df.to_dict(orient='records')
