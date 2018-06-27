@@ -20,16 +20,16 @@ logger = logging.getLogger('indexer.util')
 ES_TIMEOUT_SEC = 20
 
 
-def open_and_return_json(file_path):
+def parse_json_file(json_path):
     """Opens and returns JSON contents.
 
   Args:
-    file_path: Relative path of JSON file.
+    json_path: Relative or absolute path of JSON file
 
   Returns:
-    Parsed JSON.
+    Parsed JSON
   """
-    with open(file_path, 'r') as f:
+    with open(json_path, 'r') as f:
         # Remove comments using jsmin, as recommended by JSON creator
         # (https://plus.google.com/+DouglasCrockfordEsq/posts/RK8qyGVaGSr).
         jsonDict = json.loads(jsmin.jsmin(f.read()))
@@ -37,7 +37,7 @@ def open_and_return_json(file_path):
 
 
 # Keep in sync with convert_to_index_name() in data-explorer repo.
-def convert_to_index_name(s):
+def _convert_to_index_name(s):
     """Converts a string to an Elasticsearch index name."""
     # For Elasticsearch index name restrictions, see
     # https://github.com/DataBiosphere/data-explorer-indexers/issues/5#issue-308168951
@@ -50,6 +50,12 @@ def convert_to_index_name(s):
         s = s.lstrip('_')
     print('Index name: %s' % s)
     return s
+
+
+def get_index_name(dataset_config_dir):
+    json_path = os.path.join(dataset_config_dir, 'dataset.json')
+    dataset_name = parse_json_file(json_path)['name']
+    return _convert_to_index_name(dataset_name)
 
 
 def _wait_elasticsearch_healthy(es):

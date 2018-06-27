@@ -1,0 +1,14 @@
+{
+  // Dataset name. For Project Baseline (https://www.projectbaseline.com/),
+  // this could be "Project Baseline". This name will be displayed in the Data
+  // Explorer UI. Also, the Elasticsearch index will be given this name.
+  "name": "Platinum Genomes",
+
+  ///////////////////////////////////////////////////////
+  // Fields for BigQuery indexer:
+  //
+  // Name of BigQuery column that represents primary key. See
+  // https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview
+  // for more information.
+  "primary_key": "catalog_id"
+}
