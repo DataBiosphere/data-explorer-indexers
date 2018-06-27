@@ -42,9 +42,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    json_path = os.path.join(args.dataset_config_dir, 'dataset.json')
-    dataset_config = indexer_util.open_and_return_json(json_path)
-    index_name = indexer_util.convert_to_index_name(dataset_config['name'])
+    index_name = indexer_util.get_index_name(args.dataset_config_dir)
 
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)

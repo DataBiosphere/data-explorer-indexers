@@ -1,0 +1,7 @@
+// Fields for BigQuery indexer
+{
+  // Name of BigQuery column that represents primary key. See
+  // https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview
+  // for more information.
+  "primary_key": ""
+}

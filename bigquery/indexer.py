@@ -115,14 +115,14 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
 def main():
     args = parse_args()
 
-    json_path = os.path.join(args.dataset_config_dir, 'dataset.json')
-    dataset_config = indexer_util.open_and_return_json(json_path)
-    index_name = indexer_util.convert_to_index_name(dataset_config['name'])
+    # Read dataset config files
+    index_name = indexer_util.get_index_name(args.dataset_config_dir)
+    json_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
+    primary_key = indexer_util.parse_json_file(json_path)['primary_key']
 
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
-    primary_key = dataset_config['primary_key']
     f = open(os.path.join(args.dataset_config_dir, 'facet_fields.csv'))
     # Remove comments using jsmin.
     csv_str = jsmin.jsmin(f.read())
