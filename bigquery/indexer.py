@@ -57,19 +57,20 @@ def parse_args():
 def index_table(es, index_name, primary_key, table_name, billing_project_id):
     """Indexes a facet field.
 
-  I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
+    Args:
+        es: Elasticsearch object.
+        index_name: Name of Elasticsearch index.
+        primary_key: Name of primary key field.
+        table_name: Fully-qualified table name:
+            <project id>.<dataset id>.<table name>
+        billing_project_id: GCP project ID to bill for reading table
+    """
+    # I couldn't find an easy way to import BigQuery -> Elasticsearch. Instead:
+    #
+    # - BigQuery table -> pandas dataframe
+    # - dataframe -> dict
+    # - dict -> Elasticsearch
 
-  - BigQuery -> pandas dataframe
-  - Convert dataframe to dict
-  - dict -> Elasticsearch
-
-  Args:
-    es: Elasticsearch object.
-    index_name: Name of Elasticsearch index.
-    primary_key: Name of primary key field.
-    table_name: Fully-qualified table name: <project id>.<dataset id>.<table name>
-    billing_project_id: GCP project ID to bill
-  """
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
     df = pd.read_gbq(

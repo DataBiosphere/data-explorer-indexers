@@ -5,8 +5,8 @@
   // for more information.
   "primary_key": ""
 
-  // Fully-qualified table names: <project id>.<dataset id>.<table name>
   "table_names": [
+    // Fully-qualified table name: <project id>.<dataset id>.<table name>
     ""
   ]
 }
