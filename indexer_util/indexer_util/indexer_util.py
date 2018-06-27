@@ -45,7 +45,9 @@ def _convert_to_index_name(s):
     # problems. For example,
     # "curl -XDELETE http://localhost:9200/nurse's_health_study" doesn't work.
     # So also remove single quotes.
-    prohibited_chars = [' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?', '\'']
+    prohibited_chars = [
+        ' ', '"', '*', '\\', '<', '|', ',', '>', '/', '?', '\''
+    ]
     for char in prohibited_chars:
         s = s.replace(char, '_')
     s = s.lower()
