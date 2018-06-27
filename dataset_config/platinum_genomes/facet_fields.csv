@@ -1,8 +1,0 @@
-// Facet fields, one field per line
-// field_name: BigQuery field name
-// readable_field_name: Field will have this name in Elasticsearch index and
-//     Data explorer UI
-project_id, dataset_id, table_name, field_name, readable_field_name
-google.com:biggene, platinum_genomes, sample_info, gender, Gender
-google.com:biggene, platinum_genomes, sample_info, race, Race
-google.com:biggene, platinum_genomes, sample_info, relationship_to_proband, Relationship

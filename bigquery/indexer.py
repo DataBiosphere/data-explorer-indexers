@@ -54,33 +54,26 @@ def parse_args():
     return parser.parse_args()
 
 
-def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
-                      table_name, field_name, readable_field_name,
-                      billing_project_id):
+def index_table(es, index_name, primary_key, table_name, billing_project_id):
     """Indexes a facet field.
 
   I couldn't find an easy way to import BigQuery -> Elasticsearch. So instead:
 
   - BigQuery -> pandas dataframe
-  - Convert datafrom to dict
+  - Convert dataframe to dict
   - dict -> Elasticsearch
 
   Args:
     es: Elasticsearch object.
     index_name: Name of Elasticsearch index.
     primary_key: Name of primary key field.
-    project_id: BigQuery project ID.
-    dataset_id: BigQuery dataset ID.
-    table_name: BigQuery table name.
-    field_name: BigQuery field name.
-    readable_field_name: Field name for index and Data Explorer UI
+    table_name: Fully-qualified table name: <project id>.<dataset id>.<table name>
     billing_project_id: GCP project ID to bill
   """
     start_time = time.time()
-    logger.info('Indexing %s.%s.%s.%s.' % (project_id, dataset_id, table_name,
-                                           field_name))
+    logger.info('Indexing %s.' % table_name)
     df = pd.read_gbq(
-        'SELECT * FROM `%s.%s.%s`' % (project_id, dataset_id, table_name),
+        'SELECT * FROM `%s`' % table_name,
         project_id=billing_project_id,
         dialect='standard')
     elapsed_time = time.time() - start_time
@@ -89,8 +82,8 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
     logger.info('%s has %d rows' % (table_name, len(df)))
 
     if not primary_key in df.columns:
-        raise ValueError('Primary key %s not found in BigQuery dataset %s.%s' %
-                         (primary_key, dataset_id, table_name))
+        raise ValueError(
+            'Primary key %s not found in BigQuery table %s' % table_name)
 
     start_time = time.time()
     documents = df.to_dict(orient='records')
@@ -104,9 +97,7 @@ def index_facet_field(es, index_name, primary_key, project_id, dataset_id,
             # here.
             '_type': 'type',
             '_id': row[primary_key],
-            'doc': {
-                readable_field_name: row[field_name]
-            },
+            'doc': row.to_dict(),
             'doc_as_upsert': True
         } for _, row in df.iterrows())
 
@@ -121,23 +112,17 @@ def main():
 
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    json_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
-    primary_key = indexer_util.parse_json_file(json_path)['primary_key']
+    bigquery_json = os.path.join(args.dataset_config_dir, 'bigquery.json')
+    bigquery_config = indexer_util.parse_json_file(bigquery_json)
+    primary_key = bigquery_config['primary_key']
+    table_names = bigquery_config['table_names']
 
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
-    f = open(os.path.join(args.dataset_config_dir, 'facet_fields.csv'))
-    # Remove comments using jsmin.
-    csv_str = jsmin.jsmin(f.read())
-    rows = csv.DictReader(iter(csv_str.splitlines()), skipinitialspace=True)
-    for row in rows:
-        print('row: %s' % row)
-        index_facet_field(es, index_name, primary_key, row['project_id'],
-                          row['dataset_id'], row['table_name'],
-                          row['field_name'], row['readable_field_name'],
-                          args.billing_project_id)
-    f.close()
+    for table_name in table_names:
+        index_table(es, index_name, primary_key, table_name,
+                    args.billing_project_id)
 
 
 if __name__ == '__main__':
