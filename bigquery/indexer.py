@@ -1,15 +1,10 @@
 """Indexes BigQuery tables."""
 
 import argparse
-import csv
-import jsmin
-import json
 import logging
 import os
 import time
 
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import ConnectionError
 from elasticsearch.helpers import bulk
 import pandas as pd
 
