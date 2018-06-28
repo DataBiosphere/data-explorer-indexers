@@ -1,0 +1,10 @@
+// Fields for GCS indexer
+{
+  "gcs_paths": [
+    // GCS path with PRIMARY_KEY. There is an implied .+ at the end.
+    // Example: gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_
+    // For more information about primary key, see
+    // https://github.com/DataBiosphere/data-explorer-indexers#overview
+    "gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_"
+  ]
+}
