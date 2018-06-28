@@ -30,7 +30,7 @@ create it by running `gcloud auth application-default login`.
 * Setup config files.
   * Create `dataset_config/<my dataset>`. Copy `dataset_config/template/*` to this directory.
   * Edit config files; instructions are in the files. Read
-  [Overview](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#overview)
+  [Overview](https://github.com/DataBiosphere/data-explorer-indexers#overview)
   for some background information.
 * Run Elasticsearch:
   * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/)
@@ -57,44 +57,6 @@ includes any project where you have the Viewer/Editor/Owner role.
   http://localhost:9200/MY_DATASET/_search?pretty=true
   ```
 * Optionally, [bring up a local Data Explorer UI](https://github.com/DataBiosphere/data-explorer/blob/5441559c57ab7a2e0813e8e4fe7e19a9394f1bdf/README.md#run-local-data-explorer-with-a-specific-dataset).
-
-### Overview
-
-A Data explorer UI allows for faceted search. For example,
-[Boardwalk](https://ucsc-cgp.org/boardwalk) has facets: Analysis Type, Center
-Name, etc. A dataset may have hundreds of fields (weight, height, etc); the
-dataset owner must curate a list of facets that they think will be interesting.
-For [Project Baseline](https://www.projectbaseline.com/), facets may include
-age, weight, height, etc.
-
-A Dataset has a notion of `primary_key`. For a dataset that tracks 1000
-participants, `primary_key` could be `participant_id`. For a dataset that
-contains 1000 samples from a single person, `primary_key` could be `sample_id`.
-
-`primary_key` is used to tie information together from different BigQuery
-tables. Say there are facets for age and weight; age and weight are
-stored in separate BigQuery tables; and `primary_key` is `participant_id`.
-First, age table is indexed. An Elasticsearch document is created for each
-`participant_id` and has document id = `participant_id`. A document would look
-like:
-
-```
-{
-  "age": "30",
-}
-```
-
-Then, the weight table is indexed. The Elasticsearch documents will get a new
-weight field:
-
-```
-{
-  "age": "30",
-  "weight": "140",
-}
-```
-
-`participant_id` will be used to figure out which document to update.
 
 ### Generating `requirements.txt`
 
