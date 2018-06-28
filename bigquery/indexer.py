@@ -62,9 +62,7 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     """
     # I couldn't find an easy way to import BigQuery -> Elasticsearch. Instead:
     #
-    # - BigQuery table -> pandas dataframe
-    # - dataframe -> dict
-    # - dict -> Elasticsearch
+    #   BigQuery table -> pandas dataframe -> dict -> Elasticsearch
 
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
@@ -78,8 +76,8 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     logger.info('%s has %d rows' % (table_name, len(df)))
 
     if not primary_key in df.columns:
-        raise ValueError(
-            'Primary key %s not found in BigQuery table %s' % table_name)
+        raise ValueError('Primary key %s not found in BigQuery table %s' %
+                         (primary_key, table_name))
 
     start_time = time.time()
     documents = df.to_dict(orient='records')
