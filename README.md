@@ -18,7 +18,7 @@ contains 1000 samples from a single person, `primary_key` could be `sample_id`.
 Say there are facets for age and weight; age and weight are
 stored in separate BigQuery tables; and `primary_key` is `participant_id`.
 First, age table is indexed. An Elasticsearch document is created for each
-`participant_id` and has document id = `participant_id`. A document would look
+`participant_id` with document id = `participant_id`. A document would look
 like:
 
 ```
