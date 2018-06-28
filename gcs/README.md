@@ -20,6 +20,17 @@ container from the [data-explorer repo](https://github.com/DataBiosphere/data-ex
 
 ### Index a custom dataset locally
 
+We assume that primary key appears in the GCS file path. For example, the file
+`gs://genomics-public-data/platinum-genomes/bam/NA12890_S1.bam` has primary key
+`NA12890`. Primary key can appear anywhere in the path; being part of a
+directory or file name is fine.
+[See here](https://github.com/DataBiosphere/data-explorer-indexers#overview)
+for background on primary key,
+
+If your GCS files don't follow this convention -- for example, if the file paths
+contain sample ID instead of participant ID -- please file an Issue and we will
+add support for this.
+
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
 * Setup config files.
