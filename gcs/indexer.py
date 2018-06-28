@@ -79,8 +79,8 @@ def main():
 
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    gcs_json = os.path.join(args.dataset_config_dir, 'gcs.json')
-    gcs_paths = indexer_util.parse_json_file(gcs_json)['gcs_paths']
+    gcs_config_path = os.path.join(args.dataset_config_dir, 'gcs.json')
+    gcs_paths = indexer_util.parse_json_file(gcs_config_path)['gcs_paths']
 
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
