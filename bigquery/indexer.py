@@ -106,8 +106,8 @@ def main():
 
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    bigquery_json = os.path.join(args.dataset_config_dir, 'bigquery.json')
-    bigquery_config = indexer_util.parse_json_file(bigquery_json)
+    config_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
+    bigquery_config = indexer_util.parse_json_file(config_path)
     primary_key = bigquery_config['primary_key']
     table_names = bigquery_config['table_names']
 
