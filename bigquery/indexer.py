@@ -50,7 +50,7 @@ def parse_args():
 
 
 def index_table(es, index_name, primary_key, table_name, billing_project_id):
-    """Indexes a facet field.
+    """Indexes a BigQuery table.
 
     Args:
         es: Elasticsearch object.
