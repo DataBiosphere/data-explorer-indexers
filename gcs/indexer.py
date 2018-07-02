@@ -6,13 +6,6 @@ import jsmin
 import json
 import logging
 import os
-import re
-import time
-
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import ConnectionError
-from elasticsearch.helpers import bulk
-from google.cloud import storage
 
 from indexer_util import indexer_util
 

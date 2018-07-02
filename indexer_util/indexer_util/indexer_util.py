@@ -1,6 +1,5 @@
 """Utilities for Data Explorer indexers"""
 
-import csv
 import jsmin
 import json
 import logging
