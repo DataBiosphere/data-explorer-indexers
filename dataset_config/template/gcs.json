@@ -1,6 +1,6 @@
 // Fields for GCS indexer
 {
-  "gcs_paths": [
+  "gcs_patterns": [
     // GCS path with the string "PRIMARY_KEY" indicating where primary key
     // exists in the path. For example, if your GCS file path looks like
     // gs://genomics-public-data/platinum-genomes/bam/NA12877_S1.bam, then
@@ -8,6 +8,7 @@
     // gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_
     // For more information about primary key, see
     // https://github.com/DataBiosphere/data-explorer-indexers#overview
+    // This may include regex syntax such as *
     ""
   ]
 }
