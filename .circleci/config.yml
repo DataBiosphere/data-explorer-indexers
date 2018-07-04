@@ -1,8 +1,10 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/python:2.7-stretch
+    machine:
+      image: circleci/classic:latest
+    environment:
+      GOOGLE_PROJECT_ID: ci-test-data-explorer
     steps:
       - checkout
       - restore_cache:
@@ -10,10 +12,21 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
-            virtualenv ~/yapf
-            source ~/yapf/bin/activate
             pip install yapf
             yapf -dr .
+      - run:
+          name: Run the BigQuery indexer
+          command: |
+            echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
+            cd bigquery
+            docker network create dataexplorer_default
+            docker-compose up -d elasticsearch
+            BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --exit-code-from indexer --build indexer
+      - run:
+          name: Test the Elasticsearch instance
+          command: |
+            curl -s 'http://localhost:9200/platinum_genomes/_search'
+            ./tests/test_elasticsearch_index.sh
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
           paths:
