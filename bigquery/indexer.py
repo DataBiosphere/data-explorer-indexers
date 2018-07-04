@@ -80,7 +80,6 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
                          (primary_key, table_name))
 
     start_time = time.time()
-    documents = df.to_dict(orient='records')
     # Use generator so we can index large tables without having to load into
     # memory.
     k = (
@@ -91,9 +90,12 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
             # here.
             '_type': 'type',
             '_id': row[primary_key],
-            'doc': row.to_dict(),
+            # Remove nan's as described in
+            # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
+            # Elasticsearch crashes when indexing nan's.
+            'doc': row.dropna().to_dict(),
             'doc_as_upsert': True
-        } for _, row in df.iterrows())
+        } for col, row in df.iterrows())
 
     bulk(es, k)
     elapsed_time = time.time() - start_time
