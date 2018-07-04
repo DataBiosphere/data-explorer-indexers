@@ -95,7 +95,7 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
             # Elasticsearch crashes when indexing nan's.
             'doc': row.dropna().to_dict(),
             'doc_as_upsert': True
-        } for col, row in df.iterrows())
+        } for _, row in df.iterrows())
 
     bulk(es, k)
     elapsed_time = time.time() - start_time
