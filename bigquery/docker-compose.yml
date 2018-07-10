@@ -6,7 +6,6 @@ services:
       # Disable the vm.max_map_counts bootstrap check, which is un-settable in
       # some instances (e.g. CircleCI)
       - "transport.host=localhost"
-      - "bootstrap.system_call_filter=false"
     ports:
       - 127.0.0.1:9200:9200
   indexer:
