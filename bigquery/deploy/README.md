@@ -8,7 +8,7 @@
   rather than the default Compute Engine service account (which has the Editor
   role).
     * Create a project for deploying Data Explorer. We recommend the project ID
-      be `DATASET-data-explorer'. We recommend creating a
+      be `DATASET-data-explorer`. We recommend creating a
       project because all project Editors/Owners will indirectly have
       access to the BigQuery tables. (Project Editors/Owners by default have
       permission to act as service accounts, and the indexer service account will be
