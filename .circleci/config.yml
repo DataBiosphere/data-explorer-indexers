@@ -15,18 +15,17 @@ jobs:
             pip install yapf
             yapf -dr .
       - run:
-          name: Run the BigQuery indexer
+          name: Set service account credentials
+          command: echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
+      - run:
+          name: Test the BigQuery indexer
           command: |
-            echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
             cd bigquery
             docker network create dataexplorer_default
-            docker-compose up -d elasticsearch
-            BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --exit-code-from indexer --build indexer
-      - run:
-          name: Test the Elasticsearch instance
-          command: |
-            curl -s 'http://localhost:9200/platinum_genomes/_search'
-            ./tests/test_elasticsearch_index.sh
+            BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --build
+#           Test that the platinum_genomes index has 17 documents
+            curl localhost:9200/_cat/indices?v | grep platinum_genomes.*17
+            docker-compose stop
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
           paths:
