@@ -17,8 +17,8 @@
       granted Editor/Owner roles in this project, already has access to the BigQuery tables.
     * Create the service account
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
-      * We recommend `indexer` to make it clear what this service account does.
-        The full service account email would be indexer@DATASET-data-explorer.iam.gserviceaccount.com
+      * We recommend the name `indexer` to make it clear what this service account does.
+        The full service account email would be `indexer@DATASET-data-explorer.iam.gserviceaccount.com`
       * Add the `Storage > Storage Object Viewer` role. This is for reading
       docker images from GCR. Note that this will give the service account access to
       all GCS buckets for this project, so we recommend not storing any
