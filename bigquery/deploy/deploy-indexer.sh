@@ -38,4 +38,4 @@ cd deploy
 kubectl delete configmap dataset-config
 kubectl create configmap dataset-config --from-file=../../dataset_config/${dataset}
 kubectl delete -f bq-indexer.yaml
-kubectl apply -f bq-indexer.yaml
+kubectl create -f bq-indexer.yaml
