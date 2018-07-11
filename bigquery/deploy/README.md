@@ -7,7 +7,8 @@
   we recommend using a service account with only the necessary permissions,
   rather than the default Compute Engine service account (which has the Editor
   role).
-    * Create a project for deploying Data Explorer. We recommend creating a
+    * Create a project for deploying Data Explorer. We recommend the project ID
+      be `DATASET-data-explorer`. We recommend creating a
       project because all project Editors/Owners will indirectly have
       access to the BigQuery tables. (Project Editors/Owners by default have
       permission to act as service accounts, and the indexer service account will be
@@ -16,8 +17,8 @@
       granted Editor/Owner roles in this project, already has access to the BigQuery tables.
     * Create the service account
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
-      * We suggest the name `DATASET-data-explorer-indexer` to make it clear
-      what this service account does.
+      * We recommend the name `indexer` to make it clear what this service account does.
+        The full service account email would be `indexer@DATASET-data-explorer.iam.gserviceaccount.com`
       * Add the `Storage > Storage Object Viewer` role. This is for reading
       docker images from GCR. Note that this will give the service account access to
       all GCS buckets for this project, so we recommend not storing any
