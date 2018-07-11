@@ -1,0 +1,37 @@
+# Use this config to run the indexer as a CronJob on a regular schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: bq-indexer
+spec:
+  # Run every day at 5:00AM UTC
+  schedule: "0 5 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: bq-indexer
+        spec:
+          containers:
+          - name: bq-indexer
+            image: gcr.io/PROJECT_ID/bq-indexer
+            # Uncomment to force repulling image. This is useful if you're modifying
+            # indexer.py and want to test on GKE.
+            imagePullPolicy: Always
+            volumeMounts:
+            - name: dataset-config
+              mountPath: /app/dataset_config
+            command: ["python", "/app/indexer.py"]
+            args: [
+              "--elasticsearch_url", "http://ELASTICSEARCH_URL:9200/",
+              "--dataset_config_dir", "/app/dataset_config",
+              "--billing_project_id", "PROJECT_ID"
+            ]
+
+          restartPolicy: Never
+
+          volumes:
+          - name: dataset-config
+            configMap:
+              name: dataset-config
+
