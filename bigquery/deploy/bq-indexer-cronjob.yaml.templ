@@ -4,8 +4,8 @@ kind: CronJob
 metadata:
   name: bq-indexer
 spec:
-  # Run daily
-  schedule: "*/3 * * * *"
+  # Run every day at 5:00AM UTC
+  schedule: "0 5 * * *"
   jobTemplate:
     spec:
       template:
