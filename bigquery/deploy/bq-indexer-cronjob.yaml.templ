@@ -1,4 +1,7 @@
 # Use this config to run the indexer as a CronJob on a regular schedule
+#
+# Copy this file to bq-indexer-cronjob.yaml and fill in the variables.
+# kubectl apply -f bq-indexer-cronjob.yaml
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -15,8 +18,6 @@ spec:
           containers:
           - name: bq-indexer
             image: gcr.io/PROJECT_ID/bq-indexer
-            # Uncomment to force repulling image. This is useful if you're modifying
-            # indexer.py and want to test on GKE.
             imagePullPolicy: Always
             volumeMounts:
             - name: dataset-config
