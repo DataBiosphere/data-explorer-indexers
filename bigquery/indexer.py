@@ -80,24 +80,31 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
                          (primary_key, table_name))
 
     start_time = time.time()
+
     # Use generator so we can index large tables without having to load into
     # memory.
-    k = (
-        {
-            '_op_type': 'update',
-            '_index': index_name,
-            # type will go away in future versions of Elasticsearch. Just use any string
-            # here.
-            '_type': 'type',
-            '_id': row[primary_key],
+    def es_actions(df):
+        for _, row in df.iterrows():
             # Remove nan's as described in
             # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
             # Elasticsearch crashes when indexing nan's.
-            'doc': row.dropna().to_dict(),
-            'doc_as_upsert': True
-        } for _, row in df.iterrows())
+            row_dict = row.dropna().to_dict()
+            row_dict = {
+                table_name + '.' + k: v
+                for k, v in row_dict.iteritems()
+            }
+            yield ({
+                '_op_type': 'update',
+                '_index': index_name,
+                # type will go away in future versions of Elasticsearch. Just
+                # use any string here.
+                '_type': 'type',
+                '_id': row[primary_key],
+                'doc': row_dict,
+                'doc_as_upsert': True
+            })
 
-    bulk(es, k)
+    bulk(es, es_actions(df))
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime("%Hh:%Mm:%Ss", time.gmtime(elapsed_time))
     logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)

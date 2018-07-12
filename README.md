@@ -23,7 +23,7 @@ like:
 
 ```
 {
-  "age": "30",
+  "myproject.mytable.mydataset.age": "30",
 }
 ```
 
@@ -32,8 +32,8 @@ weight field:
 
 ```
 {
-  "age": "30",
-  "weight": "140",
+  "myproject.mytable.mydataset.age": "30",
+  "myproject.mytable.mydataset.weight": "140",
 }
 ```
 
