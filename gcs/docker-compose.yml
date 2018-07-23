@@ -24,4 +24,4 @@ networks:
     external:
       # This is only needed for indexing data into an Elasticsearch container
       # from the data-explorer repo. Use the network from that repo.
-      name: dataexplorer_default
+      name: data-explorer_default

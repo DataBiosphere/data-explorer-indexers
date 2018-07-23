@@ -18,7 +18,7 @@ jobs:
           name: Run the BigQuery Indexer
           command: |
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
-            docker network create dataexplorer_default
+            docker network create data-explorer_default
             cd bigquery
             # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread
             docker-compose up -d elasticsearch
