@@ -70,3 +70,8 @@ pip install -r requirements-to-freeze.txt
 pip freeze | sort -f | sed 's/^indexer-util.*/\.\/indexer_util/g' > requirements.txt
 deactivate
 ```
+
+### Troubleshooting
+
+When indexing a large table on a Mac, Elasticsearch may crash with no error
+message in the logs. Try increasing Docker's memory, for example from 2G to 3G.
