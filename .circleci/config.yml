@@ -26,7 +26,7 @@ jobs:
             # For some reason index isn't available right after indexer terminates, so sleep
             sleep 5
             # Assert the 1000_genomes index has 3500 documents
-            expr $(curl -s 'http://localhost:9200/platinum_genomes/_search' | jq -r '.hits.total') = "3500"
+            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
             docker-compose stop
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
