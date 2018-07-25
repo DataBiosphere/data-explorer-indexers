@@ -6,6 +6,9 @@ import jsmin
 import json
 import logging
 import os
+import re
+
+from google.cloud import storage
 
 from indexer_util import indexer_util
 
