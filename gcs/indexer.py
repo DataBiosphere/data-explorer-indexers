@@ -39,7 +39,7 @@ def parse_args():
 
 def index_gcs_pattern(gcs_pattern):
     # Input gcs_pattern looks like
-    # gs://genomics-public-data/1000-genomes/bam/HG00101.mapped.ILLUMINA.bwa.GBR.low_coverage.20130415.bam
+    # gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.
 
     logger.info('Processing %s' % gcs_pattern)
 
