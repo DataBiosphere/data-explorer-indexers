@@ -3,6 +3,7 @@ dataset_config/*
 !dataset_config/1000_genomes
 !dataset_config/template
 dataset_config/1000_genomes/deploy.json
+dataset_config/1000_genomes/ui.json
 bigquery/deploy/bq-indexer.yaml
 bigquery/deploy/bq-indexer-cronjob.yaml
 
