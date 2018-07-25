@@ -7,7 +7,7 @@ A Data Explorer UI allows for faceted search. For example,
 Type, Center Name, etc.
 
 A dataset may have hundreds of fields. The dataset owner
-must [curate a list](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/dataset_config/platinum_genomes/ui.json)
+must [curate a list](https://github.com/DataBiosphere/data-explorer/blob/master/dataset_config/1000_genomes/ui.json)
 of the most important fields (age, gender, etc).
 
 A dataset has a notion of `primary_key`. For a dataset that tracks 1000

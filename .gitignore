@@ -1,11 +1,9 @@
 # Don't check in dataset-specific files. Dataset may be private.
 dataset_config/*
-!dataset_config/platinum_genomes
+!dataset_config/1000_genomes
 !dataset_config/template
-dataset_config/platinum_genomes/deploy.json
-dataset_config/platinum_genomes/ui.json
+dataset_config/1000_genomes/deploy.json
 bigquery/deploy/bq-indexer.yaml
-bigquery/deploy/bq-indexer-cronjob.yaml
 
 # Allow developers to symlink their preferred configuration.
 /docker-compose.yml
