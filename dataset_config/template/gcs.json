@@ -3,9 +3,9 @@
   "gcs_patterns": [
     // GCS path with the string "PRIMARY_KEY" indicating where primary key
     // exists in the path. For example, if your GCS file path looks like
-    // gs://genomics-public-data/platinum-genomes/bam/NA12877_S1.bam, then
-    // you would put
-    // gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_
+    // gs://genomics-public-data/1000-genomes/bam/HG00101.mapped.ILLUMINA.bwa.GBR.low_coverage.20130415.bam,
+    // then you would put
+    // gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.
     // For more information about primary key, see
     // https://github.com/DataBiosphere/data-explorer-indexers#overview
     // This may include regex syntax such as *

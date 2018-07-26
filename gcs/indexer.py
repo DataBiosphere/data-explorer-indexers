@@ -6,6 +6,9 @@ import jsmin
 import json
 import logging
 import os
+import re
+
+from google.cloud import storage
 
 from indexer_util import indexer_util
 
@@ -36,9 +39,9 @@ def parse_args():
 
 def index_gcs_pattern(gcs_pattern):
     # Input gcs_pattern looks like
-    # gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_
+    # gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.
 
-    logger.info('Processing %s.' % gcs_pattern)
+    logger.info('Processing %s' % gcs_pattern)
 
     trimmed_gcs_pattern = gcs_pattern.replace('gs://', '')
 
@@ -46,7 +49,7 @@ def index_gcs_pattern(gcs_pattern):
     bucket_str = trimmed_gcs_pattern.split('/')[0]
 
     prefix = trimmed_gcs_pattern.split('/', 1)[1]
-    # prefix looks like platinum-genomes/bam/
+    # prefix looks like 1000-genomes/bam/
     prefix = prefix[:prefix.index('PRIMARY_KEY')]
 
     logger.info('Retrieving objects from bucket %s with prefix %s.' %

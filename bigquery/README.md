@@ -2,8 +2,7 @@
 
 ### Quickstart
 
-Index the default
-[public BigQuery table](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info) 
+Index the public [1000 Genomes BigQuery table](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.sample_info)
 into a local Elasticsearch container.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
@@ -16,7 +15,7 @@ includes any project where you have the Viewer/Editor/Owner role.
 * View Elasticsearch index:
   ```
   http://localhost:9200/_cat/indices?v
-  http://localhost:9200/platinum_genomes/_search?pretty=true
+  http://localhost:9200/1000_genomes/_search?pretty=true
   ```
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions

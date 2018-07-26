@@ -2,7 +2,9 @@
 
 ### Quickstart
 
-Index [Platinum Genomes GCS files](https://pantheon.corp.google.com/storage/browser/genomics-public-data/platinum-genomes)
+Index 1000 Genomes files from
+[here](https://console.cloud.google.com/storage/browser/genomics-public-data/1000-genomes/bam)
+and [here](https://console.cloud.google.com/storage/browser/genomics-public-data/ftp-trace.ncbi.nih.gov/1000genomes/ftp/data)
 into a local Elasticsearch container.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
@@ -11,7 +13,7 @@ create it by running `gcloud auth application-default login`.
 * View Elasticsearch index:
   ```
   http://localhost:9200/_cat/indices?v
-  http://localhost:9200/platinum_genomes/_search?pretty=true
+  http://localhost:9200/1000_genomes/_search?pretty=true
   ```
 
 If you want to run the Data Explorer UI on this dataset, follow the instructions
@@ -21,8 +23,8 @@ container from the [data-explorer repo](https://github.com/DataBiosphere/data-ex
 ### Index a custom dataset locally
 
 We assume that primary key appears in the GCS file path. For example, the file
-`gs://genomics-public-data/platinum-genomes/bam/NA12890_S1.bam` has primary key
-`NA12890`. Primary key can appear anywhere in the path; being part of a
+`gs://genomics-public-data/1000-genomes/bam/HG00101.mapped.ILLUMINA.bwa.GBR.low_coverage.20130415.bam`
+has primary key `HG00101`. Primary key can appear anywhere in the path; being part of a
 directory or file name is fine.
 [See here](https://github.com/DataBiosphere/data-explorer-indexers#overview)
 for background on primary key,

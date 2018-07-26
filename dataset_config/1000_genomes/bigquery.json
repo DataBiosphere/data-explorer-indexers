@@ -3,10 +3,10 @@
   // Name of BigQuery column that represents primary key. See
   // https://github.com/DataBiosphere/data-explorer-indexers#overview
   // for more information.
-  "primary_key": "catalog_id",
+  "primary_key": "Sample",
 
   "table_names": [
     // Fully-qualified table name: <project id>.<dataset id>.<table name>
-    "google.com:biggene.platinum_genomes.sample_info"
+    "genomics-public-data.1000_genomes.sample_info"
   ]
 }

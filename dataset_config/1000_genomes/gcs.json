@@ -9,6 +9,7 @@
     // For more information about primary key, see
     // https://github.com/DataBiosphere/data-explorer-indexers#overview
     // This may include regex syntax such as *
-    "gs://genomics-public-data/platinum-genomes/bam/PRIMARY_KEY_"
+    "gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.",
+    "gs://genomics-public-data/ftp-trace.ncbi.nih.gov/1000genomes/ftp/data/PRIMARY_KEY"
   ]
 }
