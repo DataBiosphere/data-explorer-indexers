@@ -8,6 +8,7 @@ import time
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
+from elasticsearch.helpers import bulk
 
 # Log to stderr.
 logging.basicConfig(
@@ -101,3 +102,22 @@ def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
             'Creating %s index at %s.' % (index_name, elasticsearch_url))
         es.indices.create(index=index_name, body={})
     return es
+
+
+def bulk_index(es, index, docs_by_id):
+    # Use generator so we can index arbitrarily large iterators (like tables),
+    # without having to load into memory.
+    def es_actions(docs_by_id):
+        for key, doc in docs_by_id:
+            yield ({
+                '_op_type': 'update',
+                '_index': index,
+                # type will go away in future versions of Elasticsearch. Just
+                # use any string here.
+                '_type': 'type',
+                '_id': key,
+                'doc': doc,
+                'doc_as_upsert': True
+            })
+
+    bulk(es, es_actions(docs_by_id))

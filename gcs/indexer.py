@@ -20,6 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger('indexer.gcs')
 
 ES_TIMEOUT_SEC = 20
+FILE_TYPES = ['bam', 'vcf', 'fastq', 'cram']
 
 
 def parse_args():
@@ -37,37 +38,58 @@ def parse_args():
     return parser.parse_args()
 
 
-def index_gcs_pattern(gcs_pattern):
-    # Input gcs_pattern looks like
-    # gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.
-
+def index_gcs_files(es, index_name, gcs_pattern):
     logger.info('Processing %s' % gcs_pattern)
 
+    # Input gcs_pattern looks like
+    # gs://genomics-public-data/1000-genomes/bam/PRIMARY_KEY.
     trimmed_gcs_pattern = gcs_pattern.replace('gs://', '')
-
     # bucket_str looks like genomics-public-data
     bucket_str = trimmed_gcs_pattern.split('/')[0]
-
-    prefix = trimmed_gcs_pattern.split('/', 1)[1]
     # prefix looks like 1000-genomes/bam/
+    prefix = trimmed_gcs_pattern.split('/', 1)[1]
     prefix = prefix[:prefix.index('PRIMARY_KEY')]
 
     logger.info('Retrieving objects from bucket %s with prefix %s.' %
                 (bucket_str, prefix))
     bucket = storage.Client(project=None).bucket(bucket_str)
     objects = bucket.list_blobs(prefix=prefix)
-
     regex = re.compile(gcs_pattern.replace('PRIMARY_KEY', '(\w+)'))
 
+    # Group each object by primary key and file type, e.g.
+    # {
+    #   'PRIMARY_KEY1' : {
+    #       'bam': {
+    #           'count': 2,
+    #           'files': ['gs://b/file1.bam', 'gs://b/file2.bam'],
+    #       'vcf', {...}
+    #   }, ...
+    # }
+    file_sets = {}
     for obj in objects:
-        obj_path = 'gs://%s/%s' % (bucket_str, obj.name)
-        match = re.match(regex, obj_path)
-        if match:
-            primary_key = match.group(1)
-            print(
-                'Identified primary key %s from %s' % (primary_key, obj_path))
-        else:
-            raise ValueError('Could not find primary key in %s' % obj_path)
+        path = 'gs://%s/%s' % (bucket_str, obj.name)
+        match = re.match(regex, path)
+        if not match:
+            continue
+        key = match.group(1)
+        file_type = ''
+        for t in FILE_TYPES:
+            if t in path:
+                file_type = t
+        if not file_type:
+            continue
+        _append_to_file_sets(file_sets, key, file_type, path)
+
+    indexer_util.bulk_index(es, index_name, file_sets.iteritems())
+
+
+def _append_to_file_sets(file_sets, key, file_type, path):
+    if key not in file_sets:
+        file_sets[key] = {'key': key}
+    if file_type not in file_sets[key]:
+        file_sets[key][file_type] = {'files': [], 'count': 0}
+    file_sets[key][file_type]['files'].append(path)
+    file_sets[key][file_type]['count'] += 1
 
 
 def main():
@@ -83,7 +105,7 @@ def main():
                                                        index_name)
 
     for gcs_pattern in gcs_patterns:
-        index_gcs_pattern(gcs_pattern)
+        index_gcs_files(es, index_name, gcs_pattern)
 
 
 if __name__ == '__main__':
