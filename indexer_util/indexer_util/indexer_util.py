@@ -104,18 +104,18 @@ def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
     return es
 
 
-def bulk_index(es, index, docs_by_id):
+def bulk_index(es, index_name, docs_by_id):
     # Use generator so we can index arbitrarily large iterators (like tables),
     # without having to load into memory.
     def es_actions(docs_by_id):
-        for key, doc in docs_by_id:
+        for _id, doc in docs_by_id:
             yield ({
                 '_op_type': 'update',
-                '_index': index,
+                '_index': index_name,
                 # type will go away in future versions of Elasticsearch. Just
                 # use any string here.
                 '_type': 'type',
-                '_id': key,
+                '_id': _id,
                 'doc': doc,
                 'doc_as_upsert': True
             })

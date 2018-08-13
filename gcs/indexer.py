@@ -38,6 +38,14 @@ def parse_args():
     return parser.parse_args()
 
 
+def _append_to_file_sets(file_sets, primary_key, file_type, path):
+    if primary_key not in file_sets:
+        file_sets[primary_key] = {}
+    if file_type not in file_sets[primary_key]:
+        file_sets[primary_key][file_type] = {'files': []}
+    file_sets[primary_key][file_type]['files'].append(path)
+
+
 def index_gcs_files(es, index_name, gcs_pattern):
     logger.info('Processing %s' % gcs_pattern)
 
@@ -71,25 +79,16 @@ def index_gcs_files(es, index_name, gcs_pattern):
         match = re.match(regex, path)
         if not match:
             continue
-        key = match.group(1)
+        primary_key = match.group(1)
         file_type = ''
         for t in FILE_TYPES:
             if t in path:
                 file_type = t
         if not file_type:
             continue
-        _append_to_file_sets(file_sets, key, file_type, path)
+        _append_to_file_sets(file_sets, primary_key, file_type, path)
 
     indexer_util.bulk_index(es, index_name, file_sets.iteritems())
-
-
-def _append_to_file_sets(file_sets, key, file_type, path):
-    if key not in file_sets:
-        file_sets[key] = {'key': key}
-    if file_type not in file_sets[key]:
-        file_sets[key][file_type] = {'files': [], 'count': 0}
-    file_sets[key][file_type]['files'].append(path)
-    file_sets[key][file_type]['count'] += 1
 
 
 def main():
