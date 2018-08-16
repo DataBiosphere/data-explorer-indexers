@@ -1,0 +1,6 @@
+participant_id	sample_id	sample_type	sequencing_center	tissue_type	cram	crai	cram_md5	vcf
+997	997-wgs	WGS	Macrogen	Whole Blood	gs://bucket/cram/997/997.cram	gs://bucket/cram/997/997.cram.crai	gs://bucket/cram/997/997.cram.md5
+998	998-lcl-wgs	WGS	Macrogen	Lymphoblastoid Cell Lines	gs://bucket/cram/998-lcl/998-lcl.cram	gs://bucket/cram/998-lcl/998-lcl.cram.crai	gs://bucket/cram/998-lcl/998-lcl.cram.md5	gs://bucket/vcf/998-lcl/998-lcl.g.vcf.gz
+998	998-wgs	WGS	Macrogen	Whole Blood	gs://bucket/cram/998/998.cram	gs://bucket/cram/998/998.cram.crai	gs://bucket/cram/998/998.cram.md5	gs://bucket/vcf/998/998.g.vcf.gz
+999	999-wgs	WGS	Macrogen	Whole Blood	gs://bucket/cram/999/999.cram	gs://bucket/cram/999/999.cram.crai	gs://bucket/cram/999/999.cram.md5	gs://bucket/vcf/999/999.g.vcf.gz
+999	999-exome	Exome	USUHS	Whole Blood	gs://bucket/cram/999-exome/999-exome.cram	gs://bucket/cram/999-exome/999-exome.cram.crai	gs://bucket/cram/999-exome/999-exome.cram.md5	gs://bucket/vcf/999-exome/999-exome.g.vcf.gz
