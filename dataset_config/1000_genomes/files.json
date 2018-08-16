@@ -1,0 +1,13 @@
+// Configuration of the location manfiest, delimiter-separated files which
+// contain metadata about bundles of files (e.g. cram, cai, md5 files for one
+// sample). Each file can be configured with a delimiter and primary key
+// column used for indexing.
+{
+  "manifest_files": [
+    {
+      "path": "gs://bryancrampton-testing/test.csv",
+      "delimiter": ",",
+      "primary_key": "participant_id"
+    }
+  ]
+}
