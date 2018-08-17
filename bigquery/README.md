@@ -10,8 +10,8 @@ create it by running `gcloud auth application-default login`.
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
-* If you have not already, create the `data-explorer_default` docker network
-by running: `docker network create data-explorer_default`
+* If `docker network ls` doesn't show `data-explorer_default`, run:
+`docker network create data-explorer_default`
 * From `bigquery` directory, run:
  `BILLING_PROJECT_ID=<billing project id> docker-compose up --build`
 * View Elasticsearch index:
