@@ -120,4 +120,5 @@ def bulk_index(es, index_name, docs_by_id):
                 'doc_as_upsert': True
             })
 
-    bulk(es, es_actions(docs_by_id))
+    # For writing large amounts of data, the default timeout of 10s is sometimes not enough
+    bulk(es, es_actions(docs_by_id), request_timeout=60)
