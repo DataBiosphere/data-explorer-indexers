@@ -27,6 +27,8 @@
       account to run a BigQuery query, which takes place while indexing the
       BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
       for the BigQuery query, not the project containing the BigQuery tables.
+      * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
+      appear at https://console.cloud.google.com/logs/viewer
     * Work with the Dataset owner to identity a Google Group with read-only
     access to the dataset, that the service account can be added to. Add the
     service account to the Google Group.
