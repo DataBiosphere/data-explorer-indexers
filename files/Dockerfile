@@ -5,10 +5,10 @@ FROM python:2
 
 WORKDIR /app
 COPY indexer_util /app/indexer_util
-COPY gcs/requirements.txt /app
+COPY files/requirements.txt /app
 RUN pip install -r /app/requirements.txt
 
 COPY dataset_config /app/dataset_config
-COPY gcs /app
+COPY files /app
 
 CMD python indexer.py

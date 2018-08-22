@@ -14,7 +14,7 @@ services:
     build:
       # Context is project root, to pick up indexer_util and dataset_config
       context: ../
-      dockerfile: gcs/Dockerfile
+      dockerfile: files/Dockerfile
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include 1000 Genomes by default.
