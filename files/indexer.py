@@ -50,7 +50,8 @@ def read_file_lines(path, dataset_config_dir):
         bucket = client.bucket(bucket_str)
         obj = bucket.get_blob(obj_str)
         if not obj:
-            raise ValueError('Manifest file [%s/%s] does not exist.' % (bucket_str, obj_str))
+            raise ValueError('Manifest file [%s/%s] does not exist.' %
+                             (bucket_str, obj_str))
         return iter(obj.download_as_string(client).split('\n'))
     else:
         full_path = os.path.join(dataset_config_dir, path)
@@ -108,16 +109,21 @@ def main():
 
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    gcs_config_path = os.path.join(args.dataset_config_dir, 'files.json')
-    manifest_files = indexer_util.parse_json_file(gcs_config_path)['manifest_files']
+    path = os.path.join(args.dataset_config_dir, 'files.json')
+    manifest_files = indexer_util.parse_json_file(path)['manifest_files']
 
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
     # Add 'samples' as a nested index to prevent array flattening of objects:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.3/nested.html.
-    es.indices.put_mapping(doc_type='type', index=index_name, body={
-        "properties": {"samples": {"type": "nested"}}
-    })
+    es.indices.put_mapping(
+        doc_type='type',
+        index=index_name,
+        body={"properties": {
+            "samples": {
+                "type": "nested"
+            }
+        }})
 
     for path in manifest_files:
         index_file_manifest(es, index_name, path, args.dataset_config_dir)
