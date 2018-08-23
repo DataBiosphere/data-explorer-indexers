@@ -85,10 +85,8 @@
     curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
     ```
   * Make sure the files in `dataset_config/MY_DATASET` are filled out.
-    * If you don't have config files for your dataset, follow [these
-      instructions](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
-      to set them up.
-    * Make sure `dataset_config/MY_DATASET/deploy.json` is filled out.
+    * Make sure `deploy.json` and `dataset.json` `authorization_domain` are
+      filled out.
   * From project root, run `bigquery/deploy/deploy-indexer.sh MY_DATASET`, where
   MY_DATASET is the name of the config directory in `dataset_config`.
   * Verify the indexer was successful:
