@@ -1,4 +1,4 @@
-"""Indexes genomic sample files."""
+"""Indexes genomic files."""
 
 import argparse
 import csv
@@ -12,8 +12,8 @@ from google.cloud import storage
 
 from indexer_util import indexer_util
 
-PRIMARY_KEY_COL = 'participant_id'
-SAMPLE_COL = 'sample_id'
+PARTICIPANT_ID_COL = 'participant_id'
+SAMPLE_ID_COL = 'sample_id'
 DELIMITER = '\t'
 FILE_TYPES = ['bam', 'cram', 'fastq', 'vcf']
 
@@ -59,7 +59,7 @@ def read_file_lines(path, dataset_config_dir):
 
 
 def index_file_manifest(es, index_name, path, dataset_config_dir):
-    logger.info('Processing CSV manifest %s' % path)
+    logger.info('Processing TSV manifest %s' % path)
     lines = read_file_lines(path, dataset_config_dir)
 
     # TODO(bryancrampton): Allow configuration of the number of header lines.
@@ -67,9 +67,9 @@ def index_file_manifest(es, index_name, path, dataset_config_dir):
     for col in csv.reader(iter([lines.next()]), delimiter=DELIMITER).next():
         header.append(col)
 
-    if PRIMARY_KEY_COL not in header or SAMPLE_COL not in header:
-        raise ValueError(
-            '%s and %s are required columns' % (PRIMARY_KEY_COL, SAMPLE_COL))
+    if PARTICIPANT_ID_COL not in header or SAMPLE_ID_COL not in header:
+        raise ValueError('%s and %s are required columns'
+            % (PARTICIPANT_ID_COL, SAMPLE_ID_COL))
 
     docs = {}
     for line in csv.reader(lines, delimiter='\t'):
@@ -79,27 +79,25 @@ def index_file_manifest(es, index_name, path, dataset_config_dir):
 
         idx = 0
         doc = {}
-        primary_id = ''
+        participant_id = ''
         sample_id = ''
         file_types_map = {}
-        for col in line:
+        for value in line:
             col_name = header[idx]
-            if col_name == PRIMARY_KEY_COL:
-                primary_id = col
-            elif col_name == SAMPLE_COL:
-                sample_id = col
+            if col_name == PARTICIPANT_ID_COL:
+                participant_id = value
             else:
-                doc[col_name] = col
+                doc[col_name] = value
                 # If this column contains a path for a known file type, mark the
-                # helper column 'HAS_<FILE_TYPE>' as true.
+                # helper column '_has_<FILE_TYPE>' as true.
                 for file_type in FILE_TYPES:
                     if file_type in col:
-                        doc['HAS_%s' % file_type] = True
+                        doc['_has_%s' % file_type] = True
             idx += 1
 
-        if primary_id not in docs:
-            docs[primary_id] = {'samples': []}
-        docs[primary_id]['samples'].append(doc)
+        if participant_id not in docs:
+            docs[participant_id] = {'samples': []}
+        docs[participant_id]['samples'].append(doc)
 
     indexer_util.bulk_index(es, index_name, docs.iteritems())
 

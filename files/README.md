@@ -8,7 +8,7 @@ into an Elasticsearch container.
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login` (only needed if
 manifest file is on GCS).
-* From `file` directory, run: `docker-compose up --build`
+* From the `files` directory, run: `docker-compose up --build`
 * View Elasticsearch index:
   ```
   http://localhost:9200/_cat/indices?v
@@ -28,7 +28,7 @@ field on the document and `participant_id` is used as the primary
 key. [See here](https://github.com/DataBiosphere/data-explorer-indexers#overview)
 for background on primary key. Any additional columns in the manifest file
 will be indexed as metadata fields on the sample. Columns containing paths to
-known genomic file types will also have a `has_<FILE_TYPE>` field set, where
+known genomic file types will also have a `_has_<FILE_TYPE>` field set, where
 `FILE_TYPE` is one of `BAM`, `CRAM`, `FASTQ`, or `VCF`.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,

@@ -5,8 +5,8 @@
 //   associated with that sample. Each row must contain at least
 //   'participant_id' and 'sample_id' columns. Any additional columns will be
 //   indexed as sample metadata. Columns containing known file types (BAM, CRAM,
-//   FASTQ, VCF) will be speicially interpreted and the sample will have a
-//   'has_<FILE_TYPE>' field set.
+//   FASTQ, VCF) will be specially interpreted and the sample will have a
+//   '_has_<FILE_TYPE>' field set.
 //
 //   Currently GCS file paths (gs://) and local file paths (relative to this
 //   directory) are supported.
