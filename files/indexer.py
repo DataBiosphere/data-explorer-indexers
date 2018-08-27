@@ -91,7 +91,7 @@ def index_file_manifest(es, index_name, path, dataset_config_dir):
                 # If this column contains a path for a known file type, mark the
                 # helper column '_has_<FILE_TYPE>' as true.
                 for file_type in FILE_TYPES:
-                    if file_type in col:
+                    if file_type in value:
                         doc['_has_%s' % file_type] = True
             idx += 1
 

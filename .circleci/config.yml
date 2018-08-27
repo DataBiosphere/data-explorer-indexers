@@ -32,7 +32,6 @@ jobs:
           name: Run the Files Indexer
           command: |
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
-            docker network create data-explorer_default
             cd files
             # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread
             docker-compose up -d elasticsearch
