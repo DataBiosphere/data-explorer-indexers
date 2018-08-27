@@ -38,7 +38,7 @@ jobs:
             BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --build indexer
             # For some reason index isn't available right after indexer terminates, so sleep
             sleep 5
-            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "7000"
+            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
             curl -XDELETE localhost:9200/1000_genomes
             docker-compose stop
       - save_cache:
