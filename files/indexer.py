@@ -68,8 +68,8 @@ def index_file_manifest(es, index_name, path, dataset_config_dir):
         header.append(col)
 
     if PARTICIPANT_ID_COL not in header or SAMPLE_ID_COL not in header:
-        raise ValueError('%s and %s are required columns'
-            % (PARTICIPANT_ID_COL, SAMPLE_ID_COL))
+        raise ValueError('%s and %s are required columns' %
+                         (PARTICIPANT_ID_COL, SAMPLE_ID_COL))
 
     docs = {}
     for line in csv.reader(lines, delimiter='\t'):
