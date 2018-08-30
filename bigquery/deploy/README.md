@@ -1,5 +1,19 @@
 ## Running on GKE
 
+* For private datasets, determine readers Google Group  
+  Work with the Dataset owner to identity a Google Group of users with read-only
+  access to the dataset.  
+  * If you intend for users to work with your dataset in Saturn, it is highly
+    recommended to use a Saturn group. The Saturn group will be synced to a
+    Google Group, but not the other way around; so group management must be done
+    in the Saturn Group UI.  
+    For example, consider a Saturn group foo, which is
+    automatically synced to Google Group foo@firecloud.org:
+      * The Saturn group will be used for setting [Authorization Domains](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
+      on workspaces. This ensures that only authorized users will see data sent
+      from Data Explorer to Saturn.
+      * The Google Group will be used for [restricting who can see
+    Data Explorer](https://github.com/DataBiosphere/data-explorer/tree/master/deploy#enable-access-control).
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
   dataset  
@@ -29,9 +43,7 @@
       for the BigQuery query, not the project containing the BigQuery tables.
       * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
       appear at https://console.cloud.google.com/logs/viewer
-    * Work with the Dataset owner to identity a Google Group with read-only
-    access to the dataset, that the service account can be added to. Add the
-    service account to the Google Group.
+    * Add the service account to the readers Google Group.
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
@@ -73,10 +85,8 @@
     curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
     ```
   * Make sure the files in `dataset_config/MY_DATASET` are filled out.
-    * If you don't have config files for your dataset, follow [these
-      instructions](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#index-a-custom-dataset-locally)
-      to set them up.
-    * Make sure `dataset_config/MY_DATASET/deploy.json` is filled out.
+    * Make sure `deploy.json` and the `authorization_domain` field in
+      `dataset.json` are filled out.
   * From project root, run `bigquery/deploy/deploy-indexer.sh MY_DATASET`, where
   MY_DATASET is the name of the config directory in `dataset_config`.
   * Verify the indexer was successful:
