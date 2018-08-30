@@ -85,8 +85,8 @@
     curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
     ```
   * Make sure the files in `dataset_config/MY_DATASET` are filled out.
-    * Make sure `deploy.json` and `dataset.json` `authorization_domain` are
-      filled out.
+    * Make sure `deploy.json` and the `authorization_domain` field in
+      `dataset.json` are filled out.
   * From project root, run `bigquery/deploy/deploy-indexer.sh MY_DATASET`, where
   MY_DATASET is the name of the config directory in `dataset_config`.
   * Verify the indexer was successful:
