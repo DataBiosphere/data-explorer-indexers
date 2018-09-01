@@ -10,7 +10,6 @@ import pandas as pd
 
 from indexer_util import indexer_util
 
-# Log to stderr.
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(filename)10s:%(lineno)s %(levelname)s %(message)s',
@@ -18,6 +17,9 @@ logging.basicConfig(
 logger = logging.getLogger('indexer.bigquery')
 
 ES_TIMEOUT_SEC = 20
+SELECT_FORMAT = 'SELECT * FROM `%s`'
+REPEATED_TYPE = 'REPEATED'
+STRUCT_TYPE = 'RECORD'
 
 
 # Copied from https://stackoverflow.com/a/45392259
@@ -52,7 +54,7 @@ def parse_args():
 def get_nested_mappings(schema, prefix=None):
     nested = {}
     for field in schema:
-        if field.mode == 'REPEATED' and field.field_type == 'RECORD':
+        if field.mode == REPEATED_TYPE and field.field_type == STRUCT_TYPE:
             name = '%s.%s' % (prefix, field.name) if prefix else field.name
             nested[name] = {"type": "nested"}
             inner_nested = get_nested_mappings(field.fields)
@@ -91,7 +93,7 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     # There is no easy way to import BigQuery -> Elasticsearch. Instead:
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
-        'SELECT * FROM `%s`' % table_name,
+        SELECT_FORMAT % table_name,
         project_id=billing_project_id,
         dialect='standard')
     elapsed_time = time.time() - start_time
@@ -102,8 +104,6 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     if not primary_key in df.columns:
         raise ValueError('Primary key %s not found in BigQuery table %s' %
                          (primary_key, table_name))
-
-    start_time = time.time()
 
     def docs_by_id(df):
         for _, row in df.iterrows():
