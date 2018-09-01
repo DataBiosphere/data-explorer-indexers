@@ -5,6 +5,7 @@ import logging
 import os
 import time
 
+from google.cloud import bigquery
 import pandas as pd
 
 from indexer_util import indexer_util
@@ -48,6 +49,30 @@ def parse_args():
     return parser.parse_args()
 
 
+def get_nested_mappings(schema, prefix=None):
+    nested = {}
+    for field in schema:
+        if field.mode == 'REPEATED' and field.field_type == 'RECORD':
+            name = '%s.%s' % (prefix, field.name) if prefix else field.name
+            nested[name] = {"type": "nested"}
+            inner_nested = get_nested_mappings(field.fields)
+            if inner_nested:
+                nested[name]['properties'] = inner_nested
+    return nested if nested else None
+
+
+def create_nested_mappings(es, index_name, table_name, billing_project_id):
+    project, dataset, table = table_name.split('.')
+    bq = bigquery.Client(project=billing_project_id)
+    table = bq.get_table(bq.dataset(dataset, project=project).table(table))
+    nested = get_nested_mappings(table.schema, table_name)
+
+    if nested:
+        logger.info('Adding neseted mappings to %s.' % index_name)
+        es.indices.put_mapping(
+            doc_type='type', index=index_name, body={'properties': nested})
+
+
 def index_table(es, index_name, primary_key, table_name, billing_project_id):
     """Indexes a BigQuery table.
 
@@ -59,12 +84,12 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
             <project id>.<dataset id>.<table name>
         billing_project_id: GCP project ID to bill for reading table
     """
-    # I couldn't find an easy way to import BigQuery -> Elasticsearch. Instead:
-    #
-    #   BigQuery table -> pandas dataframe -> dict -> Elasticsearch
+    create_nested_mappings(es, index_name, table_name, billing_project_id)
 
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
+    # There is no easy way to import BigQuery -> Elasticsearch. Instead:
+    # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
         'SELECT * FROM `%s`' % table_name,
         project_id=billing_project_id,
