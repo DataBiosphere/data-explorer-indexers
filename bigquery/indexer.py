@@ -16,11 +16,6 @@ logging.basicConfig(
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
 
-ES_TIMEOUT_SEC = 20
-SELECT_FORMAT = 'SELECT * FROM `%s`'
-REPEATED_TYPE = 'REPEATED'
-STRUCT_TYPE = 'RECORD'
-
 
 # Copied from https://stackoverflow.com/a/45392259
 def environ_or_required(key):
@@ -52,9 +47,11 @@ def parse_args():
 
 
 def get_nested_mappings(schema, prefix=None):
+    # Find all repeated record type fields and create mappings for them
+    # recursively.
     nested = {}
     for field in schema:
-        if field.mode == REPEATED_TYPE and field.field_type == STRUCT_TYPE:
+        if field.mode == 'REPEATED' and field.field_type == 'RECORD':
             name = '%s.%s' % (prefix, field.name) if prefix else field.name
             nested[name] = {"type": "nested"}
             inner_nested = get_nested_mappings(field.fields)
@@ -64,6 +61,8 @@ def get_nested_mappings(schema, prefix=None):
 
 
 def create_nested_mappings(es, index_name, table_name, billing_project_id):
+    # Create nested mappings so queries will work correctly, see:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
     project, dataset, table = table_name.split('.')
     bq = bigquery.Client(project=billing_project_id)
     table = bq.get_table(bq.dataset(dataset, project=project).table(table))
@@ -93,7 +92,7 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     # There is no easy way to import BigQuery -> Elasticsearch. Instead:
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
-        SELECT_FORMAT % table_name,
+        'SELECT * FROM `%s`' % table_name,
         project_id=billing_project_id,
         dialect='standard')
     elapsed_time = time.time() - start_time
