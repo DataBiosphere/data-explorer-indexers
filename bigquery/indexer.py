@@ -5,18 +5,16 @@ import logging
 import os
 import time
 
+from google.cloud import bigquery
 import pandas as pd
 
 from indexer_util import indexer_util
 
-# Log to stderr.
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(filename)10s:%(lineno)s %(levelname)s %(message)s',
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
-
-ES_TIMEOUT_SEC = 20
 
 
 # Copied from https://stackoverflow.com/a/45392259
@@ -48,6 +46,34 @@ def parse_args():
     return parser.parse_args()
 
 
+def get_nested_mappings(schema, prefix=None):
+    # Find all repeated record type fields and create mappings for them
+    # recursively.
+    nested = {}
+    for field in schema:
+        if field.mode == 'REPEATED' and field.field_type == 'RECORD':
+            name = '%s.%s' % (prefix, field.name) if prefix else field.name
+            nested[name] = {"type": "nested"}
+            inner_nested = get_nested_mappings(field.fields)
+            if inner_nested:
+                nested[name]['properties'] = inner_nested
+    return nested if nested else None
+
+
+def create_nested_mappings(es, index_name, table_name, billing_project_id):
+    # Create nested mappings so queries will work correctly, see:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
+    project, dataset, table = table_name.split('.')
+    bq = bigquery.Client(project=billing_project_id)
+    table = bq.get_table(bq.dataset(dataset, project=project).table(table))
+    nested = get_nested_mappings(table.schema, table_name)
+
+    if nested:
+        logger.info('Adding neseted mappings to %s.' % index_name)
+        es.indices.put_mapping(
+            doc_type='type', index=index_name, body={'properties': nested})
+
+
 def index_table(es, index_name, primary_key, table_name, billing_project_id):
     """Indexes a BigQuery table.
 
@@ -59,12 +85,12 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
             <project id>.<dataset id>.<table name>
         billing_project_id: GCP project ID to bill for reading table
     """
-    # I couldn't find an easy way to import BigQuery -> Elasticsearch. Instead:
-    #
-    #   BigQuery table -> pandas dataframe -> dict -> Elasticsearch
+    create_nested_mappings(es, index_name, table_name, billing_project_id)
 
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
+    # There is no easy way to import BigQuery -> Elasticsearch. Instead:
+    # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
         'SELECT * FROM `%s`' % table_name,
         project_id=billing_project_id,
@@ -77,8 +103,6 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     if not primary_key in df.columns:
         raise ValueError('Primary key %s not found in BigQuery table %s' %
                          (primary_key, table_name))
-
-    start_time = time.time()
 
     def docs_by_id(df):
         for _, row in df.iterrows():
