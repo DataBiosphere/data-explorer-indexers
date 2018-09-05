@@ -29,17 +29,16 @@ jobs:
             curl -XDELETE localhost:9200/1000_genomes
             docker-compose stop
       - run:
-          name: Run the GCS Indexer
+          name: Run the Files Indexer
           command: |
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
-            # Note: data-explorer_default has already been created
-            cd gcs
+            cd files
             # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread
             docker-compose up -d elasticsearch
             BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --build indexer
             # For some reason index isn't available right after indexer terminates, so sleep
             sleep 5
-            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "2559"
+            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
             curl -XDELETE localhost:9200/1000_genomes
             docker-compose stop
       - save_cache:
