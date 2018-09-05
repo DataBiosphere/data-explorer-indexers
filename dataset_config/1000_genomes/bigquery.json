@@ -10,6 +10,6 @@
   "primary_key": "Sample",
 
   "table_names": [
-    "genomics-public-data.1000_genomes.sample_info"
+    "bigquery-public-data.human_genome_variants.1000_genomes_sample_info"
   ]
 }
