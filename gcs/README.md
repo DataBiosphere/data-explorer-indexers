@@ -9,6 +9,8 @@ into a local Elasticsearch container.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
+* If `docker network ls` doesn't show `data-explorer_default`, run:
+`docker network create data-explorer_default`
 * From `gcs` directory, run: `docker-compose up --build`
 * View Elasticsearch index:
   ```
