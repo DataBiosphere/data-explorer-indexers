@@ -16,16 +16,38 @@ logging.basicConfig(
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
 
+UPDATE_SAMPLES_SCRIPT = """
+if (!ctx._source.containsKey('samples')) {
+   ctx._source.samples = [params.sample]
+} else {
+   // If this sample already exists, merge it with the new one.
+   int removeIdx = -1;
+   for (int i = 0; i < ctx._source.samples.size(); i++) {
+      if (ctx._source.samples.get(i).get('%s').equals(params.sample.get('%s'))) {
+         removeIdx = i;
+      }
+   }
+
+   if (removeIdx >= 0) {
+      Map merged = ctx._source.samples.remove(removeIdx);
+      merged.putAll(params.sample);
+      ctx._source.samples.add(merged);
+   } else {
+      ctx._source.samples.add(params.sample);
+   }
+}
+"""
+
 
 # Copied from https://stackoverflow.com/a/45392259
-def environ_or_required(key):
+def _environ_or_required(key):
     if os.environ.get(key):
         return {'default': os.environ.get(key)}
     else:
         return {'required': True}
 
 
-def parse_args():
+def _parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--elasticsearch_url',
@@ -42,11 +64,11 @@ def parse_args():
         type=str,
         help=
         'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
-        **environ_or_required('BILLING_PROJECT_ID'))
+        **_environ_or_required('BILLING_PROJECT_ID'))
     return parser.parse_args()
 
 
-def get_nested_mappings(schema, prefix=None):
+def _get_nested_mappings(schema, prefix=None):
     # Find all repeated record type fields and create mappings for them
     # recursively.
     nested = {}
@@ -54,41 +76,105 @@ def get_nested_mappings(schema, prefix=None):
         if field.mode == 'REPEATED' and field.field_type == 'RECORD':
             name = '%s.%s' % (prefix, field.name) if prefix else field.name
             nested[name] = {"type": "nested"}
-            inner_nested = get_nested_mappings(field.fields)
+            inner_nested = _get_nested_mappings(field.fields)
             if inner_nested:
                 nested[name]['properties'] = inner_nested
     return nested if nested else None
 
 
-def create_nested_mappings(es, index_name, table_name, billing_project_id):
-    # Create nested mappings so queries will work correctly, see:
+def _create_nested_mappings(es, index_name, table_name, sample_id_col,
+                            billing_project_id):
+    # Create nested mappings for repeated record type BigQuery fields so that
+    # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    project, dataset, table = table_name.split('.')
+    project_id, dataset, table = table_name.split('.')
     bq = bigquery.Client(project=billing_project_id)
-    table = bq.get_table(bq.dataset(dataset, project=project).table(table))
-    nested = get_nested_mappings(table.schema, table_name)
-
+    t = bq.get_table(bq.dataset(dataset, project=project_id).table(table))
+    nested = _get_nested_mappings(t.schema, table_name)
     if nested:
         logger.info('Adding neseted mappings to %s.' % index_name)
         es.indices.put_mapping(
             doc_type='type', index=index_name, body={'properties': nested})
 
+    # If the table contains the sample ID column, add a nested samples mapping.
+    if sample_id_col in [f.name for f in t.schema]:
+        logger.info('Adding nested sample mapping to %s.' % index_name)
+        sample_mapping = {"properties": {"samples": {"type": "nested"}}}
+        es.indices.put_mapping(
+            doc_type='type', index=index_name, body=sample_mapping)
 
-def index_table(es, index_name, primary_key, table_name, billing_project_id):
+
+def _docs_by_id(df, table_name, participant_id_col):
+    for _, row in df.iterrows():
+        # Remove nan's as described in
+        # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
+        # Elasticsearch crashes when indexing nan's.
+        row_dict = row.dropna().to_dict()
+        # Remove the participant_id_col since it is stored as document id.
+        del row_dict[participant_id_col]
+        row_dict = {table_name + '.' + k: v for k, v in row_dict.iteritems()}
+        yield row[participant_id_col], row_dict
+
+
+def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
+                          sample_file_cols):
+    for _, row in df.iterrows():
+        # Remove nan's as described in
+        # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
+        # Elasticsearch crashes when indexing nan's.
+        row_dict = row.dropna().to_dict()
+        # Remove the participant_id_col since it is stored as document id.
+        del row_dict[participant_id_col]
+        # Use the sample_id_col without the project_id + dataset qualification.
+        row_dict = {
+            table_name + '.' + k if k != sample_id_col else k: v
+            for k, v in row_dict.iteritems()
+        }
+
+        # Use the sample_file_cols configuration to add the internal
+        # '_has_<sample_file_type>' fields to the samples index.
+        for file_type, col in sample_file_cols.iteritems():
+            # Only mark as false if this sample file column is relevant to the
+            # table currently being indexed.
+            if col.split('.')[:3] == table_name.split('.'):
+                has_name = '_has_%s' % file_type.lower().replace(" ", "_")
+                if col in row_dict and row_dict[col]:
+                    row_dict[has_name] = True
+                else:
+                    row_dict[has_name] = False
+
+        script = UPDATE_SAMPLES_SCRIPT % (sample_id_col, sample_id_col)
+        yield row[participant_id_col], {
+            'source': script,
+            'lang': 'painless',
+            'params': {
+                'sample': row_dict
+            }
+        }
+
+
+def index_table(es, index_name, table_name, participant_id_col, sample_id_col,
+                sample_file_cols, billing_project_id):
     """Indexes a BigQuery table.
 
     Args:
         es: Elasticsearch object.
         index_name: Name of Elasticsearch index.
-        primary_key: Name of primary key field.
-        table_name: Fully-qualified table name:
-            <project id>.<dataset id>.<table name>
+        table_name: Fully-qualified table name of the format:
+            "<project id>.<dataset id>.<table name>"
+        participant_id_col: Name of the column containing the participant ID.
+        sample_id_col: (optional) Name of the column containing the sample ID
+            (only needed on samples tables).
+        sample_file_cols: (optional) Mappings for columns which contain genomic
+            files of a particular type (specified in ui.json).
         billing_project_id: GCP project ID to bill for reading table
     """
-    create_nested_mappings(es, index_name, table_name, billing_project_id)
+    _create_nested_mappings(es, index_name, table_name, sample_id_col,
+                            billing_project_id)
 
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
+
     # There is no easy way to import BigQuery -> Elasticsearch. Instead:
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
@@ -100,44 +186,46 @@ def index_table(es, index_name, primary_key, table_name, billing_project_id):
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
     logger.info('%s has %d rows' % (table_name, len(df)))
 
-    if not primary_key in df.columns:
-        raise ValueError('Primary key %s not found in BigQuery table %s' %
-                         (primary_key, table_name))
+    if not participant_id_col in df.columns:
+        raise ValueError(
+            'Participant ID column %s not found in BigQuery table %s' %
+            (primary_key, table_name))
 
-    def docs_by_id(df):
-        for _, row in df.iterrows():
-            # Remove nan's as described in
-            # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
-            # Elasticsearch crashes when indexing nan's.
-            row_dict = row.dropna().to_dict()
-            row_dict = {
-                table_name + '.' + k: v
-                for k, v in row_dict.iteritems()
-            }
-            yield row[primary_key], row_dict
+    # Samples tables and participant tables need to be indexed in distinct
+    # ways. Participants can be updated using the standard partial update,
+    # while nested samples must be appended using a 'script', see:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
+    if sample_id_col in df.columns:
+        scripts_by_id = _sample_scripts_by_id(df, table_name,
+                                              participant_id_col,
+                                              sample_id_col, sample_file_cols)
+        indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
+    else:
+        docs_by_id = _docs_by_id(df, table_name, participant_id_col)
+        indexer_util.bulk_index_docs(es, index_name, docs_by_id)
 
-    indexer_util.bulk_index(es, index_name, docs_by_id(df))
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime("%Hh:%Mm:%Ss", time.gmtime(elapsed_time))
     logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)
 
 
 def main():
-    args = parse_args()
+    args = _parse_args()
 
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
     config_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(config_path)
-    primary_key = bigquery_config['primary_key']
-    table_names = bigquery_config['table_names']
-
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
-    for table_name in table_names:
-        index_table(es, index_name, primary_key, table_name,
-                    args.billing_project_id)
+    participant_id_col = bigquery_config['participant_id_column']
+    sample_id_col = bigquery_config.get('sample_id_column', None)
+    sample_file_cols = bigquery_config.get('sample_file_columns', {})
+
+    for table_name in bigquery_config['table_names']:
+        index_table(es, index_name, table_name, participant_id_col,
+                    sample_id_col, sample_file_cols, args.billing_project_id)
 
 
 if __name__ == '__main__':
