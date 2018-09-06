@@ -70,7 +70,7 @@
     curl EXTERNAL_IP:9200
     ```
 
-* Run indexer on GKE
+* Update and run indexer on GKE
   * If you did the "Run Elasticsearch on GKE" step a while ago, run
     these commands to point `gcloud` and `kubectl` to the right project:
     ```
