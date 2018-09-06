@@ -104,7 +104,28 @@ def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
     return es
 
 
-def bulk_index(es, index_name, docs_by_id):
+def bulk_index_scripts(es, index_name, scripts_by_id):
+    # Use generator so we can index arbitrarily large iterators (like tables),
+    # without having to load into memory.
+    def es_actions(scripts_by_id):
+        for _id, script in scripts_by_id:
+            yield ({
+                '_op_type': 'update',
+                '_index': index_name,
+                # type will go away in future versions of Elasticsearch. Just
+                # use any string here.
+                '_type': 'type',
+                '_id': _id,
+                'script': script,
+                'scripted_upsert': True,
+            })
+
+    # For writing large amounts of data, the default timeout of 10s is
+    # sometimes not enough.
+    bulk(es, es_actions(scripts_by_id), request_timeout=60)
+
+
+def bulk_index_docs(es, index_name, docs_by_id):
     # Use generator so we can index arbitrarily large iterators (like tables),
     # without having to load into memory.
     def es_actions(docs_by_id):
@@ -120,5 +141,6 @@ def bulk_index(es, index_name, docs_by_id):
                 'doc_as_upsert': True
             })
 
-    # For writing large amounts of data, the default timeout of 10s is sometimes not enough
+    # For writing large amounts of data, the default timeout of 10s is
+    # sometimes not enough.
     bulk(es, es_actions(docs_by_id), request_timeout=60)

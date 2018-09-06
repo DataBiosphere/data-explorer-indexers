@@ -1,4 +1,0 @@
-elasticsearch==6.1.1
-./indexer_util
-jsmin==2.2.2
-urllib3==1.22
