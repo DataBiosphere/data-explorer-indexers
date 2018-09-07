@@ -23,7 +23,7 @@
 //   format is: <project>.<dataset>.<table>.<column>
 {
   "table_names": [
-      "bryancrampton-testing.data_explorer.1000_genomes_samples_manifest",
+      "bryancrampton-testing.data_explorer.1000_genomes_sample_manifest",
       "bryancrampton-testing.data_explorer.1000_genomes_sample_info"
   ],
 
