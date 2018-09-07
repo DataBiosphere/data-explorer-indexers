@@ -117,7 +117,7 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
                 '_type': 'type',
                 '_id': _id,
                 'script': script,
-                'scripted_upsert': True,
+                'upsert': {},
             })
 
     # For writing large amounts of data, the default timeout of 10s is
