@@ -15,19 +15,11 @@ jobs:
             pip install yapf
             yapf -dr .
       - run:
-          name: Run the BigQuery Indexer
+          name: Run the BigQuery Indexer integration test
           command: |
+            # TODO(bryancrampton): Refactor interaction with BigQuery / elasticsearch to support unit testing
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
-            docker network create data-explorer_default
-            cd bigquery
-            # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread
-            docker-compose up -d elasticsearch
-            BILLING_PROJECT_ID=${GOOGLE_PROJECT_ID} docker-compose up --build indexer
-            # For some reason index isn't available right after indexer terminates, so sleep
-            sleep 5
-            expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
-            curl -XDELETE localhost:9200/1000_genomes
-            docker-compose stop
+            bigquery/tests/integration.sh ${GOOGLE_PROJECT_ID}
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
           paths:

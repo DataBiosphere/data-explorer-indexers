@@ -116,6 +116,7 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
                 # use any string here.
                 '_type': 'type',
                 '_id': _id,
+                'scripted_upsert': True,
                 'script': script,
                 'upsert': {},
             })

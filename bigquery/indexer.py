@@ -91,17 +91,18 @@ def _create_nested_mappings(es, index_name, table_name, sample_id_col,
     bq = bigquery.Client(project=billing_project_id)
     t = bq.get_table(bq.dataset(dataset, project=project_id).table(table))
     nested = _get_nested_mappings(t.schema, table_name)
-    if nested:
-        logger.info('Adding neseted mappings to %s.' % index_name)
-        es.indices.put_mapping(
-            doc_type='type', index=index_name, body={'properties': nested})
-
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_col in [f.name for f in t.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
-        sample_mapping = {"properties": {"samples": {"type": "nested"}}}
+        sample_mapping = {'properties': {'samples': {'type': 'nested'}}}
+        if nested:
+            sample_mapping['properties']['samples']['properties'] = nested
         es.indices.put_mapping(
             doc_type='type', index=index_name, body=sample_mapping)
+    elif nested:
+        logger.info('Adding neseted mappings to %s.' % index_name)
+        es.indices.put_mapping(
+            doc_type='type', index=index_name, body={'properties': nested})
 
 
 def _docs_by_id(df, table_name, participant_id_col):
