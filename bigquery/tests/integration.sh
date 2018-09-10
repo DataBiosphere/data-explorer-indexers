@@ -3,7 +3,7 @@
 # Run Data Explorer Indexer integration tests.
 #
 # Regenerate the integration_golden_index.json by running from project root (after indexing):
-# curl -s 'http://localhost:9200/1000_genomes/_search?size=3500&sort=_id:asc' | jq -rS '.hits.hits' > 'bigquery/tests/integration_golden_index.json'
+# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'bigquery/tests/integration_golden_index.json'
 #
 # bigquery/tests/integration.sh <billing_project_id>
 #
@@ -29,7 +29,7 @@ sleep 5
 expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
 
 # Write the index out to a file in order to diff.
-curl -s 'http://localhost:9200/1000_genomes/_search?size=3500&sort=_id:asc' | jq -rS '.hits.hits' > 'tests/actual_index.json'
+curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/actual_index.json'
 DIFF=$(diff tests/integration_golden_index.json tests/actual_index.json) 
 if [ "$DIFF" != "" ]; then
   echo "Index does not match golden json file, diff:"
