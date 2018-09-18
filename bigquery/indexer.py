@@ -82,17 +82,14 @@ def _get_nested_mappings(schema, prefix=None):
     return nested if nested else None
 
 
-def _create_nested_mappings(es, index_name, table_name, sample_id_col,
-                            billing_project_id):
+def _create_nested_mappings(es, index_name, table, sample_id_col):
     # Create nested mappings for repeated record type BigQuery fields so that
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    project_id, dataset, table = table_name.split('.')
-    bq = bigquery.Client(project=billing_project_id)
-    t = bq.get_table(bq.dataset(dataset, project=project_id).table(table))
-    nested = _get_nested_mappings(t.schema, table_name)
+    table_name = table.full_table_id
+    nested = _get_nested_mappings(table.schema, table_name)
     # If the table contains the sample ID column, add a nested samples mapping.
-    if sample_id_col in [f.name for f in t.schema]:
+    if sample_id_col in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
         sample_mapping = {'properties': {'samples': {'type': 'nested'}}}
         if nested:
@@ -115,6 +112,16 @@ def _docs_by_id(df, table_name, participant_id_col):
         del row_dict[participant_id_col]
         row_dict = {table_name + '.' + k: v for k, v in row_dict.iteritems()}
         yield row[participant_id_col], row_dict
+
+
+def _field_docs_by_id(table_name, fields):
+    for field in fields:
+        field_dict = {
+            "elasticsearch_field_name" : table_name + '.' + field.name,
+            "name" : field.name,
+            "description":field.description
+        }
+        yield field.name, field_dict
 
 
 def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
@@ -154,8 +161,8 @@ def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
         }
 
 
-def index_table(es, index_name, table_name, participant_id_col, sample_id_col,
-                sample_file_cols, billing_project_id):
+def index_table(es, index_name, bq, table, participant_id_col, sample_id_col,
+                sample_file_cols):
     """Indexes a BigQuery table.
 
     Args:
@@ -168,29 +175,18 @@ def index_table(es, index_name, table_name, participant_id_col, sample_id_col,
             (only needed on samples tables).
         sample_file_cols: (optional) Mappings for columns which contain genomic
             files of a particular type (specified in ui.json).
-        billing_project_id: GCP project ID to bill for reading table
     """
-    _create_nested_mappings(es, index_name, table_name, sample_id_col,
-                            billing_project_id)
-
+    _create_nested_mappings(es, index_name, table, sample_id_col)
+    table_name = table.full_table_id
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
 
-    # There is no easy way to import BigQuery -> Elasticsearch. Instead:
-    # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
-    df = pd.read_gbq(
-        'SELECT * FROM `%s`' % table_name,
-        project_id=billing_project_id,
-        dialect='standard')
-    elapsed_time = time.time() - start_time
-    elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
-    logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
-    logger.info('%s has %d rows' % (table_name, len(df)))
+    df = bq.list_rows(table).to_dataframe()
 
     if not participant_id_col in df.columns:
         raise ValueError(
             'Participant ID column %s not found in BigQuery table %s' %
-            (primary_key, table_name))
+            (participant_id_col, table_name))
 
     # Samples tables and participant tables need to be indexed in distinct
     # ways. Participants can be updated using the standard partial update,
@@ -207,7 +203,18 @@ def index_table(es, index_name, table_name, participant_id_col, sample_id_col,
 
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime("%Hh:%Mm:%Ss", time.gmtime(elapsed_time))
-    logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)
+    logger.info('dataframe -> ElasticSearch index took %s' % elapsed_time_str)
+
+
+def index_fields(es, index_name, table):
+    field_docs = _field_docs_by_id(table.full_table_id, table.schema)
+    indexer_util.bulk_index_docs(es, index_name, field_docs)
+
+
+def read_table(bq, table_name):
+    project_id, dataset, table = table_name.split('.')
+    t = bq.get_table(bq.dataset(dataset, project=project_id).table(table))
+    return t
 
 
 def main():
@@ -223,10 +230,13 @@ def main():
     participant_id_col = bigquery_config['participant_id_column']
     sample_id_col = bigquery_config.get('sample_id_column', None)
     sample_file_cols = bigquery_config.get('sample_file_columns', {})
+    bq = bigquery.Client(project=args.billing_project_id)
 
     for table_name in bigquery_config['table_names']:
-        index_table(es, index_name, table_name, participant_id_col,
-                    sample_id_col, sample_file_cols, args.billing_project_id)
+        table = read_table(bq, table_name)
+        index_table(es, index_name, bq, table, participant_id_col,
+                    sample_id_col, sample_file_cols)
+        index_fields(es, index_name + "_fields", table)
 
 
 if __name__ == '__main__':
