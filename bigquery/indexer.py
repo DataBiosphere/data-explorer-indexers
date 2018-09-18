@@ -117,9 +117,9 @@ def _docs_by_id(df, table_name, participant_id_col):
 def _field_docs_by_id(table_name, fields):
     for field in fields:
         field_dict = {
-            "elasticsearch_field_name" : table_name + '.' + field.name,
-            "name" : field.name,
-            "description":field.description
+            "elasticsearch_field_name": table_name + '.' + field.name,
+            "name": field.name,
+            "description": field.description
         }
         yield field.name, field_dict
 
