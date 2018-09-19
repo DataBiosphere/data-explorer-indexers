@@ -50,11 +50,13 @@
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
     * Expand `More` and select the service account you just created.
     * Click `Create`
-  * After cluster has finished creating, run:
+  * After cluster has finished creating, run this command to point `kubectl` to
+  the right cluster.
     ```
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
-    This will make `kubectl` use this cluster.
+    `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
+    e.g. `us-central1`.
 
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch. From project root:
@@ -72,12 +74,17 @@
 
 * Update and run indexer on GKE
   * If you did the "Run Elasticsearch on GKE" step a while ago, run
-    these commands to point `gcloud` and `kubectl` to the right project:
+    these commands to point `gcloud` and `kubectl` to the right project.
     ```
+    # See what projects gcloud and kubectl are configured for
+    gcloud config get-value project
+    kubectl config current-context
+    # Point gcloud and kubetl to the right project
     gcloud config set project MY_PROJECT
-    # This will make kubectl use this cluster.
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
+    `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
+    e.g. `us-central1`.
   * We recommend you delete the index, to start from a clean slate.
     ```
     kubectl get svc,pods
@@ -102,13 +109,4 @@ If you no longer need this Elasticsearch deployment:
 ```
 kubectl config get-clusters
 kubectl config delete-cluster CLUSTER_NAME
-```
-
-## Developer tips
-
-Determine what project/cluster `gcloud` and `kubectl` are currently configured
-for.
-```
-gcloud config get-value project
-kubectl config current-context
 ```
