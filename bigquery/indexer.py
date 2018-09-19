@@ -217,8 +217,7 @@ def index_table(es, index_name, client, table, participant_id_col,
 def index_fields(es, index_name, table):
     table_name = _get_table_name(table.full_table_id)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
-    field_docs = _field_docs_by_id(
-        table_name, table.schema)
+    field_docs = _field_docs_by_id(table_name, table.schema)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
