@@ -90,7 +90,8 @@ def _create_nested_mappings(es, index_name, table, sample_id_col):
     # Create nested mappings for repeated record type BigQuery fields so that
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    nested = _get_nested_mappings(table.schema, _get_table_name(table.full_table_id))
+    nested = _get_nested_mappings(table.schema,
+                                  _get_table_name(table.full_table_id))
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_col in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
