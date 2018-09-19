@@ -6,7 +6,6 @@ import os
 import time
 
 from google.cloud import bigquery
-import pandas as pd
 
 from indexer_util import indexer_util
 
@@ -116,12 +115,8 @@ def _docs_by_id(df, table_name, participant_id_col):
 
 def _field_docs_by_id(table_name, fields):
     for field in fields:
-        field_dict = {
-            "elasticsearch_field_name": table_name + '.' + field.name,
-            "name": field.name,
-            "description": field.description
-        }
-        yield field.name, field_dict
+        field_dict = {"name": field.name, "description": field.description}
+        yield table_name + '.' + field.name, field_dict
 
 
 def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
@@ -161,8 +156,8 @@ def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
         }
 
 
-def index_table(es, index_name, bq, table, participant_id_col, sample_id_col,
-                sample_file_cols):
+def index_table(es, index_name, client, table, participant_id_col,
+                sample_id_col, sample_file_cols):
     """Indexes a BigQuery table.
 
     Args:
@@ -177,11 +172,17 @@ def index_table(es, index_name, bq, table, participant_id_col, sample_id_col,
             files of a particular type (specified in ui.json).
     """
     _create_nested_mappings(es, index_name, table, sample_id_col)
-    table_name = table.full_table_id
+    table_name = _get_table_name(table.full_table_id)
     start_time = time.time()
     logger.info('Indexing %s.' % table_name)
 
-    df = bq.list_rows(table).to_dataframe()
+    # There is no easy way to import BigQuery -> Elasticsearch. Instead:
+    # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
+    df = client.list_rows(table).to_dataframe()
+    elapsed_time = time.time() - start_time
+    elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
+    logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
+    logger.info('%s has %d rows' % (table_name, len(df)))
 
     if not participant_id_col in df.columns:
         raise ValueError(
@@ -203,18 +204,24 @@ def index_table(es, index_name, bq, table, participant_id_col, sample_id_col,
 
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime("%Hh:%Mm:%Ss", time.gmtime(elapsed_time))
-    logger.info('dataframe -> ElasticSearch index took %s' % elapsed_time_str)
+    logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)
 
 
 def index_fields(es, index_name, table):
-    field_docs = _field_docs_by_id(table.full_table_id, table.schema)
+    field_docs = _field_docs_by_id(
+        _get_table_name(table.full_table_id), table.schema)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
-def read_table(bq, table_name):
-    project_id, dataset, table = table_name.split('.')
-    t = bq.get_table(bq.dataset(dataset, project=project_id).table(table))
-    return t
+def read_table(client, table_name):
+    project_id, dataset_id, table_name = table_name.split('.')
+    return client.get_table(
+        client.dataset(dataset_id, project=project_id).table(table_name))
+
+
+def _get_table_name(legacy_table_name):
+    project_id, dataset_table_id = legacy_table_name.split(':')
+    return project_id + '.' + dataset_table_id
 
 
 def main():
@@ -230,13 +237,13 @@ def main():
     participant_id_col = bigquery_config['participant_id_column']
     sample_id_col = bigquery_config.get('sample_id_column', None)
     sample_file_cols = bigquery_config.get('sample_file_columns', {})
-    bq = bigquery.Client(project=args.billing_project_id)
+    client = bigquery.Client(project=args.billing_project_id)
 
     for table_name in bigquery_config['table_names']:
-        table = read_table(bq, table_name)
-        index_table(es, index_name, bq, table, participant_id_col,
+        table = read_table(client, table_name)
+        index_table(es, index_name, client, table, participant_id_col,
                     sample_id_col, sample_file_cols)
-        index_fields(es, index_name + "_fields", table)
+        index_fields(es, index_name + '_fields', table)
 
 
 if __name__ == '__main__':
