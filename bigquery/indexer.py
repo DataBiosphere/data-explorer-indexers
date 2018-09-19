@@ -81,12 +81,16 @@ def _get_nested_mappings(schema, prefix=None):
     return nested if nested else None
 
 
+def _get_table_name(legacy_table_name):
+    project_id, dataset_table_id = legacy_table_name.split(':')
+    return project_id + '.' + dataset_table_id
+
+
 def _create_nested_mappings(es, index_name, table, sample_id_col):
     # Create nested mappings for repeated record type BigQuery fields so that
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    table_name = _get_table_name(table.full_table_id)
-    nested = _get_nested_mappings(table.schema, table_name)
+    nested = _get_nested_mappings(table.schema, _get_table_name(table.full_table_id))
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_col in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
@@ -115,7 +119,9 @@ def _docs_by_id(df, table_name, participant_id_col):
 
 def _field_docs_by_id(table_name, fields):
     for field in fields:
-        field_dict = {"name": field.name, "description": field.description}
+        field_dict = {'name': field.name}
+        if field.description:
+            field_dict['description'] = field.description
         yield table_name + '.' + field.name, field_dict
 
 
@@ -174,7 +180,7 @@ def index_table(es, index_name, client, table, participant_id_col,
     _create_nested_mappings(es, index_name, table, sample_id_col)
     table_name = _get_table_name(table.full_table_id)
     start_time = time.time()
-    logger.info('Indexing %s.' % table_name)
+    logger.info('Indexing %s into %s.' % (table_name, index_name))
 
     # There is no easy way to import BigQuery -> Elasticsearch. Instead:
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
@@ -217,11 +223,6 @@ def read_table(client, table_name):
     project_id, dataset_id, table_name = table_name.split('.')
     return client.get_table(
         client.dataset(dataset_id, project=project_id).table(table_name))
-
-
-def _get_table_name(legacy_table_name):
-    project_id, dataset_table_id = legacy_table_name.split(':')
-    return project_id + '.' + dataset_table_id
 
 
 def main():
