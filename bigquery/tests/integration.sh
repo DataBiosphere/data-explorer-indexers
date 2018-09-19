@@ -30,7 +30,7 @@ expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total
 
 # Write the index out to a file in order to diff.
 curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/actual_index.json'
-DIFF=$(diff tests/integration_golden_index.json tests/actual_index.json) 
+DIFF=$(diff tests/integration_golden_index.json tests/actual_index.json)
 if [ "$DIFF" != "" ]; then
   echo "Index does not match golden json file, diff:"
   echo "$DIFF"
