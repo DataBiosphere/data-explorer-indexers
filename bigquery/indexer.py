@@ -86,14 +86,14 @@ def _get_table_name(legacy_table_name):
     return project_id + '.' + dataset_table_id
 
 
-def _create_nested_mappings(es, index_name, table, sample_id_col):
+def _create_nested_mappings(es, index_name, table, sample_id_column):
     # Create nested mappings for repeated record type BigQuery fields so that
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
     nested = _get_nested_mappings(table.schema,
                                   _get_table_name(table.full_table_id))
     # If the table contains the sample ID column, add a nested samples mapping.
-    if sample_id_col in [f.name for f in table.schema]:
+    if sample_id_column in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
         sample_mapping = {'properties': {'samples': {'type': 'nested'}}}
         if nested:
@@ -106,16 +106,16 @@ def _create_nested_mappings(es, index_name, table, sample_id_col):
             doc_type='type', index=index_name, body={'properties': nested})
 
 
-def _docs_by_id(df, table_name, participant_id_col):
+def _docs_by_id(df, table_name, participant_id_column):
     for _, row in df.iterrows():
         # Remove nan's as described in
         # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
         # Elasticsearch crashes when indexing nan's.
         row_dict = row.dropna().to_dict()
-        # Remove the participant_id_col since it is stored as document id.
-        del row_dict[participant_id_col]
+        # Remove the participant_id_column since it is stored as document id.
+        del row_dict[participant_id_column]
         row_dict = {table_name + '.' + k: v for k, v in row_dict.iteritems()}
-        yield row[participant_id_col], row_dict
+        yield row[participant_id_column], row_dict
 
 
 def _field_docs_by_id(table_name, fields):
@@ -126,24 +126,24 @@ def _field_docs_by_id(table_name, fields):
         yield table_name + '.' + field.name, field_dict
 
 
-def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
-                          sample_file_cols):
+def _sample_scripts_by_id(df, table_name, participant_id_column,
+                          sample_id_column, sample_file_columns):
     for _, row in df.iterrows():
         # Remove nan's as described in
         # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
         # Elasticsearch crashes when indexing nan's.
         row_dict = row.dropna().to_dict()
-        # Remove the participant_id_col since it is stored as document id.
-        del row_dict[participant_id_col]
-        # Use the sample_id_col without the project_id + dataset qualification.
+        # Remove the participant_id_column since it is stored as document id.
+        del row_dict[participant_id_column]
+        # Use the sample_id_column without the project_id + dataset qualification.
         row_dict = {
-            table_name + '.' + k if k != sample_id_col else k: v
+            table_name + '.' + k if k != sample_id_column else k: v
             for k, v in row_dict.iteritems()
         }
 
-        # Use the sample_file_cols configuration to add the internal
+        # Use the sample_file_columns configuration to add the internal
         # '_has_<sample_file_type>' fields to the samples index.
-        for file_type, col in sample_file_cols.iteritems():
+        for file_type, col in sample_file_columns.iteritems():
             # Only mark as false if this sample file column is relevant to the
             # table currently being indexed.
             if col.split('.')[:3] == table_name.split('.'):
@@ -153,8 +153,8 @@ def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
                 else:
                     row_dict[has_name] = False
 
-        script = UPDATE_SAMPLES_SCRIPT % (sample_id_col, sample_id_col)
-        yield row[participant_id_col], {
+        script = UPDATE_SAMPLES_SCRIPT % (sample_id_column, sample_id_column)
+        yield row[participant_id_column], {
             'source': script,
             'lang': 'painless',
             'params': {
@@ -163,8 +163,8 @@ def _sample_scripts_by_id(df, table_name, participant_id_col, sample_id_col,
         }
 
 
-def index_table(es, index_name, client, table, participant_id_col,
-                sample_id_col, sample_file_cols):
+def index_table(es, index_name, client, table, participant_id_column,
+                sample_id_column, sample_file_columns):
     """Indexes a BigQuery table.
 
     Args:
@@ -172,13 +172,13 @@ def index_table(es, index_name, client, table, participant_id_col,
         index_name: Name of Elasticsearch index.
         table_name: Fully-qualified table name of the format:
             "<project id>.<dataset id>.<table name>"
-        participant_id_col: Name of the column containing the participant ID.
-        sample_id_col: (optional) Name of the column containing the sample ID
+        participant_id_column: Name of the column containing the participant ID.
+        sample_id_column: (optional) Name of the column containing the sample ID
             (only needed on samples tables).
-        sample_file_cols: (optional) Mappings for columns which contain genomic
+        sample_file_columns: (optional) Mappings for columns which contain genomic
             files of a particular type (specified in ui.json).
     """
-    _create_nested_mappings(es, index_name, table, sample_id_col)
+    _create_nested_mappings(es, index_name, table, sample_id_column)
     table_name = _get_table_name(table.full_table_id)
     start_time = time.time()
     logger.info('Indexing %s into %s.' % (table_name, index_name))
@@ -191,22 +191,22 @@ def index_table(es, index_name, client, table, participant_id_col,
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
     logger.info('%s has %d rows' % (table_name, len(df)))
 
-    if not participant_id_col in df.columns:
+    if not participant_id_column in df.columns:
         raise ValueError(
             'Participant ID column %s not found in BigQuery table %s' %
-            (participant_id_col, table_name))
+            (participant_id_column, table_name))
 
     # Samples tables and participant tables need to be indexed in distinct
     # ways. Participants can be updated using the standard partial update,
     # while nested samples must be appended using a 'script', see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
-    if sample_id_col in df.columns:
-        scripts_by_id = _sample_scripts_by_id(df, table_name,
-                                              participant_id_col,
-                                              sample_id_col, sample_file_cols)
+    if sample_id_column in df.columns:
+        scripts_by_id = _sample_scripts_by_id(
+            df, table_name, participant_id_column, sample_id_column,
+            sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     else:
-        docs_by_id = _docs_by_id(df, table_name, participant_id_col)
+        docs_by_id = _docs_by_id(df, table_name, participant_id_column)
         indexer_util.bulk_index_docs(es, index_name, docs_by_id)
 
     elapsed_time = time.time() - start_time
@@ -237,15 +237,15 @@ def main():
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
-    participant_id_col = bigquery_config['participant_id_column']
-    sample_id_col = bigquery_config.get('sample_id_column', None)
-    sample_file_cols = bigquery_config.get('sample_file_columns', {})
+    participant_id_column = bigquery_config['participant_id_column']
+    sample_id_column = bigquery_config.get('sample_id_column', None)
+    sample_file_columns = bigquery_config.get('sample_file_columns', {})
     client = bigquery.Client(project=args.billing_project_id)
 
     for table_name in bigquery_config['table_names']:
         table = read_table(client, table_name)
-        index_table(es, index_name, client, table, participant_id_col,
-                    sample_id_col, sample_file_cols)
+        index_table(es, index_name, client, table, participant_id_column,
+                    sample_id_column, sample_file_columns)
         index_fields(es, index_name + '_fields', table)
 
 
