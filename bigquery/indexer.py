@@ -126,8 +126,8 @@ def _field_docs_by_id(table_name, fields):
         yield table_name + '.' + field.name, field_dict
 
 
-def _sample_scripts_by_id(df, table_name, participant_id_column, sample_id_column,
-                          sample_file_columns):
+def _sample_scripts_by_id(df, table_name, participant_id_column,
+                          sample_id_column, sample_file_columns):
     for _, row in df.iterrows():
         # Remove nan's as described in
         # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
@@ -201,9 +201,9 @@ def index_table(es, index_name, client, table, participant_id_column,
     # while nested samples must be appended using a 'script', see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
     if sample_id_column in df.columns:
-        scripts_by_id = _sample_scripts_by_id(df, table_name,
-                                              participant_id_column,
-                                              sample_id_column, sample_file_columns)
+        scripts_by_id = _sample_scripts_by_id(
+            df, table_name, participant_id_column, sample_id_column,
+            sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     else:
         docs_by_id = _docs_by_id(df, table_name, participant_id_column)
