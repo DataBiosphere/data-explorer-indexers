@@ -61,10 +61,11 @@ includes any project where you have the Viewer/Editor/Owner role.
 
 ### Overview
 
-In `bigquery.json`, the dataset curator specifies:
+In [`bigquery.json`](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/dataset_config/template/bigquery.json),
+the dataset curator specifies:
 
 - A list of BigQuery tables
-- Name of participant and sample id columns
+- Name of participant id and sample id columns
 
 For each table, the entire contents of the table are indexed.
 (The dataset curator specifies which fields appear in the Data
@@ -76,7 +77,7 @@ For the fields index:
 - `field_description` is the BigQuery column description, if it exists
 
 To inspect the Elasticsearch indices for 1000 Genomes, run
-the [Quickstart above](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart)
+the [above Quickstart](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#quickstart)
 and look at:
 ```
 http://localhost:9200/1000_genomes/_search?pretty=true
