@@ -118,12 +118,20 @@ def _docs_by_id(df, table_name, participant_id_column):
         yield row[participant_id_column], row_dict
 
 
-def _field_docs_by_id(table_name, fields):
+def _field_docs_by_id(table_name, fields, sample_id_column):
+    # If the table contains the sample_id_columnm, prefix the elasticsearch Name
+    # of the fields in this table with "samples."
+    # This is needed to differentiate the sample facets for special handling.
+    prefix = ""
+    for field in fields:
+        if field.name == sample_id_column:
+            prefix = "samples."
+
     for field in fields:
         field_dict = {'name': field.name}
         if field.description:
             field_dict['description'] = field.description
-        yield table_name + '.' + field.name, field_dict
+        yield prefix + table_name + '.' + field.name, field_dict
 
 
 def _sample_scripts_by_id(df, table_name, participant_id_column,
@@ -214,10 +222,10 @@ def index_table(es, index_name, client, table, participant_id_column,
     logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)
 
 
-def index_fields(es, index_name, table):
+def index_fields(es, index_name, table, sample_id_column):
     table_name = _get_table_name(table.full_table_id)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
-    field_docs = _field_docs_by_id(table_name, table.schema)
+    field_docs = _field_docs_by_id(table_name, table.schema, sample_id_column)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
@@ -246,7 +254,7 @@ def main():
         table = read_table(client, table_name)
         index_table(es, index_name, client, table, participant_id_column,
                     sample_id_column, sample_file_columns)
-        index_fields(es, index_name + '_fields', table)
+        index_fields(es, index_name + '_fields', table, sample_id_column)
 
 
 if __name__ == '__main__':
