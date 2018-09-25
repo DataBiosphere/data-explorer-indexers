@@ -15,7 +15,8 @@ fi
 
 waitForClusterHealthy() {
   status=''
-  while [[ $status != 'yellow' ]]; do
+  # For some reason, cluster health is green on CircleCI
+  while [[ $status != 'yellow' && $status != 'green' ]]; do
     echo "Waiting for Elasticsearch cluster to be healthy"
     sleep 1
     status=$(curl -s localhost:9200/_cluster/health | jq -r '.status')
