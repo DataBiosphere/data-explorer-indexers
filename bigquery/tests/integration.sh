@@ -2,25 +2,37 @@
 #
 # Run Data Explorer Indexer integration tests.
 #
-# Regenerate the integration_golden_index.json by running from project root (after indexing):
-# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'bigquery/tests/integration_golden_index.json'
-#
-# bigquery/tests/integration.sh <billing_project_id>
-#
+# Regenerate the integration_golden_index.json by running from bigquery/ (after indexing):
+# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/integration_golden_index.json'
 
 if (( $# != 1 ))
 then
-  echo "Usage: biquery/tests/tests.sh <billing_project_id>"
+  echo "Usage: tests/integration.sh <billing_project_id>"
   echo "  where <billing_project_id> is the GCP project billed for BigQuery usage"
-  echo "Run this script from project root"
+  echo "Run this script from bigquery/ directory"
   exit 1
 fi
 
+waitForClusterHealthy() {
+  status=''
+  # For some reason, cluster health is green on CircleCI
+  while [[ $status != 'yellow' && $status != 'green' ]]; do
+    echo "Waiting for Elasticsearch cluster to be healthy"
+    sleep 1
+    status=$(curl -s localhost:9200/_cluster/health | jq -r '.status')
+  done
+  echo "Elasticsearch cluster is now healthy"
+}
+
+
 billing_project_id=$1
 docker network create data-explorer_default
-cd bigquery
+
 # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread.
 docker-compose up -d elasticsearch
+waitForClusterHealthy
+curl -XDELETE localhost:9200/1000_genomes
+
 BILLING_PROJECT_ID=${billing_project_id} docker-compose up --build indexer
 # For some reason index isn't available right after indexer terminates, so sleep.
 sleep 5
@@ -38,5 +50,4 @@ if [ "$DIFF" != "" ]; then
 fi
 
 rm tests/actual_index.json
-curl -XDELETE localhost:9200/1000_genomes
 docker-compose stop

@@ -19,7 +19,7 @@ jobs:
           command: |
             # TODO(bryancrampton): Refactor interaction with BigQuery / elasticsearch to support unit testing
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
-            bigquery/tests/integration.sh ${GOOGLE_PROJECT_ID}
+            cd bigquery && tests/integration.sh ${GOOGLE_PROJECT_ID}
       - save_cache:
           key: virtualenv-{{ .Branch }}-{{ checksum "bigquery/requirements.txt" }}
           paths:
