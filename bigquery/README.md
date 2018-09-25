@@ -74,7 +74,7 @@ Explorer UI in [`ui.json`](https://github.com/DataBiosphere/data-explorer/blob/m
 For the main dataset index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#main-dataset-index)):
 - If a table has a sample id column, the other columns are treated as sample fields and added to the nested sample object.
 - If a table has a participant id column, the other columns are treated as participant fields and indexed in the top-level participant document.
-- Sample is column overrides participant id column: if a table has both ids,
+- Sample id column overrides participant id column: if a table has both ids,
 the other columns are treated as sample fields.
 
 For the fields index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#fields-index)):
