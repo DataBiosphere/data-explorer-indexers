@@ -3,14 +3,11 @@
 # Run Data Explorer Indexer integration tests.
 #
 # Regenerate the integration_golden_index.json by running from bigquery/ (after indexing):
-# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'bigquery/tests/integration_golden_index.json'
-#
-# tests/integration.sh <billing_project_id>
-#
+# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/integration_golden_index.json'
 
 if (( $# != 1 ))
 then
-  echo "Usage: tests/tests.sh <billing_project_id>"
+  echo "Usage: tests/integration.sh <billing_project_id>"
   echo "  where <billing_project_id> is the GCP project billed for BigQuery usage"
   echo "Run this script from bigquery/ directory"
   exit 1
@@ -31,7 +28,7 @@ billing_project_id=$1
 docker network create data-explorer_default
 
 # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread.
-#docker-compose up -d elasticsearch
+docker-compose up -d elasticsearch
 waitForClusterHealthy
 curl -XDELETE localhost:9200/1000_genomes
 
