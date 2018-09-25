@@ -2,82 +2,57 @@
 
 ### Overview
 
-A Data Explorer UI allows for faceted search. For example,
-[Boardwalk](https://commons.ucsc-cgp-dev.org/boardwalk) has facets Analysis
-Type, Center Name, etc.
+This repo contains indexers which index a dataset into Elasticsearch, for
+use by the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer).
 
-A dataset may have hundreds of fields. The dataset owner
-must [curate a list](https://github.com/DataBiosphere/data-explorer/blob/master/dataset_config/1000_genomes/ui.json)
-of the most important fields (age, gender, etc).
+For each dataset, two Elasticsearch indices are created:
 
-A dataset has a notion of `participant_id` and (optional) `sample_id`. The
-columns in BigQuery tables which represent these IDs are configured in [`bigquery.json`](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/dataset_config/template/bigquery.json#L17-L18).
+1. The main dataset index, named DATASET
+1. The fields index, named DATASET_fields
 
+#### Main dataset index
 
-### Participant Indexing
-`participant_id` is used as the primary key in the index and ties information
-together from different sources. Say there are facets for age and weight; age
-and weight are stored in separate BigQuery tables, all with a `participant_id`
-column. First, age table is indexed. An Elasticsearch document is created for
-each `participant_id` with document id = `participant_id`. A document would look
-like:
+This index is used for faceted search.
+
+Each Elasticsearch document represents a participant. The document id is participant id.  
+
+A participant can have
+zero or more samples. Within a participant document, a sample is a
+[nested object](https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html#_using_literal_nested_literal_fields_for_arrays_of_objects). Each nested object has a `sample_id` field.
+
+Participant fields are in the top-level participant document. Sample fields are in the nested sample objects. For example, here's an excerpt of a `1000_genomes`
+document:
+
 ```
-{
-  "myproject.mydataset.table1.age": "30",
+"_id" : "NA12003",
+"_source" : {
+  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Super_Population" : "EUR",
+  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Gender" : "male",
+  "samples" : [
+    {
+      "sample_id" : "HG02924",
+      "verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot" : true
+      "verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_18_vcf" : "gs://genomics-public-data/1000-genomes-phase-3/vcf-20150220/ALL.chr18.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf",
+    }
+  ],
 }
 ```
 
-Then, the weight table is indexed. The Elasticsearch documents will get a new
-weight field:
+#### Fields index
+
+This index is used for field search. TODO: Include screenshot.
+
+Each document represents a field. The document id is name of the
+Elasticsearch field from the main dataset index. Example fields
+are age, gender, etc. Here's an example document from `1000_genomes_fields`:
 ```
-{
-  "myproject.mydataset.table1.age": "30",
-  "myproject.mydataset.table2.weight": "140",
+"_id" : "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot",
+"_source" : {
+  "name" : "In_Low_Coverage_Pilot",
+  "description" : "The sample is in the low coverage pilot experiment"
 }
 ```
 
-`participant_id` will be used to figure out which document to update.
-
-### Sample Indexing
-`participant_id` is also used as the foreign key for samples, which are stored
-as a [nested datatype](https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html)
-in the index beneath participants. `sample_id` is the secondary key for samples
-and can be used to tie together information from different sources, just like
-`participant_id`. Suppose we index two samples tables, one containing the tissue
-type and the other with the sequencing type. After indexing the first samples
-table, a document would look like:
-```
-{
-  "myproject.mydataset.table1.age": "30",
-  "myproject.mydataset.table2.weight": "140",
-  "samples": [
-    "sample_id": "S001",
-    "myproject.mydataset.table3.tissue_type": "blood"
-  ]  
-}
-```
-
-Then, the sequencing type table is indexed. The nested sample document will
-get a new `sequencing_type` field:
-```
-{
-  ...
-  "samples": [
-    "sample_id": "S001",
-    "myproject.mydataset.table3.tissue_type": "blood",
-    "myproject.mydataset.table4.sequencing_type": "WGS"
-  ]  
-}
-```
-
-### Sample File Types
-Fields which contain important types of genomic files can additionally be
-specified in [`bigquery.json`](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/dataset_config/template/bigquery.json#L20)
-under `sample_file_columns`. These columns are used to generated a special
-Samples Overview facet.
-[comment]: # TODO(bryancrampton): Inline screenshot of Samples Overview facet
-
-
-## One-time setup
+### One-time setup
 
 [Set up git secrets.](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/hooks)
