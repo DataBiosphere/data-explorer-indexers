@@ -71,7 +71,13 @@ For each table, the entire contents of the table are indexed.
 (The dataset curator specifies which fields appear in the Data
 Explorer UI in [`ui.json`](https://github.com/DataBiosphere/data-explorer/blob/master/dataset_config/template/ui.json).)
 
-For the fields index:
+For the main dataset index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#main-dataset-index)):
+- If a table has a sample id column, the other columns are treated as sample fields and added to the nested sample object.
+- If a table has a participant id column, the other columns are treated as participant fields and indexed in the top-level participant document.
+- Sample is column overrides participant id column: if a table has both ids,
+the other columns are treated as sample fields.
+
+For the fields index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#fields-index)):
 - Document id is the name of the Elasticsearch field from the main dataset index
 - `field_name` is BigQuery column name
 - `field_description` is the BigQuery column description, if it exists
