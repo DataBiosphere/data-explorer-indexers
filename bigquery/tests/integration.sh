@@ -2,8 +2,11 @@
 #
 # Run Data Explorer Indexer integration tests.
 #
-# Regenerate the integration_golden_index.json by running from bigquery/ (after indexing):
-# curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/integration_golden_index.json'
+# Regenerate golden files by running from bigquery/:
+#   docker-compose up -d elasticsearch
+#   curl -XDELETE localhost:9200/1000_genomes && curl -XDELETE localhost:9200/1000_genomes_fields
+#   BILLING_PROJECT_ID=google.com:api-project-360728701457 docker-compose up --build -d indexer
+#   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/integration_golden_index.json'
 
 if (( $# != 1 ))
 then
