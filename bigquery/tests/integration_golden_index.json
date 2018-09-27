@@ -5,11 +5,11 @@
       "_has_chr_y_vcf": false,
       "_has_exome_bam": false,
       "_has_exome_cram": false,
+      "_has_fastq": false,
       "_has_wgs_high_coverage_bam": false,
       "_has_wgs_high_coverage_cram": false,
       "_has_wgs_low_coverage_bam": false,
       "_has_wgs_low_coverage_cram": false,
-      "_has_fastq": false,
       "sample_id": "HG02924",
       "verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Affy_6_0_Genotypes": true
     }
