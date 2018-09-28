@@ -1,0 +1,102 @@
+[
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Family_ID",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Family ID",
+      "name": "Family_ID"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.ET_Pilot_Platforms",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "exon targetted sequencing platforms,",
+      "name": "ET_Pilot_Platforms"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Phase1_E_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "phase1 exome sequencing centers",
+      "name": "Phase1_E_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_phase1_chrY_Deletions",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is genotyepd in the chrY phase1 deletions",
+      "name": "Has_phase1_chrY_Deletions"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_LC_Affy_Free",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_LC_Affy_Free"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.LC_Passed_QC",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "These are binary flags showing if the sample passed QC, All samples which have passed QC have bam files. Only samples which have both exome and low coverage data are found under ftp/data and listed in the standard alignment index. The small number of other samples are found in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/phase3_EX_or_LC_only_alignment/",
+      "name": "LC_Passed_QC"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Omni_Genotypes",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Omni Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20120131_omni_genotypes_and_intensities/Omni25_genotypes_2141_samples.b37.vcf.gz   ",
+      "name": "Has_Omni_Genotypes"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Affy_6_0_Genotypes",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Affy 6.0 Genotypes in  ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20121128_corriel_p3_sample_genotypes/",
+      "name": "Has_Affy_6_0_Genotypes"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.EBV_Coverage",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "This was calculated by looking at the alignment of the data to NC_007605 in the low coverage bam files and using that to calculate coverage   ",
+      "name": "EBV_Coverage"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_16_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 16 multi-sample VCF with 2504 samples",
+      "name": "chr_16_vcf"
+    },
+    "_type": "type"
+  }
+]

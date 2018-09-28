@@ -6,7 +6,9 @@
 #   docker-compose up -d elasticsearch
 #   curl -XDELETE localhost:9200/1000_genomes && curl -XDELETE localhost:9200/1000_genomes_fields
 #   BILLING_PROJECT_ID=google.com:api-project-360728701457 docker-compose up --build -d indexer
-#   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/integration_golden_index.json'
+#   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes_golden.json'
+#   curl -s 'http://localhost:9200/1000_genomes/_mappings?pretty' | jq -rS '.' > 'tests/1000_genomes_mappings_golden.json'
+#   curl -s 'http://localhost:9200/1000_genomes_fields/_search' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
 
 if (( $# != 1 ))
 then
@@ -35,6 +37,7 @@ docker network create data-explorer_default
 docker-compose up -d elasticsearch
 waitForClusterHealthy
 curl -XDELETE localhost:9200/1000_genomes
+curl -XDELETE localhost:9200/1000_genomes_fields
 
 BILLING_PROJECT_ID=${billing_project_id} docker-compose up --build indexer
 # For some reason index isn't available right after indexer terminates, so sleep.
@@ -44,13 +47,34 @@ sleep 5
 expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
 
 # Write the index out to a file in order to diff.
-curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/actual_index.json'
-DIFF=$(diff tests/integration_golden_index.json tests/actual_index.json)
+curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes.json'
+DIFF=$(diff tests/1000_genomes_golden.json tests/1000_genomes.json)
 if [ "$DIFF" != "" ]; then
   echo "Index does not match golden json file, diff:"
   echo "$DIFF"
   exit 1
 fi
 
-rm tests/actual_index.json
+# Write the mappings out to a file in order to diff.
+curl -s 'http://localhost:9200/1000_genomes/_mappings' | jq -rS '.' > 'tests/1000_genomes_mappings.json'
+DIFF=$(diff tests/1000_genomes_mappings_golden.json tests/1000_genomes_mappings.json)
+if [ "$DIFF" != "" ]; then
+  echo "Index does not match golden json file, diff:"
+  echo "$DIFF"
+  exit 1
+fi
+
+# Write the fields index out to a file in order to diff.
+curl -s 'http://localhost:9200/1000_genomes_fields/_search' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields.json'
+DIFF=$(diff tests/1000_genomes_fields_golden.json tests/1000_genomes_fields.json)
+if [ "$DIFF" != "" ]; then
+  echo "Fields index does not match golden json file, diff:"
+  echo "$DIFF"
+  exit 1
+fi
+
+
+rm tests/1000_genomes.json
+rm tests/1000_genomes_mappings.json
+rm tests/1000_genomes_fields.json
 docker-compose stop
