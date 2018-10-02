@@ -98,5 +98,1135 @@
       "name": "chr_16_vcf"
     },
     "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_22_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 22 multi-sample VCF with 2504 samples",
+      "name": "chr_22_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_20_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 20 BAI",
+      "name": "wgs_low_cov_chr_20_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_20_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 20 BAM",
+      "name": "exome_chr_20_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_unmapped_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome unmapped BAS",
+      "name": "exome_unmapped_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_high_cov_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS high coverage BAM",
+      "name": "wgs_high_cov_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.participant_id",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
+      "name": "participant_id"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Relationship",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Relationship to other members of the family",
+      "name": "Relationship"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Non_Paternity",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for annotated non paternal relationships",
+      "name": "Non_Paternity"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Grandparents",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any grand parents",
+      "name": "Grandparents"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Avuncular",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any avuncular relationships",
+      "name": "Avuncular"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Super_Population_Description",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv",
+      "name": "Super_Population_Description"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is in the low coverage pilot experiment",
+      "name": "In_Low_Coverage_Pilot"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.LC_Pilot_Platforms",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "low coverage pilot sequencing platforms ",
+      "name": "LC_Pilot_Platforms"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Sequence_in_Phase1",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Has sequence low coverage sequence in the 20101123.sequence.index file or exome sequence in the 20110522 sequence index file",
+      "name": "Has_Sequence_in_Phase1"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Main_project_LC_platform",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "low coverage sequencing platform for final sequencing round",
+      "name": "Main_project_LC_platform"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Total_Exome_Sequence",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The total amount of exome sequence available",
+      "name": "Total_Exome_Sequence"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.X_Targets_Covered_to_20x_or_greater",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The percentage of targets covered to 20x or greater as calculated by the picard function CalculateHsMetrics using these targets ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/exome_pull_down_targets_phases1_and_2/20120518.consensus.annotation.bed",
+      "name": "X_Targets_Covered_to_20x_or_greater"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_E_Omni_Free",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_E_Omni_Free"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.E_Indel_Ratio",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Both Indel ratios are the ratio of insertions to deletions found in that sample using a quick test (based on samtools). If the ratio is higher than 5 the sample is withdrawn.",
+      "name": "E_Indel_Ratio"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Axiom_Genotypes",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Axiom Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20110210_Affymetrix_Axiom/Affymetrix_Axiom_DB_2010_v4_b37.vcf.gz         ",
+      "name": "Has_Axiom_Genotypes"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Exome_LOF_Genotypes",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20121009_broad_exome_chip/ALL.wgs.broad_exome_lof_indel_v2.20121009.snps_and_indels.snpchip.genotypes.vcf.gz",
+      "name": "Has_Exome_LOF_Genotypes"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Sequence_from_Blood_in_Index",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "In the later stages of the project some populations has multiple study ids, one to indicate sequencing from blood. This data for each sample has not been treated independently in the alignment process but when there is both LCL and Blood sourced data they are both together in single bams",
+      "name": "Has_Sequence_from_Blood_in_Index"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_6_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 6 multi-sample VCF with 2504 samples",
+      "name": "chr_6_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_7_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 7 multi-sample VCF with 2504 samples",
+      "name": "chr_7_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_9_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 9 multi-sample VCF with 2504 samples",
+      "name": "chr_9_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_13_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 13 multi-sample VCF with 2504 samples",
+      "name": "chr_13_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_14_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 14 multi-sample VCF with 2504 samples",
+      "name": "chr_14_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_17_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 17 multi-sample VCF with 2504 samples",
+      "name": "chr_17_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_20_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 20 multi-sample VCF with 2504 samples",
+      "name": "chr_20_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_20_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 20 BAS",
+      "name": "wgs_low_cov_chr_20_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_unmapped_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage unmapped BAM",
+      "name": "wgs_low_cov_unmapped_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_20_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 20 BAI",
+      "name": "exome_chr_20_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped BAM",
+      "name": "exome_mapped_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped BAI",
+      "name": "exome_mapped_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Unexpected_Parent_Child",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample id for unexpected parent child relationships",
+      "name": "Unexpected_Parent_Child"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Siblings",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any siblings",
+      "name": "Siblings"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Third_Order",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any third order cryptic relations. As mentioned above, this analysis was not as widely run as the other relatedness analyses and as such there may still be unannotated third order relations in the set",
+      "name": "Third_Order"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Super_Population",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv",
+      "name": "Super_Population"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.participant_id",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
+      "name": "participant_id"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.HC_Pilot_Platforms",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "high coverage sequencing platforms",
+      "name": "HC_Pilot_Platforms"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Phase1_LC_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "phase1 low coverage sequencing centers",
+      "name": "Phase1_LC_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Phase1_E_Platform",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "phase1 exome sequencing platforms",
+      "name": "Phase1_E_Platform"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Phase1_Integrated_Variant_Set",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is genotyped in the phase1 integrated call set on autosomes and chrX",
+      "name": "In_Phase1_Integrated_Variant_Set"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_E_Omni_Chip",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_E_Omni_Chip"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_LC_Omni_Free",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_LC_Omni_Free"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_LC_Omni_Chip",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_LC_Omni_Chip"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.E_Passed_QC",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "These are binary flags showing if the sample passed QC, All samples which have passed QC have bam files. Only samples which have both exome and low coverage data are found under ftp/data and listed in the standard alignment index. The small number of other samples are found in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/phase3_EX_or_LC_only_alignment/",
+      "name": "E_Passed_QC"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Final_Phase_Variant_Calling",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Any sample which has both LC and E QC passed bams is in the final analysis set",
+      "name": "In_Final_Phase_Variant_Calling"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_5_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 5 multi-sample VCF with 2504 samples",
+      "name": "chr_5_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_8_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 8 multi-sample VCF with 2504 samples",
+      "name": "chr_8_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_10_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 10 multi-sample VCF with 2504 samples",
+      "name": "chr_10_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_11_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 11 multi-sample VCF with 2504 samples",
+      "name": "chr_11_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_11_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 11 BAM",
+      "name": "wgs_low_cov_chr_11_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped BAS",
+      "name": "wgs_low_cov_mapped_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_cram",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped CRAM",
+      "name": "wgs_low_cov_mapped_cram"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_11_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 11 BAM",
+      "name": "exome_chr_11_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_20_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 20 BAS",
+      "name": "exome_chr_20_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped BAS",
+      "name": "exome_mapped_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_crai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped CRAI",
+      "name": "exome_mapped_crai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_csra",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped CSRA",
+      "name": "exome_mapped_csra"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Population",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "3 letter population code",
+      "name": "Population"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Population_Description",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Description of Population",
+      "name": "Population_Description"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Gender",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Gender",
+      "name": "Gender"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Half_Siblings",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any half siblings",
+      "name": "Half_Siblings"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.HC_Pilot_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "high coverage sequencing centers",
+      "name": "HC_Pilot_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Phase1_chrY_SNPS",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is genotyped in the chrY phase1 snp set",
+      "name": "Has_Phase1_chrY_SNPS"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Total_LC_Sequence",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The total amount of low coverage sequence available",
+      "name": "Total_LC_Sequence"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Main_Project_E_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome sequencing centers for the final sequencing round",
+      "name": "Main_Project_E_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_E_Affy_Free",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_E_Affy_Free"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_E_Affy_Chip",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_E_Affy_Chip"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.VerifyBam_LC_Affy_Chip",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Value from UMich's VerifyBamID BAM QC program http://genome.sph.umich.edu/wiki/VerifyBamID.  The Free measures use a statistical model based on the haplotypes discovered by the chip. The Chip measure considers the genotypes available for that individual from that chip. We use greater than 3% as a cut off for our our low coverage samples and greater than 3.5% for our exome samples.",
+      "name": "VerifyBam_LC_Affy_Chip"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_12_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 12 multi-sample VCF with 2504 samples",
+      "name": "chr_12_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_15_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 15 multi-sample VCF with 2504 samples",
+      "name": "chr_15_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_18_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 18 multi-sample VCF with 2504 samples",
+      "name": "chr_18_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_11_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 11 BAI",
+      "name": "wgs_low_cov_chr_11_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_11_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 11 BAS",
+      "name": "wgs_low_cov_chr_11_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_chr_20_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage chromosome 20 BAM",
+      "name": "wgs_low_cov_chr_20_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_crai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped CRAI",
+      "name": "wgs_low_cov_mapped_crai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_unmapped_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage unmapped BAI",
+      "name": "wgs_low_cov_unmapped_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_11_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 11 BAS",
+      "name": "exome_chr_11_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_high_cov_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS high coverage BAI",
+      "name": "wgs_high_cov_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_high_cov_cram",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS high coverage CRAM",
+      "name": "wgs_high_cov_cram"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Unknown_Second_Order",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "sample ids for any unknown second order relations",
+      "name": "Unknown_Second_Order"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.sample_id",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
+      "name": "sample_id"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.LC_Pilot_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "low coverage pilot sequencing centers",
+      "name": "LC_Pilot_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_High_Coverage_Pilot",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is in the high coverage pilot",
+      "name": "In_High_Coverage_Pilot"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Exon_Targetted_Pilot",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The Sample is in the exon targetted pilot experiment",
+      "name": "In_Exon_Targetted_Pilot"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.ET_Pilot_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "exon targetted sequencing centers,",
+      "name": "ET_Pilot_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Phase1_LC_Platform",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "phase1 low coverage sequencing platforms",
+      "name": "Phase1_LC_Platform"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_phase1_chrMT_SNPs",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The sample is genotyped in the phase1 chrMT snps",
+      "name": "Has_phase1_chrMT_SNPs"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Main_project_LC_Centers",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "low coverage sequencing centers for final sequencing round",
+      "name": "Main_project_LC_Centers"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.LC_Non_Duplicated_Aligned_Coverage",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "The non duplicated aligned coverage for the low coverage sequence data.  This was calculated using the ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/alignment_indices/20130502.low_coverage.alignment.index.bas.gz file, the (mapped bases - duplicated bases) was summed for each sample and divided by 2.75GB and rounded to 2dp",
+      "name": "LC_Non_Duplicated_Aligned_Coverage"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.Main_Project_E_Platform",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome sequencing platform for the final sequencing round",
+      "name": "Main_Project_E_Platform"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.LC_Indel_Ratio",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Both Indel ratios are the ratio of insertions to deletions found in that sample using a quick test (based on samtools). If the ratio is higher than 5 the sample is withdrawn.",
+      "name": "LC_Indel_Ratio"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.DNA_Source_from_Coriell",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "This was the annotated DNA Source from Coriell     ",
+      "name": "DNA_Source_from_Coriell"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_1_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 1 multi-sample VCF with 2504 samples",
+      "name": "chr_1_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_2_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 2 multi-sample VCF with 2504 samples",
+      "name": "chr_2_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_3_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 3 multi-sample VCF with 2504 samples",
+      "name": "chr_3_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_4_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 4 multi-sample VCF with 2504 samples",
+      "name": "chr_4_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_19_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 19 multi-sample VCF with 2504 samples",
+      "name": "chr_19_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_21_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome 21 multi-sample VCF with 2504 samples",
+      "name": "chr_21_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_X_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome X multi-sample VCF with 2504 samples",
+      "name": "chr_X_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_Y_vcf",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Chromosome Y multi-sample VCF with 1233 samples",
+      "name": "chr_Y_vcf"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped BAM",
+      "name": "wgs_low_cov_mapped_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped BAI",
+      "name": "wgs_low_cov_mapped_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_csra",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage mapped CSRA",
+      "name": "wgs_low_cov_mapped_csra"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_unmapped_bas",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS low coverage unmapped BAS",
+      "name": "wgs_low_cov_unmapped_bas"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_chr_11_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome chromosome 11 BAI",
+      "name": "exome_chr_11_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_cram",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome mapped CRAM",
+      "name": "exome_mapped_cram"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_unmapped_bam",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome unmapped BAM",
+      "name": "exome_unmapped_bam"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_unmapped_bai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Exome unmapped BAI",
+      "name": "exome_unmapped_bai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_high_cov_crai",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "WGS high coverage CRAI",
+      "name": "wgs_high_cov_crai"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.fastq",
+    "_index": "1000_genomes_fields",
+    "_score": 1,
+    "_source": {
+      "description": "List of FASTQ files",
+      "name": "fastq"
+    },
+    "_type": "type"
   }
 ]

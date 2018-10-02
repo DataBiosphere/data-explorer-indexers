@@ -8,7 +8,7 @@
 #   BILLING_PROJECT_ID=google.com:api-project-360728701457 docker-compose up --build -d indexer
 #   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes/_mappings?pretty' | jq -rS '.' > 'tests/1000_genomes_mappings_golden.json'
-#   curl -s 'http://localhost:9200/1000_genomes_fields/_search' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
+#   curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
 
 if (( $# != 1 ))
 then
@@ -44,7 +44,10 @@ BILLING_PROJECT_ID=${billing_project_id} docker-compose up --build indexer
 sleep 5
 
 # Validate the correct number of documents were indexed.
-expr $(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total') = "3500"
+DOC_COUNT=$(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total')
+if [ DOC_COUNT != "3714" ]; then
+  echo "Number of documents is incorrect, expected 3714, got $DOC_COUNT"
+fi
 
 # Write the index out to a file in order to diff.
 curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes.json'
@@ -65,7 +68,7 @@ if [ "$DIFF" != "" ]; then
 fi
 
 # Write the fields index out to a file in order to diff.
-curl -s 'http://localhost:9200/1000_genomes_fields/_search' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields.json'
+curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields.json'
 DIFF=$(diff tests/1000_genomes_fields_golden.json tests/1000_genomes_fields.json)
 if [ "$DIFF" != "" ]; then
   echo "Fields index does not match golden json file, diff:"
