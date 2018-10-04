@@ -81,8 +81,12 @@ def _get_nested_mappings(schema, prefix=None):
     return nested if nested else None
 
 
-def _get_table_name(legacy_table_name):
-    project_id, dataset_table_id = legacy_table_name.split(':')
+def _table_name_from_table(table):
+    # table.full_table_id is the legacy format: project id:dataset id.table name
+    # Convert to Standard SQL format: project id.dataset id.table name
+    # Use rsplit instead of split because project id may have ":", eg
+    # "google.com:api-project-123".
+    project_id, dataset_table_id = table.full_table_id.rsplit(':', 1)
     return project_id + '.' + dataset_table_id
 
 
@@ -90,8 +94,7 @@ def _create_nested_mappings(es, index_name, table, sample_id_column):
     # Create nested mappings for repeated record type BigQuery fields so that
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    nested = _get_nested_mappings(table.schema,
-                                  _get_table_name(table.full_table_id))
+    nested = _get_nested_mappings(table.schema, _table_name_from_table(table))
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_column in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
@@ -154,7 +157,7 @@ def _sample_scripts_by_id(df, table_name, participant_id_column,
         for file_type, col in sample_file_columns.iteritems():
             # Only mark as false if this sample file column is relevant to the
             # table currently being indexed.
-            if col.split('.')[:3] == table_name.split('.'):
+            if table_name in col:
                 has_name = '_has_%s' % file_type.lower().replace(" ", "_")
                 if col in row_dict and row_dict[col]:
                     row_dict[has_name] = True
@@ -187,7 +190,7 @@ def index_table(es, index_name, client, table, participant_id_column,
             files of a particular type (specified in ui.json).
     """
     _create_nested_mappings(es, index_name, table, sample_id_column)
-    table_name = _get_table_name(table.full_table_id)
+    table_name = _table_name_from_table(table)
     start_time = time.time()
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -223,14 +226,16 @@ def index_table(es, index_name, client, table, participant_id_column,
 
 
 def index_fields(es, index_name, table, sample_id_column):
-    table_name = _get_table_name(table.full_table_id)
+    table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
     field_docs = _field_docs_by_id(table_name, table.schema, sample_id_column)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
 def read_table(client, table_name):
-    project_id, dataset_id, table_name = table_name.split('.')
+    # Use rsplit instead of split because project id may have ".", eg
+    # "google.com:api-project-123".
+    project_id, dataset_id, table_name = table_name.rsplit('.', 2)
     return client.get_table(
         client.dataset(dataset_id, project=project_id).table(table_name))
 
