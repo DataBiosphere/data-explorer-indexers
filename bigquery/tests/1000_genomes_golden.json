@@ -5,20 +5,19 @@
       "_has_chr_y_vcf": false,
       "_has_exome_bam": false,
       "_has_exome_cram": false,
-      "_has_fastq": false,
       "_has_wgs_high_coverage_bam": false,
       "_has_wgs_high_coverage_cram": false,
       "_has_wgs_low_coverage_bam": false,
       "_has_wgs_low_coverage_cram": false,
       "sample_id": "HG02924",
-      "verily-public-data.human_genome_variants.1000_genomes_sample_info.Has_Affy_6_0_Genotypes": true
+      "verily-public-data.human_genome_variants_no_fastq.1000_genomes_sample_info.Has_Affy_6_0_Genotypes": true
     }
   ],
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Family_ID": "NG06",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Gender": "male",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Population": "ESN",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Population_Description": "Esan in Nigeria",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Relationship": "child",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Super_Population": "AFR",
-  "verily-public-data.human_genome_variants.1000_genomes_participant_info.Super_Population_Description": "African"
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Family_ID": "NG06",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Gender": "male",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Population": "ESN",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Population_Description": "Esan in Nigeria",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Relationship": "child",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Super_Population": "AFR",
+  "verily-public-data.human_genome_variants_no_fastq.1000_genomes_participant_info.Super_Population_Description": "African"
 }
