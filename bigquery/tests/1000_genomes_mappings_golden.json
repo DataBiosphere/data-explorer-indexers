@@ -5,33 +5,6 @@
         "properties": {
           "samples": {
             "properties": {
-              "_has_autosome_vcf": {
-                "type": "boolean"
-              },
-              "_has_chr_y_vcf": {
-                "type": "boolean"
-              },
-              "_has_exome_bam": {
-                "type": "boolean"
-              },
-              "_has_exome_cram": {
-                "type": "boolean"
-              },
-              "_has_fastq": {
-                "type": "boolean"
-              },
-              "_has_wgs_high_coverage_bam": {
-                "type": "boolean"
-              },
-              "_has_wgs_high_coverage_cram": {
-                "type": "boolean"
-              },
-              "_has_wgs_low_coverage_bam": {
-                "type": "boolean"
-              },
-              "_has_wgs_low_coverage_cram": {
-                "type": "boolean"
-              },
               "sample_id": {
                 "fields": {
                   "keyword": {
@@ -43,7 +16,7 @@
               },
               "verily-public-data": {
                 "properties": {
-                  "human_genome_variants": {
+                  "human_genome_variants_no_fastq": {
                     "properties": {
                       "1000_genomes_sample_info": {
                         "properties": {
@@ -626,15 +599,6 @@
                             },
                             "type": "text"
                           },
-                          "fastq": {
-                            "fields": {
-                              "keyword": {
-                                "ignore_above": 256,
-                                "type": "keyword"
-                              }
-                            },
-                            "type": "text"
-                          },
                           "wgs_high_cov_bai": {
                             "fields": {
                               "keyword": {
@@ -817,7 +781,7 @@
           },
           "verily-public-data": {
             "properties": {
-              "human_genome_variants": {
+              "human_genome_variants_no_fastq": {
                 "properties": {
                   "1000_genomes_participant_info": {
                     "properties": {
