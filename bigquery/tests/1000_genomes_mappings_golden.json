@@ -40,7 +40,7 @@
               },
               "verily-public-data": {
                 "properties": {
-                  "human_genome_variants_no_fastq": {
+                  "human_genome_variants": {
                     "properties": {
                       "1000_genomes_sample_info": {
                         "properties": {
@@ -805,7 +805,7 @@
           },
           "verily-public-data": {
             "properties": {
-              "human_genome_variants_no_fastq": {
+              "human_genome_variants": {
                 "properties": {
                   "1000_genomes_participant_info": {
                     "properties": {
