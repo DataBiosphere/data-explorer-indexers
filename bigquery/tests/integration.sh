@@ -45,8 +45,8 @@ sleep 5
 
 # Validate the correct number of documents were indexed.
 DOC_COUNT=$(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total')
-if [ "$DOC_COUNT" != "3714" ]; then
-  echo "Number of documents is incorrect, expected 3714, got $DOC_COUNT"
+if [ "$DOC_COUNT" != "3500" ]; then
+  echo "Number of documents is incorrect, expected 3500, got $DOC_COUNT"
   exit 1
 fi
 
