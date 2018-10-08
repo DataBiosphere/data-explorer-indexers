@@ -89,7 +89,8 @@
     ```
     kubectl get svc,pods
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
-    curl -XDELETE EXTERNAL_IP:9200/MY_DATASET
+    curl -XDELETE <EXTERNAL_IP>:9200/<MY_DATASET>
+    curl -XDELETE <EXTERNAL_IP>:9200/<MY_DATASET>_fields
     ```
   * Make sure the files in `dataset_config/MY_DATASET` are filled out.
     * Make sure `deploy.json` and the `authorization_domain` field in
