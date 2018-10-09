@@ -289,7 +289,7 @@ def main():
     args = _parse_args()
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    bigquery_config_path = os.path.join(args.dataset_config_dir, 
+    bigquery_config_path = os.path.join(args.dataset_config_dir,
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
@@ -309,7 +309,7 @@ def main():
 
     if os.path.exists(deploy_config_path):
         deploy_config = indexer_util.parse_json_file(deploy_config_path)
-        create_samples_json_export_file(es, index_name, 
+        create_samples_json_export_file(es, index_name,
                                         deploy_config['project_id'])
 
 
