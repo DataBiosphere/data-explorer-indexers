@@ -7,6 +7,7 @@ import time
 
 from elasticsearch_dsl import Search
 from google.cloud import bigquery
+from google.cloud import exceptions
 from google.cloud import storage
 
 from indexer_util import indexer_util
@@ -243,13 +244,23 @@ def read_table(client, table_name):
 
 
 def create_samples_json_export_file(es, index_name, project_id):
+    """
+    Writes the samples export JSON file to a GCS bucket. This significantly 
+    speeds up exporting the samples table to Saturn in the Data Explorer.
+
+    Args:
+        es: Elasticsearch object.
+        index_name: Name of Elasticsearch index.
+        project_id: Google Cloud Project ID containing the export samples bucket
+    """
     entities = []
     search = Search(using=es, index=index_name)
     for hit in search.scan():
+        participant_id = hit.meta['id']
         doc = hit.to_dict()
         for sample in doc.get('samples', []):
             sample_id = sample['sample_id']
-            export_sample = {}
+            export_sample = {'participant': participant_id}
             for table_column, value in sample.iteritems():
                 # Ignore _has_* and sample_id fields.
                 splits = table_column.split('.')
@@ -263,9 +274,12 @@ def create_samples_json_export_file(es, index_name, project_id):
                 'attributes': export_sample,
             })
 
-    bucket_name = '%s-export' % project_id
     client = storage.Client(project=project_id)
-    bucket = client.get_bucket(bucket_name)
+    bucket_name = '%s-export-samples' % project_id
+    try:
+        bucket = client.get_bucket(bucket_name)
+    except exceptions.NotFound:
+        bucket = client.create_bucket(bucket_name)
     blob = bucket.blob('samples')
     blob.upload_from_string(json.dumps(entities))
     logger.info('Wrote gs://%s/samples' % (bucket_name))
@@ -273,11 +287,11 @@ def create_samples_json_export_file(es, index_name, project_id):
 
 def main():
     args = _parse_args()
-
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    config_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
-    bigquery_config = indexer_util.parse_json_file(config_path)
+    bigquery_config_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
+    bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
+    deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
@@ -292,7 +306,9 @@ def main():
                     sample_id_column, sample_file_columns)
         index_fields(es, index_name + '_fields', table, sample_id_column)
 
-    create_samples_json_export_file(es, index_name, args.billing_project_id)
+    if os.path.exists(deploy_config_path):
+        deploy_config = indexer_util.parse_json_file(deploy_config_path)
+        create_samples_json_export_file(es, index_name, deploy_config['project_id'])
 
 
 if __name__ == '__main__':
