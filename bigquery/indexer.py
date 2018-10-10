@@ -262,7 +262,7 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
             sample_id = sample['sample_id']
             export_sample = {'participant': participant_id}
             for es_field_name, value in sample.iteritems():
-                # es_field_name looks like "_has_chr_18_vcf", "sample_id" or 
+                # es_field_name looks like "_has_chr_18_vcf", "sample_id" or
                 # "verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot".
                 splits = es_field_name.split('.')
                 # Ignore _has_* and sample_id fields.
