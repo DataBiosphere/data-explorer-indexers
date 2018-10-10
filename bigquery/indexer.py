@@ -243,15 +243,15 @@ def read_table(client, table_name):
         client.dataset(dataset_id, project=project_id).table(table_name))
 
 
-def create_samples_json_export_file(es, index_name, project_id):
+def create_samples_json_export_file(es, index_name, deploy_project_id):
     """
     Writes the samples export JSON file to a GCS bucket. This significantly 
-    speeds up exporting the samples table to Saturn in the Data Explorer.
+    speeds up exporting the samples table to Terra in the Data Explorer.
 
     Args:
         es: Elasticsearch object.
         index_name: Name of Elasticsearch index.
-        project_id: Google Cloud Project ID containing the export samples bucket
+        deploy_project_id: Google Cloud Project ID containing the export samples bucket
     """
     entities = []
     search = Search(using=es, index=index_name)
@@ -261,9 +261,11 @@ def create_samples_json_export_file(es, index_name, project_id):
         for sample in doc.get('samples', []):
             sample_id = sample['sample_id']
             export_sample = {'participant': participant_id}
-            for table_column, value in sample.iteritems():
+            for es_field_name, value in sample.iteritems():
+                # es_field_name looks like "_has_chr_18_vcf", "sample_id" or 
+                # "verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot".
+                splits = es_field_name.split('.')
                 # Ignore _has_* and sample_id fields.
-                splits = table_column.split('.')
                 if len(splits) != 4:
                     continue
                 export_sample[splits[3]] = value
@@ -274,15 +276,14 @@ def create_samples_json_export_file(es, index_name, project_id):
                 'attributes': export_sample,
             })
 
-    client = storage.Client(project=project_id)
+    client = storage.Client(project=deploy_project_id)
     # Don't put in project_id-export because that bucket has TTL= 1 day.
-    bucket_name = '%s-export-samples' % project_id
-    try:
-        bucket = client.get_bucket(bucket_name)
-    except exceptions.NotFound:
+    bucket_name = '%s-export-samples' % deploy_project_id
+    bucket = client.lookup_bucket(bucket_name)
+    if not bucket:
         bucket = client.create_bucket(bucket_name)
     blob = bucket.blob('samples')
-    entities_json = json.dumps(entities)
+    entities_json = json.dumps(entities, indent=4)
     # Remove the trailing ']' character to allow this JSON to be merged
     # with JSON for additional entities using the GCS compose API:
     # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
