@@ -1,11 +1,14 @@
 """Indexes BigQuery tables."""
-
 import argparse
+import json
 import logging
 import os
 import time
 
+from elasticsearch_dsl import Search
 from google.cloud import bigquery
+from google.cloud import exceptions
+from google.cloud import storage
 
 from indexer_util import indexer_util
 
@@ -240,13 +243,63 @@ def read_table(client, table_name):
         client.dataset(dataset_id, project=project_id).table(table_name))
 
 
+def create_samples_json_export_file(es, index_name, deploy_project_id):
+    """
+    Writes the samples export JSON file to a GCS bucket. This significantly 
+    speeds up exporting the samples table to Terra in the Data Explorer.
+
+    Args:
+        es: Elasticsearch object.
+        index_name: Name of Elasticsearch index.
+        deploy_project_id: Google Cloud Project ID containing the export samples bucket
+    """
+    entities = []
+    search = Search(using=es, index=index_name)
+    for hit in search.scan():
+        participant_id = hit.meta['id']
+        doc = hit.to_dict()
+        for sample in doc.get('samples', []):
+            sample_id = sample['sample_id']
+            export_sample = {'participant': participant_id}
+            for es_field_name, value in sample.iteritems():
+                # es_field_name looks like "_has_chr_18_vcf", "sample_id" or
+                # "verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot".
+                splits = es_field_name.split('.')
+                # Ignore _has_* and sample_id fields.
+                if len(splits) != 4:
+                    continue
+                export_sample[splits[3]] = value
+
+            entities.append({
+                'entityType': 'sample',
+                'name': sample_id,
+                'attributes': export_sample,
+            })
+
+    client = storage.Client(project=deploy_project_id)
+    # Don't put in project_id-export because that bucket has TTL= 1 day.
+    bucket_name = '%s-export-samples' % deploy_project_id
+    bucket = client.lookup_bucket(bucket_name)
+    if not bucket:
+        bucket = client.create_bucket(bucket_name)
+    blob = bucket.blob('samples')
+    entities_json = json.dumps(entities, indent=4)
+    # Remove the trailing ']' character to allow this JSON to be merged
+    # with JSON for additional entities using the GCS compose API:
+    # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+    entities_json = entities_json[:-1]
+    blob.upload_from_string(entities_json)
+    logger.info('Wrote gs://%s/samples' % (bucket_name))
+
+
 def main():
     args = _parse_args()
-
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    config_path = os.path.join(args.dataset_config_dir, 'bigquery.json')
-    bigquery_config = indexer_util.parse_json_file(config_path)
+    bigquery_config_path = os.path.join(args.dataset_config_dir,
+                                        'bigquery.json')
+    bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
+    deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
@@ -260,6 +313,11 @@ def main():
         index_table(es, index_name, client, table, participant_id_column,
                     sample_id_column, sample_file_columns)
         index_fields(es, index_name + '_fields', table, sample_id_column)
+
+    if os.path.exists(deploy_config_path):
+        deploy_config = indexer_util.parse_json_file(deploy_config_path)
+        create_samples_json_export_file(es, index_name,
+                                        deploy_config['project_id'])
 
 
 if __name__ == '__main__':
