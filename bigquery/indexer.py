@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import time
-
+import pdb
 from elasticsearch_dsl import Search
 from google.cloud import bigquery
 from google.cloud import exceptions
@@ -75,12 +75,15 @@ def _get_nested_mappings(schema, prefix=None):
     # recursively.
     nested = {}
     for field in schema:
+        name = '%s.%s' % (prefix, field.name) if prefix else field.name
+        inner_nested = _get_nested_mappings(field.fields)
         if field.mode == 'REPEATED' and field.field_type == 'RECORD':
-            name = '%s.%s' % (prefix, field.name) if prefix else field.name
-            nested[name] = {"type": "nested"}
-            inner_nested = _get_nested_mappings(field.fields)
-            if inner_nested:
-                nested[name]['properties'] = inner_nested
+            nested[name] = {}
+            nested[name]['type'] = "nested"
+        if inner_nested:
+            if name not in nested:
+                nested[name] = {}
+            nested[name]['properties'] = inner_nested
     return nested if nested else None
 
 
@@ -98,6 +101,8 @@ def _create_nested_mappings(es, index_name, table, sample_id_column):
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
     nested = _get_nested_mappings(table.schema, _table_name_from_table(table))
+    print("Final nested")
+    print(nested)
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_column in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
@@ -245,7 +250,7 @@ def read_table(client, table_name):
 
 def create_samples_json_export_file(es, index_name, deploy_project_id):
     """
-    Writes the samples export JSON file to a GCS bucket. This significantly 
+    Writes the samples export JSON file to a GCS bucket. This significantly
     speeds up exporting the samples table to Terra in the Data Explorer.
 
     Args:
