@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import time
-import pdb
 from elasticsearch_dsl import Search
 from google.cloud import bigquery
 from google.cloud import exceptions
@@ -101,8 +100,6 @@ def _create_nested_mappings(es, index_name, table, sample_id_column):
     # queries will work correctly, see:
     # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
     nested = _get_nested_mappings(table.schema, _table_name_from_table(table))
-    print("Final nested")
-    print(nested)
     # If the table contains the sample ID column, add a nested samples mapping.
     if sample_id_column in [f.name for f in table.schema]:
         logger.info('Adding nested sample mapping to %s.' % index_name)
