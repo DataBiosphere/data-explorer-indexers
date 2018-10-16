@@ -135,7 +135,7 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
         if id_prefix:
             field_id = id_prefix + '.' + field_id
         # For 'RECORD' fields, we want to index only the sub fields. For example
-        # for 'address' has {city, state, zip}, we want to index 'address.city',
+        # if 'address' has {city, state, zip}, we want to index 'address.city',
         # 'address.state' and 'address.zip'.
         if field.field_type == 'RECORD':
             for field_doc in _field_docs_by_id(field_id, field_name,
