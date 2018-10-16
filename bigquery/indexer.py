@@ -127,6 +127,8 @@ def _docs_by_id(df, table_name, participant_id_column):
 
 
 def _field_docs_by_id(id_prefix, name_prefix, fields):
+    # This method is recursive to handle nested fields (BigQuery RECORD columns).
+    # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
         field_name = field.name
         field_id = field.name
@@ -240,16 +242,16 @@ def index_fields(es, index_name, table, sample_id_column):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
-    prefix = table_name
+    id_prefix = table_name
     fields = table.schema
     # If the table contains the sample_id_columnm, prefix the elasticsearch Name
     # of the fields in this table with "samples."
     # This is needed to differentiate the sample facets for special handling.
     for field in fields:
         if field.name == sample_id_column:
-            prefix = "samples." + prefix
+            id_prefix = "samples." + id_prefix
 
-    field_docs = _field_docs_by_id(prefix, '', fields)
+    field_docs = _field_docs_by_id(id_prefix, '', fields)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
