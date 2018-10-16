@@ -126,20 +126,28 @@ def _docs_by_id(df, table_name, participant_id_column):
         yield row[participant_id_column], row_dict
 
 
-def _field_docs_by_id(table_name, fields, sample_id_column):
-    # If the table contains the sample_id_columnm, prefix the elasticsearch Name
-    # of the fields in this table with "samples."
-    # This is needed to differentiate the sample facets for special handling.
-    prefix = ""
+def _field_docs_by_id(id_prefix, name_prefix, fields):
+    # This method is recursive to handle nested fields (BigQuery RECORD columns).
+    # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
-        if field.name == sample_id_column:
-            prefix = "samples."
-
-    for field in fields:
-        field_dict = {'name': field.name}
-        if field.description:
-            field_dict['description'] = field.description
-        yield prefix + table_name + '.' + field.name, field_dict
+        field_name = field.name
+        field_id = field.name
+        if name_prefix:
+            field_name = name_prefix + '.' + field_name
+        if id_prefix:
+            field_id = id_prefix + '.' + field_id
+        # For 'RECORD' fields, we want to index only the sub fields. For example
+        # if 'address' has {city, state, zip}, we want to index 'address.city',
+        # 'address.state' and 'address.zip'.
+        if field.field_type == 'RECORD':
+            for field_doc in _field_docs_by_id(field_id, field_name,
+                                               field.fields):
+                yield field_doc
+        else:
+            field_dict = {'name': field_name}
+            if field.description:
+                field_dict['description'] = field.description
+            yield field_id, field_dict
 
 
 def _sample_scripts_by_id(df, table_name, participant_id_column,
@@ -233,7 +241,17 @@ def index_table(es, index_name, client, table, participant_id_column,
 def index_fields(es, index_name, table, sample_id_column):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
-    field_docs = _field_docs_by_id(table_name, table.schema, sample_id_column)
+
+    id_prefix = table_name
+    fields = table.schema
+    # If the table contains the sample_id_columnm, prefix the elasticsearch Name
+    # of the fields in this table with "samples."
+    # This is needed to differentiate the sample facets for special handling.
+    for field in fields:
+        if field.name == sample_id_column:
+            id_prefix = "samples." + id_prefix
+
+    field_docs = _field_docs_by_id(id_prefix, '', fields)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
