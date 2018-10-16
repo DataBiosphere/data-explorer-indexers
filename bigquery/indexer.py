@@ -334,6 +334,8 @@ def main():
                     sample_id_column, sample_file_columns)
         index_fields(es, index_name + '_fields', table, sample_id_column)
 
+    # Ensure all of the newly indexed documents are loaded into ES.
+    time.sleep(5)
     if os.path.exists(deploy_config_path):
         deploy_config = indexer_util.parse_json_file(deploy_config_path)
         create_samples_json_export_file(es, index_name,
