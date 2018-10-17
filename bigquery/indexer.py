@@ -150,6 +150,25 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
             yield field_id, field_dict
 
 
+# Sample and participant tables need to be indexed differently.
+# For participant tables, we can use partial updates
+# (https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#_updates_with_a_partial_document)
+#
+# If one participant table has weight and another has height:
+# - First weight table is indexed. Participant documents get a weight field.
+# - Then height table is indexed. Participant documents get a height field. The
+#   weight fields are unchanged.
+#
+# Now say one sample table has center and another has platform.
+# - First center table is indexed. For each participant document, a samples
+#   field is created. The samples field contains an array of nested objects,
+#   each of which has a center field.
+# - Then platform table is indexed. For each participant document, the samples
+#   field is overwritten to the new value, which contains platform and not
+#   center.
+# In order to keep the center field, one must use a script. See
+# https://discuss.elastic.co/t/updating-nested-objects/87586/2 and
+# https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
 def _sample_scripts_by_id(df, table_name, participant_id_column,
                           sample_id_column, sample_file_columns):
     for _, row in df.iterrows():
@@ -220,10 +239,6 @@ def index_table(es, index_name, client, table, participant_id_column,
             'Participant ID column %s not found in BigQuery table %s' %
             (participant_id_column, table_name))
 
-    # Samples tables and participant tables need to be indexed in distinct
-    # ways. Participants can be updated using the standard partial update,
-    # while nested samples must be appended using a 'script', see:
-    # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
     if sample_id_column in df.columns:
         scripts_by_id = _sample_scripts_by_id(
             df, table_name, participant_id_column, sample_id_column,
