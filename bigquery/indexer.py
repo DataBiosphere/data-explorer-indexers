@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import pandas as pd
 import time
 from elasticsearch_dsl import Search
 from google.cloud import bigquery
@@ -207,7 +208,7 @@ def _sample_scripts_by_id(df, table_name, participant_id_column,
 
 
 def index_table(es, index_name, client, table, participant_id_column,
-                sample_id_column, sample_file_columns):
+                sample_id_column, sample_file_columns, billing_project_id):
     """Indexes a BigQuery table.
 
     Args:
@@ -220,6 +221,7 @@ def index_table(es, index_name, client, table, participant_id_column,
             (only needed on samples tables).
         sample_file_columns: (optional) Mappings for columns which contain genomic
             files of a particular type (specified in ui.json).
+        billing_project_id: GCP project ID to bill for reading table
     """
     _create_nested_mappings(es, index_name, table, sample_id_column)
     table_name = _table_name_from_table(table)
@@ -228,7 +230,10 @@ def index_table(es, index_name, client, table, participant_id_column,
 
     # There is no easy way to import BigQuery -> Elasticsearch. Instead:
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
-    df = client.list_rows(table).to_dataframe()
+    df = pd.read_gbq(
+        'SELECT * FROM `%s`' % table_name,
+        project_id=billing_project_id,
+        dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
     logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
@@ -346,7 +351,8 @@ def main():
     for table_name in bigquery_config['table_names']:
         table = read_table(client, table_name)
         index_table(es, index_name, client, table, participant_id_column,
-                    sample_id_column, sample_file_columns)
+                    sample_id_column, sample_file_columns,
+                    args.billing_project_id)
         index_fields(es, index_name + '_fields', table, sample_id_column)
 
     # Ensure all of the newly indexed documents are loaded into ES.
