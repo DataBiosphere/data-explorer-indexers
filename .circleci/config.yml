@@ -18,6 +18,8 @@ jobs:
           name: Run the BigQuery Indexer integration test
           command: |
             # TODO(bryancrampton): Refactor interaction with BigQuery / elasticsearch to support unit testing
+            # Needed to create samples file
+            echo '{"project_id": "ci-test-data-explorer"}' > dataset_config/1000_genomes/deploy.json
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
             cd bigquery && tests/integration.sh ${GOOGLE_PROJECT_ID}
       - save_cache:
