@@ -16,6 +16,8 @@ services:
       context: ../
       dockerfile: bigquery/Dockerfile
     environment:
+      # Needed to keep the samples file name unique across users.
+      - USER
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include 1000 Genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/1000_genomes}
