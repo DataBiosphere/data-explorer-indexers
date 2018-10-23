@@ -317,8 +317,10 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
             })
 
     client = storage.Client(project=deploy_project_id)
+    user = client.get_service_account_email(project=deploy_project_id).split('@')[0]
     # Don't put in project_id-export because that bucket has TTL= 1 day.
-    bucket_name = '%s-export-samples' % deploy_project_id
+    bucket_name = '%s-%s-%s-export-samples' % (deploy_project_id, index_name, user)
+    logger.info(bucket_name)
     bucket = client.lookup_bucket(bucket_name)
     if not bucket:
         bucket = client.create_bucket(bucket_name)
