@@ -320,19 +320,19 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
     user = client.get_service_account_email(
         project=deploy_project_id).split('@')[0]
     # Don't put in project_id-export because that bucket has TTL= 1 day.
-    bucket_name = '%s-%s-%s-export-samples' % (deploy_project_id, index_name,
-                                               user)
+    bucket_name = '%s-export-samples' % deploy_project_id
     bucket = client.lookup_bucket(bucket_name)
     if not bucket:
         bucket = client.create_bucket(bucket_name)
-    blob = bucket.blob('samples')
+    samples_file_name = '%s-%s-samples' % (index_name, user)
+    blob = bucket.blob(samples_file_name)
     entities_json = json.dumps(entities, indent=4)
     # Remove the trailing ']' character to allow this JSON to be merged
     # with JSON for additional entities using the GCS compose API:
     # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
     entities_json = entities_json[:-1]
     blob.upload_from_string(entities_json)
-    logger.info('Wrote gs://%s/samples' % (bucket_name))
+    logger.info('Wrote gs://%s/%s' % (bucket_name, samples_file_name))
 
 
 def main():
