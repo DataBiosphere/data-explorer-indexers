@@ -7,13 +7,12 @@ into a local Elasticsearch container.
 
 * If `~/.config/gcloud/application_default_credentials.json` doesn't exist,
 create it by running `gcloud auth application-default login`.
-* Determine the project that will be billed for querying the BigQuery tables.
-Your account must have `bigquery.jobs.create` permission on this project; this
-includes any project where you have the Viewer/Editor/Owner role.
+* Copy [`dataset_config/template/deploy.json`](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/dataset_config/template/deploy.json)
+to `dataset_config/1000_genomes/deploy.json`. Set `project_id` to a project
+where you are at least Project Editor.
 * If `docker network ls` doesn't show `data-explorer_default`, run:
 `docker network create data-explorer_default`
-* From `bigquery` directory, run:
- `BILLING_PROJECT_ID=<billing project id> docker-compose up --build`
+* From `bigquery` directory, run: `docker-compose up --build`
 * View Elasticsearch index:
   ```
   http://localhost:9200/_cat/indices?v
@@ -50,7 +49,7 @@ Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
 * Run the indexer. From `bigquery` directory, run:
   ```
-  BILLING_PROJECT_ID=<billing project id> DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer
+  DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer
   ```
 * View Elasticsearch index:
   ```

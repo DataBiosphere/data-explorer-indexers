@@ -21,7 +21,6 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include 1000 Genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/1000_genomes}
-      - BILLING_PROJECT_ID=${BILLING_PROJECT_ID}
     volumes:
       # Expose gcloud credentials. This is only needed for
       # local runs, which are authenticated as a user. This is not needed for

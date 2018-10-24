@@ -61,12 +61,6 @@ def _parse_args():
         type=str,
         help='Directory containing config files. Can be relative or absolute.',
         default=os.environ.get('DATASET_CONFIG_DIR'))
-    parser.add_argument(
-        '--billing_project_id',
-        type=str,
-        help=
-        'The project that will be billed for querying BigQuery tables. The account running this script must have bigquery.jobs.create permission on this project.',
-        **_environ_or_required('BILLING_PROJECT_ID'))
     return parser.parse_args()
 
 
@@ -208,21 +202,7 @@ def _sample_scripts_by_id(df, table_name, participant_id_column,
 
 
 def index_table(es, index_name, client, table, participant_id_column,
-                sample_id_column, sample_file_columns, billing_project_id):
-    """Indexes a BigQuery table.
-
-    Args:
-        es: Elasticsearch object.
-        index_name: Name of Elasticsearch index.
-        table_name: Fully-qualified table name of the format:
-            "<project id>.<dataset id>.<table name>"
-        participant_id_column: Name of the column containing the participant ID.
-        sample_id_column: (optional) Name of the column containing the sample ID
-            (only needed on samples tables).
-        sample_file_columns: (optional) Mappings for columns which contain genomic
-            files of a particular type (specified in ui.json).
-        billing_project_id: GCP project ID to bill for reading table
-    """
+                sample_id_column, sample_file_columns, deploy_project_id):
     _create_nested_mappings(es, index_name, table, sample_id_column)
     table_name = _table_name_from_table(table)
     start_time = time.time()
@@ -232,7 +212,7 @@ def index_table(es, index_name, client, table, participant_id_column,
     # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
     df = pd.read_gbq(
         'SELECT * FROM `%s`' % table_name,
-        project_id=billing_project_id,
+        project_id=deploy_project_id,
         dialect='standard')
     elapsed_time = time.time() - start_time
     elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
@@ -318,7 +298,7 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
 
     client = storage.Client(project=deploy_project_id)
     user = os.environ.get('USER')
-    # Don't put in project_id-export because that bucket has TTL= 1 day.
+    # Don't put in deploy_project_id-export because that bucket has TTL= 1 day.
     bucket_name = '%s-export-samples' % deploy_project_id
     bucket = client.lookup_bucket(bucket_name)
     if not bucket:
@@ -342,27 +322,25 @@ def main():
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
+    deploy_project_id = indexer_util.parse_json_file(
+        deploy_config_path)['project_id']
     es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
                                                        index_name)
 
     participant_id_column = bigquery_config['participant_id_column']
     sample_id_column = bigquery_config.get('sample_id_column', None)
     sample_file_columns = bigquery_config.get('sample_file_columns', {})
-    client = bigquery.Client(project=args.billing_project_id)
+    client = bigquery.Client(project=deploy_project_id)
 
     for table_name in bigquery_config['table_names']:
         table = read_table(client, table_name)
         index_table(es, index_name, client, table, participant_id_column,
-                    sample_id_column, sample_file_columns,
-                    args.billing_project_id)
+                    sample_id_column, sample_file_columns, deploy_project_id)
         index_fields(es, index_name + '_fields', table, sample_id_column)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
-    if os.path.exists(deploy_config_path):
-        deploy_config = indexer_util.parse_json_file(deploy_config_path)
-        create_samples_json_export_file(es, index_name,
-                                        deploy_config['project_id'])
+    create_samples_json_export_file(es, index_name, deploy_project_id)
 
 
 if __name__ == '__main__':
