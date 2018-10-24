@@ -2,21 +2,15 @@
 #
 # Run Data Explorer Indexer integration tests.
 #
+# From bigquery/, run: tests/integration.sh
+#
 # Regenerate golden files by running from bigquery/:
 #   docker-compose up -d elasticsearch
 #   curl -XDELETE localhost:9200/1000_genomes && curl -XDELETE localhost:9200/1000_genomes_fields
-#   BILLING_PROJECT_ID=google.com:api-project-360728701457 docker-compose up --build indexer
+#   docker-compose up --build indexer
 #   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes/_mappings?pretty' | jq -rS '.' > 'tests/1000_genomes_mappings_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
-
-if (( $# != 1 ))
-then
-  echo "Usage: tests/integration.sh <billing_project_id>"
-  echo "  where <billing_project_id> is the GCP project billed for BigQuery usage"
-  echo "Run this script from bigquery/ directory"
-  exit 1
-fi
 
 waitForClusterHealthy() {
   status=''
@@ -30,7 +24,6 @@ waitForClusterHealthy() {
 }
 
 
-billing_project_id=$1
 docker network create data-explorer_default
 
 # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread.
@@ -39,7 +32,7 @@ waitForClusterHealthy
 curl -XDELETE localhost:9200/1000_genomes
 curl -XDELETE localhost:9200/1000_genomes_fields
 
-BILLING_PROJECT_ID=${billing_project_id} docker-compose up --build indexer
+docker-compose up --build indexer
 # For some reason index isn't available right after indexer terminates, so sleep.
 sleep 5
 

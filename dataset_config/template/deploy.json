@@ -1,3 +1,10 @@
+// project_id is used for:
+// - Elasticsearch and indexer GCP deployment
+// - Paying for BigQuery query to read dataset BigQuery tables
+// - Storing files for sending data to Terra
+//
+// The project in this file may be different from the project containing
+// dataset BigQuery tables.
 {
   "project_id": "PROJECT_ID_TO_DEPLOY_TO"
 }

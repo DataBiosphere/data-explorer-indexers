@@ -25,8 +25,7 @@ spec:
             command: ["python", "/app/indexer.py"]
             args: [
               "--elasticsearch_url", "http://ELASTICSEARCH_URL:9200/",
-              "--dataset_config_dir", "/app/dataset_config",
-              "--billing_project_id", "PROJECT_ID"
+              "--dataset_config_dir", "/app/dataset_config"
             ]
 
           restartPolicy: Never
