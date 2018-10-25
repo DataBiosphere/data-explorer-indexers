@@ -40,6 +40,28 @@ if (!ctx._source.containsKey('samples')) {
 }
 """
 
+UPDATE_PARTICIPANT_SAMPLES_SCRIPT = """
+if (!ctx._source.containsKey('samples')) {
+  ctx._source.samples = params.samples
+} else {
+  // create a staging map to hold sample_id_column as key and all attributes as the values
+  def staging_samples = [:];
+  for (int i = 0; i < params.samples.size(); i++) {
+    // this will overwrite duplicates on any sample ids
+    staging_samples[params.samples.get(i).get(params.sample_id_column)] = params.samples.get(i);
+  }
+  for (int i = 0; i < ctx._source.samples.size(); i++) {
+    Map existingSample = ctx._source.samples.get(i);
+    def existingSampleId = existingSample.get(params.sample_id_column);
+    if (staging_samples.containsKey(existingSampleId)) {
+      existingSample.putAll(staging_samples.get(existingSampleId));
+    }
+    staging_samples[(existingSampleId)] = existingSample;
+  }
+  ctx._source.samples = staging_samples.values()
+}
+"""
+
 
 # Copied from https://stackoverflow.com/a/45392259
 def _environ_or_required(key):
@@ -207,6 +229,48 @@ def _sample_scripts_by_id(df, table_name, participant_id_column,
         }
 
 
+def _sample_scripts_by_participant_id(df, table_name, participant_id_column, sample_id_column, sample_file_columns):
+    participant_groups = df.groupby(participant_id_column)
+    # cycle through each group by name (participant_id_column)
+    for participant_id, group in participant_groups:
+        # Remove the participant_id_column since it is stored as document id.
+        participant_group = participant_groups.get_group(participant_id).drop([participant_id_column], axis=1) #.to_dict('records')
+        participant_row_dicts = []
+        for _, row in participant_group.iterrows():
+            # Remove nan's as described in
+            # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
+            # Elasticsearch crashes when indexing nan's.
+            row_dict = row.dropna().to_dict()
+            # Use the sample_id_column without the project_id + dataset qualification.
+            row_dict = {
+                table_name + '.' + k if k != sample_id_column else k: v
+                for k, v in row_dict.iteritems()
+            }
+            # Use the sample_file_columns configuration to add the internal
+            # '_has_<sample_file_type>' fields to the samples index.
+            for file_type, col in sample_file_columns.iteritems():
+                # Only mark as false if this sample file column is relevant to the
+                # table currently being indexed.
+                if table_name in col:
+                    has_name = '_has_%s' % file_type.lower().replace(" ", "_")
+                    if col in row and row_dict[col]:
+                        row_dict[has_name] = True
+                    else:
+                        row_dict[has_name] = False
+
+            participant_row_dicts.append(row_dict)
+
+        script = UPDATE_PARTICIPANT_SAMPLES_SCRIPT
+        yield participant_id, {
+            'source': script,
+            'lang': 'painless',
+            'params': {
+                'samples': participant_row_dicts,
+                'sample_id_column': sample_id_column
+            }
+        }
+
+
 def index_table(es, index_name, client, table, participant_id_column,
                 sample_id_column, sample_file_columns, billing_project_id):
     """Indexes a BigQuery table.
@@ -245,7 +309,7 @@ def index_table(es, index_name, client, table, participant_id_column,
             (participant_id_column, table_name))
 
     if sample_id_column in df.columns:
-        scripts_by_id = _sample_scripts_by_id(
+        scripts_by_id = _sample_scripts_by_participant_id( #_sample_scripts_by_id(
             df, table_name, participant_id_column, sample_id_column,
             sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
