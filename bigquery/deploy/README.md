@@ -1,15 +1,15 @@
 ## Running on GKE
 
-* For private datasets, determine readers Google Group  
+* For private datasets, determine readers Google Group.  
   Work with the Dataset owner to identity a Google Group of users with read-only
   access to the dataset.  
   * If you intend for users to work with your dataset in Terra, you must use
     Terra groups ([group management UI](https://app.terra.bio/#groups),
     [more info](https://software.broadinstitute.org/firecloud/documentation/article?id=9553) for access control. Terra groups are automatically synced to a
     firecloud.org Google Group. For example, for Terra group foo:
-      * Terra workspaces for your dataset will be shared to the foo group.
-      * Terra workspaces for your dataset must set [Authorization Domains](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
-      to group foo. This ensures that only authorized users will see data sent
+      * Terra workspaces for your dataset will be shared to the Terra group foo.
+      * Terra workspaces for your dataset must set [Authorization Domain](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
+      to Terra group foo. This ensures that only authorized users will see data sent
       from Data Explorer to Terra.
       * The Google Group foo@firecloud.org will be used for [restricting who can see
     Data Explorer](https://github.com/DataBiosphere/data-explorer/tree/master/deploy#enable-access-control).
