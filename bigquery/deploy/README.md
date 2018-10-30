@@ -3,16 +3,15 @@
 * For private datasets, determine readers Google Group  
   Work with the Dataset owner to identity a Google Group of users with read-only
   access to the dataset.  
-  * If you intend for users to work with your dataset in Saturn, it is highly
-    recommended to use a Saturn group. The Saturn group will be synced to a
-    Google Group, but not the other way around; so group management must be done
-    in the Saturn Group UI.  
-    For example, consider a Saturn group foo, which is
-    automatically synced to Google Group foo@firecloud.org:
-      * The Saturn group will be used for setting [Authorization Domains](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
-      on workspaces. This ensures that only authorized users will see data sent
-      from Data Explorer to Saturn.
-      * The Google Group will be used for [restricting who can see
+  * If you intend for users to work with your dataset in Terra, you must use
+    Terra groups ([group management UI](https://app.terra.bio/#groups),
+    [more info](https://software.broadinstitute.org/firecloud/documentation/article?id=9553) for access control. Terra groups are automatically synced to a
+    firecloud.org Google Group. For example, for Terra group foo:
+      * Terra workspaces for your dataset will be shared to the foo group.
+      * Terra workspaces for your dataset must set [Authorization Domains](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
+      to group foo. This ensures that only authorized users will see data sent
+      from Data Explorer to Terra.
+      * The Google Group foo@firecloud.org will be used for [restricting who can see
     Data Explorer](https://github.com/DataBiosphere/data-explorer/tree/master/deploy#enable-access-control).
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
