@@ -1,18 +1,17 @@
 ## Running on GKE
 
-* For private datasets, determine readers Google Group  
+* For private datasets, determine readers Google Group.  
   Work with the Dataset owner to identity a Google Group of users with read-only
   access to the dataset.  
-  * If you intend for users to work with your dataset in Saturn, it is highly
-    recommended to use a Saturn group. The Saturn group will be synced to a
-    Google Group, but not the other way around; so group management must be done
-    in the Saturn Group UI.  
-    For example, consider a Saturn group foo, which is
-    automatically synced to Google Group foo@firecloud.org:
-      * The Saturn group will be used for setting [Authorization Domains](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
-      on workspaces. This ensures that only authorized users will see data sent
-      from Data Explorer to Saturn.
-      * The Google Group will be used for [restricting who can see
+  * If you intend for users to work with your dataset in Terra, you must use
+    Terra groups ([group management UI](https://app.terra.bio/#groups),
+    [more info](https://software.broadinstitute.org/firecloud/documentation/article?id=9553) for access control. Terra groups are automatically synced to a
+    firecloud.org Google Group. For example, for Terra group foo:
+      * Terra workspaces for your dataset will be shared to the Terra group foo.
+      * Terra workspaces for your dataset must set [Authorization Domain](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
+      to Terra group foo. This ensures that only authorized users will see data sent
+      from Data Explorer to Terra.
+      * The Google Group foo@firecloud.org will be used for [restricting who can see
     Data Explorer](https://github.com/DataBiosphere/data-explorer/tree/master/deploy#enable-access-control).
 * Set up the Kubernetes environment
   * Create a service account and give it access to the BigQuery tables for your
@@ -22,7 +21,7 @@
   rather than the default Compute Engine service account (which has the Editor
   role).
     * Create a project for deploying Data Explorer. We recommend the project ID
-      be `DATASET-data-explorer`. We recommend creating a
+      be `DATASET-explorer`. We recommend creating a
       project because all project Editors/Owners will indirectly have
       access to the BigQuery tables. (Project Editors/Owners by default have
       permission to act as service accounts, and the indexer service account will be
@@ -43,20 +42,22 @@
       for the BigQuery query, not the project containing the BigQuery tables.
       * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
       appear at https://console.cloud.google.com/logs/viewer
-    * Add the service account to the readers Google Group.
+    * In the project with the BigQuery dataset, make the service account a
+    BigQuery Data Viewer.
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
-    * Expand `More` and select the service account you just created.
-    * Click `Create`
+    * Click `Advanced edit` and under `Service account`, select the service account you just created. Click `Save`.
+    * Click `Create`.
   * After cluster has finished creating, run this command to point `kubectl` to
   the right cluster.
     ```
+    gcloud config set project EXPLORER_PROJECT
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
-    e.g. `us-central1`.
+    e.g. `us-central1-a`.
 
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch. From project root:
@@ -84,7 +85,7 @@
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
-    e.g. `us-central1`.
+    e.g. `us-central1-a`.
   * We recommend you delete the index, to start from a clean slate.
     ```
     kubectl get svc,pods
