@@ -21,7 +21,7 @@
   rather than the default Compute Engine service account (which has the Editor
   role).
     * Create a project for deploying Data Explorer. We recommend the project ID
-      be `DATASET-data-explorer`. We recommend creating a
+      be `DATASET-explorer`. We recommend creating a
       project because all project Editors/Owners will indirectly have
       access to the BigQuery tables. (Project Editors/Owners by default have
       permission to act as service accounts, and the indexer service account will be
@@ -42,20 +42,22 @@
       for the BigQuery query, not the project containing the BigQuery tables.
       * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
       appear at https://console.cloud.google.com/logs/viewer
-    * Add the service account to the readers Google Group.
+    * In the project with the BigQuery dataset, make the service account a
+    BigQuery Data Viewer.
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
-    * Expand `More` and select the service account you just created.
-    * Click `Create`
+    * Click `Advanced edit` and under `Service account`, select the service account you just created. Click `Save`.
+    * Click `Create`.
   * After cluster has finished creating, run this command to point `kubectl` to
   the right cluster.
     ```
+    gcloud config set project EXPLORER_PROJECT
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
-    e.g. `us-central1`.
+    e.g. `us-central1-a`.
 
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch. From project root:
@@ -83,7 +85,7 @@
     gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
     ```
     `MY_ZONE` is the [zone where elasticsearch-cluster is running](https://console.cloud.google.com/kubernetes/list),
-    e.g. `us-central1`.
+    e.g. `us-central1-a`.
   * We recommend you delete the index, to start from a clean slate.
     ```
     kubectl get svc,pods
