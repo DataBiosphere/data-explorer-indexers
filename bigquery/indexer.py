@@ -235,7 +235,7 @@ def _sample_scripts_by_participant_id(df, table_name, participant_id_column, sam
         participant_index = participant_index + 1
         # Remove the participant_id_column since it is stored as document id.
         participant_group = participant_groups.get_group(participant_id).drop([participant_id_column], axis=1)
-        participant_row_dicts = []
+        participant_sample_dicts = []
         sample_index = 0
         for sample_id, row in participant_group.iloc[0:5000].iterrows(): #
             sample_index = sample_index + 1
@@ -260,27 +260,27 @@ def _sample_scripts_by_participant_id(df, table_name, participant_id_column, sam
                     else:
                         row_dict[has_name] = False
 
-            participant_row_dicts.append(row_dict)
-            logger.info('participant_index: %d, sample number:  %d , sample index %d, sample id %d' % (participant_index, len(participant_row_dicts) , sample_index, sample_id))
-            if len(participant_row_dicts) >= 500:
+            participant_sample_dicts.append(row_dict)
+            logger.info('participant_index: %d, sample number:  %d , sample index %d, sample id %d' % (participant_index, len(participant_sample_dicts) , sample_index, sample_id))
+            if len(participant_sample_dicts) >= 500:
                 script = UPDATE_PARTICIPANT_SAMPLES_SCRIPT
                 yield participant_id, {
                     'source': script,
                     'lang': 'painless',
                     'params': {
-                        'samples': participant_row_dicts,
+                        'samples': participant_sample_dicts,
                         'sample_id_column': sample_id_column
                     }
                 }
-                participant_row_dicts = []
+                participant_sample_dicts = []
 
-        if len(participant_row_dicts) > 0:
+        if len(participant_sample_dicts) > 0:
             script = UPDATE_PARTICIPANT_SAMPLES_SCRIPT
             yield participant_id, {
                 'source': script,
                 'lang': 'painless',
                 'params': {
-                    'samples': participant_row_dicts,
+                    'samples': participant_sample_dicts,
                     'sample_id_column': sample_id_column
                 }
             }
