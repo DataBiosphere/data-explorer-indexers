@@ -255,6 +255,69 @@ def index_fields(es, index_name, table, sample_id_column):
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
+def _get_es_field_type(bq_type, bq_mode):
+    if bq_type == 'STRING':
+        return 'text'
+    elif bq_type == 'INTEGER' or bq_type == 'INT64':
+        return 'long'
+    elif bq_type == 'FLOAT' or bq_type == 'FLOAT64':
+        return 'float'
+    elif bq_type == 'BOOLEAN' or bq_type == 'BOOL':
+        return 'boolean'
+    elif bq_type == 'TIMESTAMP' or bq_type == 'DATE' or bq_type == 'TIME' or bq_type == 'DATETIME':
+        return 'date'
+    elif bq_type == 'RECORD':
+        if bq_mode == 'REPEATED':
+            return 'nested'
+        return 'object'
+    else:
+        raise Exception('Invalid BigQuery column type')
+
+
+def _get_has_file_field_name(field_name, sample_file_columns):
+    for file_type, col in sample_file_columns.iteritems():
+        if field_name in col:
+            return '_has_%s' % file_type.lower().replace(" ", "_")
+    return ''
+
+
+def create_mappings(es, index_name, table_name, fields, sample_id_column,
+                    sample_file_columns):
+    mappings = {'dynamic': False, 'properties': {}}
+    properties = mappings['properties']
+    field_prefix = table_name
+    for field in fields:
+        if field.name == sample_id_column:
+            id_prefix = 'samples.%s' % field_prefix
+            properties['samples'] = {'type': 'nested', 'properties': {}}
+            properties = properties['samples']['properties']
+
+    for field in fields:
+        field_name = '%s.%s' % (field_prefix, field.name)
+        field_type = _get_es_field_type(field.field_type, field.mode)
+        properties[field_name] = {'type': field_type}
+
+        if field_type == 'nested' or field_type == 'object':
+            inner_mappings = create_mappings(es, index_name, field.fields,
+                                             sample_id_column,
+                                             sample_file_columns)
+            properties[field_name]['properties'] = inner_mappings['properties']
+        elif field_type == 'text':
+            properties[field_name]['fields'] = {
+                'keyword': {
+                    'type': 'keyword',
+                    'ignore_above': 256
+                }
+            }
+
+        has_field_name = _get_has_file_field_name(
+            field_name.replace('samples.', ''), sample_file_columns)
+        if has_field_name:
+            properties[has_field_name] = {'type': 'boolean'}
+
+    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+
+
 def read_table(client, table_name):
     # Use rsplit instead of split because project id may have ".", eg
     # "google.com:api-project-123".
@@ -334,9 +397,11 @@ def main():
 
     for table_name in bigquery_config['table_names']:
         table = read_table(client, table_name)
+        index_fields(es, index_name + '_fields', table, sample_id_column)
+        create_mappings(es, index_name, table_name, table.schema,
+                        sample_id_column, sample_file_columns)
         index_table(es, index_name, client, table, participant_id_column,
                     sample_id_column, sample_file_columns, deploy_project_id)
-        index_fields(es, index_name + '_fields', table, sample_id_column)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
