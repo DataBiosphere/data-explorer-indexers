@@ -4,5 +4,3 @@ elasticsearch-dsl==6.2.1
 google-cloud-bigquery
 google-cloud-storage==1.10.0
 jsmin==2.2.2
-pandas==0.22.0
-pandas_gbq==0.3.1

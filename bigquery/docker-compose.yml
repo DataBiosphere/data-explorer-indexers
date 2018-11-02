@@ -9,6 +9,7 @@ services:
       # vm.max_map_count. Note that this file is not used in production
       # deployments; bootstrap checks are still enabled for production
       # deployments.
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "transport.host=localhost"
   indexer:
     build:
