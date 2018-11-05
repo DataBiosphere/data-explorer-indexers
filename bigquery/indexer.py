@@ -305,6 +305,11 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
         bucket = client.create_bucket(bucket_name)
     samples_file_name = '%s-%s-samples' % (index_name, user)
     blob = bucket.blob(samples_file_name)
+
+    # If there are no samples do not create an export file.
+    if len(entities) == 0:
+        return
+
     entities_json = json.dumps(entities, indent=4)
     # Remove the trailing ']' character to allow this JSON to be merged
     # with JSON for additional entities using the GCS compose API:
