@@ -32,10 +32,8 @@
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
       * We recommend the name `indexer` to make it clear what this service account does.
         The full service account email would be `indexer@DATASET-data-explorer.iam.gserviceaccount.com`
-      * Add the `Storage > Storage Object Viewer` role. This is for reading
-      docker images from GCR. Note that this will give the service account access to
-      all GCS buckets for this project, so we recommend not storing any
-      sensitive data in those buckets.
+      * Add the `Storage > Storage Admin` role. This is for reading
+      docker images from GCR, as well as creating the sample export file.
       * Add the `BigQuery > BigQuery Job User` role. This allows the service
       account to run a BigQuery query, which takes place while indexing the
       BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
