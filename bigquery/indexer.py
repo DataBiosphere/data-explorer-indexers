@@ -62,11 +62,6 @@ def _parse_args():
         type=str,
         help='Directory containing config files. Can be relative or absolute.',
         default=os.environ.get('DATASET_CONFIG_DIR'))
-    parser.add_argument(
-        '--shard_count',
-        type=int,
-        help='The number of shards to use in the Elasticsearch index.',
-        default=os.environ.get('SHARD_COUNT'))
     return parser.parse_args()
 
 
@@ -386,8 +381,8 @@ def main():
     deploy_project_id = indexer_util.parse_json_file(
         deploy_config_path)['project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
-    indexer_util.maybe_create_elasticsearch_index(
-        es, args.elasticsearch_url, index_name, shards=args.shard_count)
+    indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
+                                                  index_name)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   fields_index_name)
 

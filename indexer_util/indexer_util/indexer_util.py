@@ -89,6 +89,7 @@ def _wait_elasticsearch_healthy(es):
 
 
 def get_es_client(elasticsearch_url):
+    # Retry flags needed for large datasets.
     es = Elasticsearch([elasticsearch_url],
                        retry_on_timeout=True,
                        max_retries=10)
@@ -97,10 +98,7 @@ def get_es_client(elasticsearch_url):
     return es
 
 
-def maybe_create_elasticsearch_index(es,
-                                     elasticsearch_url,
-                                     index_name,
-                                     shards=5):
+def maybe_create_elasticsearch_index(es, elasticsearch_url, index_name):
     """Creates Elasticsearchindex if it doesn't already exist."""
 
     if es.indices.exists(index=index_name):
@@ -113,7 +111,6 @@ def maybe_create_elasticsearch_index(es,
             index=index_name,
             body={
                 'settings': {
-                    'number_of_shards': shards,
                     # Default of 1000 fields is not enough for some datasets
                     'index.mapping.total_fields.limit': 15000,
                 },
