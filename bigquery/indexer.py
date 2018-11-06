@@ -62,6 +62,11 @@ def _parse_args():
         type=str,
         help='Directory containing config files. Can be relative or absolute.',
         default=os.environ.get('DATASET_CONFIG_DIR'))
+    parser.add_argument(
+        '--shard_count',
+        type=int,
+        help='The number of shards to use in the Elasticsearch index.',
+        default=os.environ.get('SHARD_COUNT'))
     return parser.parse_args()
 
 
@@ -197,6 +202,7 @@ def index_table(es, bq_client, storage_client, index_name, table,
     logger.info('Running extract table job for: %s' % table_name)
     job = bq_client.extract_table(
         table,
+        # The '*'' enables file sharding, which is required for larger datasets.
         'gs://%s/%s*.json' % (bucket_name, export_obj_prefix),
         job_id=unique_id,
         job_config=job_config)
@@ -259,6 +265,9 @@ def _get_has_file_field_name(field_name, sample_file_columns):
 
 def create_mappings(es, index_name, table_name, fields, participant_id_column,
                     sample_id_column, sample_file_columns):
+    # By default, Elasticsearch dynamically determines mappings while it ingests data.
+    # Instead, we tell Elasticsearch the mappings before ingesting data; and we turn
+    # dynamic mapping to false. For large datasets, this dramatically speeds up indexing.
     mappings = {'dynamic': False, 'properties': {}}
     properties = mappings['properties']
     is_samples_table = False
@@ -378,7 +387,7 @@ def main():
         deploy_config_path)['project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
     indexer_util.maybe_create_elasticsearch_index(
-        es, args.elasticsearch_url, index_name, shards=20)
+        es, args.elasticsearch_url, index_name, shards=args.shard_count)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   fields_index_name)
 
