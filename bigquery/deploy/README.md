@@ -66,11 +66,11 @@
     ./deploy.sh
     ```
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
-  `es-client-595585f9d4-7jw9v`; it doesn't have the `pod/` prefix.
+  `es-client-595585f9d4-7jw9v`.
     ```
-    kubectl get svc,pods
+    kubectl get pods
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
-    curl EXTERNAL_IP:9200
+    curl localhost:9200
     ```
 
 * Update and run indexer on GKE
@@ -88,10 +88,10 @@
     e.g. `us-central1-a`.
   * We recommend you delete the index, to start from a clean slate.
     ```
-    kubectl get svc,pods
+    kubectl get pods
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
-    curl -XDELETE <EXTERNAL_IP>:9200/<MY_DATASET>
-    curl -XDELETE <EXTERNAL_IP>:9200/<MY_DATASET>_fields
+    curl -XDELETE localhost:9200/<MY_DATASET>
+    curl -XDELETE localhost:9200/<MY_DATASET>_fields
     ```
   * Make sure the files in `dataset_config/MY_DATASET` are filled out.
     * Make sure `deploy.json` and the `authorization_domain` field in
@@ -100,9 +100,9 @@
   MY_DATASET is the name of the config directory in `dataset_config`.
   * Verify the indexer was successful:
     ```
-    kubectl get svc,pods
+    kubectl get pods
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
-    curl EXTERNAL_IP:9200/_cat/indices?v
+    curl localhost:9200/_cat/indices?v
     ```
 
 ## Bringing down Elasticsearch
