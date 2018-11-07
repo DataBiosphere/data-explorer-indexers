@@ -3,8 +3,9 @@ import argparse
 import json
 import logging
 import os
-import pandas as pd
 import time
+import uuid
+
 from elasticsearch_dsl import Search
 from google.cloud import bigquery
 from google.cloud import exceptions
@@ -64,23 +65,6 @@ def _parse_args():
     return parser.parse_args()
 
 
-def _get_nested_mappings(schema, prefix=None):
-    # Find all repeated record type fields and create mappings for them
-    # recursively.
-    nested = {}
-    for field in schema:
-        name = '%s.%s' % (prefix, field.name) if prefix else field.name
-        inner_nested = _get_nested_mappings(field.fields)
-        if field.mode == 'REPEATED' and field.field_type == 'RECORD':
-            nested[name] = {}
-            nested[name]['type'] = "nested"
-        if inner_nested:
-            if name not in nested:
-                nested[name] = {}
-            nested[name]['properties'] = inner_nested
-    return nested if nested else None
-
-
 def _table_name_from_table(table):
     # table.full_table_id is the legacy format: project id:dataset id.table name
     # Convert to Standard SQL format: project id.dataset id.table name
@@ -88,37 +72,6 @@ def _table_name_from_table(table):
     # "google.com:api-project-123".
     project_id, dataset_table_id = table.full_table_id.rsplit(':', 1)
     return project_id + '.' + dataset_table_id
-
-
-def _create_nested_mappings(es, index_name, table, sample_id_column):
-    # Create nested mappings for repeated record type BigQuery fields so that
-    # queries will work correctly, see:
-    # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/nested.html#_how_arrays_of_objects_are_flattened
-    nested = _get_nested_mappings(table.schema, _table_name_from_table(table))
-    # If the table contains the sample ID column, add a nested samples mapping.
-    if sample_id_column in [f.name for f in table.schema]:
-        logger.info('Adding nested sample mapping to %s.' % index_name)
-        sample_mapping = {'properties': {'samples': {'type': 'nested'}}}
-        if nested:
-            sample_mapping['properties']['samples']['properties'] = nested
-        es.indices.put_mapping(
-            doc_type='type', index=index_name, body=sample_mapping)
-    elif nested:
-        logger.info('Adding neseted mappings to %s.' % index_name)
-        es.indices.put_mapping(
-            doc_type='type', index=index_name, body={'properties': nested})
-
-
-def _docs_by_id(df, table_name, participant_id_column):
-    for _, row in df.iterrows():
-        # Remove nan's as described in
-        # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
-        # Elasticsearch crashes when indexing nan's.
-        row_dict = row.dropna().to_dict()
-        # Remove the participant_id_column since it is stored as document id.
-        del row_dict[participant_id_column]
-        row_dict = {table_name + '.' + k: v for k, v in row_dict.iteritems()}
-        yield row[participant_id_column], row_dict
 
 
 def _field_docs_by_id(id_prefix, name_prefix, fields):
@@ -145,6 +98,25 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
             yield field_id, field_dict
 
 
+def _rows_from_export(
+        storage_client,
+        bucket_name,
+        export_obj_prefix,
+):
+    bucket = storage_client.get_bucket(bucket_name)
+    for blob in bucket.list_blobs(prefix=export_obj_prefix):
+        logger.info(
+            'Reading sharded BigQuery JSON export file: %s' % blob.path)
+        json_text = blob.download_as_string()
+        for row in json_text.split('\n'):
+            # Ignore any blank lines
+            if not row:
+                continue
+            yield json.loads(row)
+        # Remove the blob now that we're finished loading it into the index.
+        blob.delete()
+
+
 # Sample and participant tables need to be indexed differently.
 # For participant tables, we can use partial updates
 # (https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#_updates_with_a_partial_document)
@@ -164,19 +136,16 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
 # In order to keep the center field, one must use a script. See
 # https://discuss.elastic.co/t/updating-nested-objects/87586/2 and
 # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
-def _sample_scripts_by_id(df, table_name, participant_id_column,
-                          sample_id_column, sample_file_columns):
-    for _, row in df.iterrows():
-        # Remove nan's as described in
-        # https://stackoverflow.com/questions/40363926/how-do-i-convert-my-dataframe-into-a-dictionary-while-ignoring-the-nan-values
-        # Elasticsearch crashes when indexing nan's.
-        row_dict = row.dropna().to_dict()
-        # Remove the participant_id_column since it is stored as document id.
-        del row_dict[participant_id_column]
-        # Use the sample_id_column without the project_id + dataset qualification.
-        row_dict = {
-            table_name + '.' + k if k != sample_id_column else k: v
-            for k, v in row_dict.iteritems()
+def _sample_scripts_by_id_from_export(
+        storage_client, bucket_name, export_obj_prefix, table_name,
+        participant_id_column, sample_id_column, sample_file_columns):
+    for row in _rows_from_export(storage_client, bucket_name,
+                                 export_obj_prefix):
+        participant_id = row[participant_id_column]
+        del row[participant_id_column]
+        row = {
+            '%s.%s' % (table_name, k) if k != sample_id_column else k: v
+            for k, v in row.iteritems()
         }
 
         # Use the sample_file_columns configuration to add the internal
@@ -186,56 +155,64 @@ def _sample_scripts_by_id(df, table_name, participant_id_column,
             # table currently being indexed.
             if table_name in col:
                 has_name = '_has_%s' % file_type.lower().replace(" ", "_")
-                if col in row_dict and row_dict[col]:
-                    row_dict[has_name] = True
+                if col in row and row[col]:
+                    row[has_name] = True
                 else:
-                    row_dict[has_name] = False
+                    row[has_name] = False
 
         script = UPDATE_SAMPLES_SCRIPT % (sample_id_column, sample_id_column)
-        yield row[participant_id_column], {
+        yield participant_id, {
             'source': script,
             'lang': 'painless',
             'params': {
-                'sample': row_dict
+                'sample': row
             }
         }
 
 
-def index_table(es, index_name, client, table, participant_id_column,
-                sample_id_column, sample_file_columns, deploy_project_id):
-    _create_nested_mappings(es, index_name, table, sample_id_column)
+def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
+                            table_name, participant_id_column):
+    for row in _rows_from_export(storage_client, bucket_name,
+                                 export_obj_prefix):
+        participant_id = row[participant_id_column]
+        del row[participant_id_column]
+        row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
+        yield participant_id, row
+
+
+def index_table(es, bq_client, storage_client, index_name, table,
+                participant_id_column, sample_id_column, sample_file_columns,
+                deploy_project_id):
     table_name = _table_name_from_table(table)
-    start_time = time.time()
-    logger.info('Indexing %s into %s.' % (table_name, index_name))
+    bucket_name = '%s-table-export' % deploy_project_id
+    table_export_bucket = storage_client.lookup_bucket(bucket_name)
+    if not table_export_bucket:
+        table_export_bucket = storage_client.create_bucket(bucket_name)
 
-    # There is no easy way to import BigQuery -> Elasticsearch. Instead:
-    # BigQuery table -> pandas dataframe -> dict -> Elasticsearch
-    df = pd.read_gbq(
-        'SELECT * FROM `%s`' % table_name,
-        project_id=deploy_project_id,
-        dialect='standard')
-    elapsed_time = time.time() - start_time
-    elapsed_time_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_time))
-    logger.info('BigQuery -> pandas took %s' % elapsed_time_str)
-    logger.info('%s has %d rows' % (table_name, len(df)))
-
-    if not participant_id_column in df.columns:
-        raise ValueError(
-            'Participant ID column %s not found in BigQuery table %s' %
-            (participant_id_column, table_name))
-
-    if sample_id_column in df.columns:
-        scripts_by_id = _sample_scripts_by_id(
-            df, table_name, participant_id_column, sample_id_column,
-            sample_file_columns)
+    unique_id = str(uuid.uuid4())
+    export_obj_prefix = 'export-%s' % unique_id
+    job_config = bigquery.job.ExtractJobConfig()
+    job_config.destination_format = (
+        bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
+    logger.info('Running extract table job for: %s' % table_name)
+    job = bq_client.extract_table(
+        table,
+        # The '*'' enables file sharding, which is required for larger datasets.
+        'gs://%s/%s*.json' % (bucket_name, export_obj_prefix),
+        job_id=unique_id,
+        job_config=job_config)
+    # Wait up to 10 minutes for the resulting export files to be created.
+    job.result(timeout=600)
+    if sample_id_column in [f.name for f in table.schema]:
+        scripts_by_id = _sample_scripts_by_id_from_export(
+            storage_client, bucket_name, export_obj_prefix, table_name,
+            participant_id_column, sample_id_column, sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     else:
-        docs_by_id = _docs_by_id(df, table_name, participant_id_column)
+        docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
+                                             export_obj_prefix, table_name,
+                                             participant_id_column)
         indexer_util.bulk_index_docs(es, index_name, docs_by_id)
-
-    elapsed_time = time.time() - start_time
-    elapsed_time_str = time.strftime("%Hh:%Mm:%Ss", time.gmtime(elapsed_time))
-    logger.info('pandas -> ElasticSearch index took %s' % elapsed_time_str)
 
 
 def index_fields(es, index_name, table, sample_id_column):
@@ -255,15 +232,89 @@ def index_fields(es, index_name, table, sample_id_column):
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
-def read_table(client, table_name):
+def _get_es_field_type(bq_type, bq_mode):
+    if bq_type == 'STRING':
+        return 'text'
+    elif bq_type == 'INTEGER' or bq_type == 'INT64':
+        return 'long'
+    elif bq_type == 'FLOAT' or bq_type == 'FLOAT64':
+        return 'float'
+    elif bq_type == 'BOOLEAN' or bq_type == 'BOOL':
+        return 'boolean'
+    elif bq_type == 'TIMESTAMP' or bq_type == 'DATE' or bq_type == 'TIME' or bq_type == 'DATETIME':
+        return 'date'
+    elif bq_type == 'RECORD':
+        if bq_mode == 'REPEATED':
+            return 'nested'
+        return 'object'
+    else:
+        raise Exception('Invalid BigQuery column type')
+
+
+def _get_has_file_field_name(field_name, sample_file_columns):
+    for file_type, col in sample_file_columns.iteritems():
+        if field_name in col:
+            return '_has_%s' % file_type.lower().replace(" ", "_")
+    return ''
+
+
+def create_mappings(es, index_name, table_name, fields, participant_id_column,
+                    sample_id_column, sample_file_columns):
+    # By default, Elasticsearch dynamically determines mappings while it ingests data.
+    # Instead, we tell Elasticsearch the mappings before ingesting data; and we turn
+    # dynamic mapping to false. For large datasets, this dramatically speeds up indexing.
+    mappings = {'dynamic': False, 'properties': {}}
+    properties = mappings['properties']
+    is_samples_table = False
+    for field in fields:
+        if field.name == sample_id_column:
+            is_samples_table = True
+            properties['samples'] = {'type': 'nested', 'properties': {}}
+            properties = properties['samples']['properties']
+
+    for field in fields:
+        field_name = '%s.%s' % (table_name, field.name)
+        if is_samples_table:
+            # Ignore the participant_id_column since it's the
+            # root ID of documents.
+            if field.name == participant_id_column:
+                continue
+            field_name = 'samples.%s' % field_name
+
+        field_type = _get_es_field_type(field.field_type, field.mode)
+        properties[field_name] = {'type': field_type}
+
+        if field_type == 'nested' or field_type == 'object':
+            inner_mappings = create_mappings(
+                es, index_name, field.fields, participant_id_column,
+                sample_id_column, sample_file_columns)
+            properties[field_name]['properties'] = inner_mappings['properties']
+        elif field_type == 'text':
+            properties[field_name]['fields'] = {
+                'keyword': {
+                    'type': 'keyword',
+                    'ignore_above': 256
+                }
+            }
+
+        has_field_name = _get_has_file_field_name(
+            field_name.replace('samples.', ''), sample_file_columns)
+        if has_field_name:
+            properties[has_field_name] = {'type': 'boolean'}
+
+    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+
+
+def read_table(bq_client, table_name):
     # Use rsplit instead of split because project id may have ".", eg
     # "google.com:api-project-123".
     project_id, dataset_id, table_name = table_name.rsplit('.', 2)
-    return client.get_table(
-        client.dataset(dataset_id, project=project_id).table(table_name))
+    return bq_client.get_table(
+        bq_client.dataset(dataset_id, project=project_id).table(table_name))
 
 
-def create_samples_json_export_file(es, index_name, deploy_project_id):
+def create_samples_json_export_file(es, storage_client, index_name,
+                                    deploy_project_id):
     """
     Writes the samples export JSON file to a GCS bucket. This significantly
     speeds up exporting the samples table to Terra in the Data Explorer.
@@ -296,13 +347,12 @@ def create_samples_json_export_file(es, index_name, deploy_project_id):
                 'attributes': export_sample,
             })
 
-    client = storage.Client(project=deploy_project_id)
     user = os.environ.get('USER')
     # Don't put in deploy_project_id-export because that bucket has TTL= 1 day.
     bucket_name = '%s-export-samples' % deploy_project_id
-    bucket = client.lookup_bucket(bucket_name)
+    bucket = storage_client.lookup_bucket(bucket_name)
     if not bucket:
-        bucket = client.create_bucket(bucket_name)
+        bucket = storage_client.create_bucket(bucket_name)
     samples_file_name = '%s-%s-samples' % (index_name, user)
     blob = bucket.blob(samples_file_name)
 
@@ -323,29 +373,39 @@ def main():
     args = _parse_args()
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
+    fields_index_name = '%s_fields' % index_name
     bigquery_config_path = os.path.join(args.dataset_config_dir,
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     deploy_project_id = indexer_util.parse_json_file(
         deploy_config_path)['project_id']
-    es = indexer_util.maybe_create_elasticsearch_index(args.elasticsearch_url,
-                                                       index_name)
+    es = indexer_util.get_es_client(args.elasticsearch_url)
+    indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
+                                                  index_name)
+    indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
+                                                  fields_index_name)
 
     participant_id_column = bigquery_config['participant_id_column']
     sample_id_column = bigquery_config.get('sample_id_column', None)
     sample_file_columns = bigquery_config.get('sample_file_columns', {})
-    client = bigquery.Client(project=deploy_project_id)
+    bq_client = bigquery.Client(project=deploy_project_id)
+    storage_client = storage.Client(project=deploy_project_id)
 
     for table_name in bigquery_config['table_names']:
-        table = read_table(client, table_name)
-        index_table(es, index_name, client, table, participant_id_column,
-                    sample_id_column, sample_file_columns, deploy_project_id)
-        index_fields(es, index_name + '_fields', table, sample_id_column)
+        table = read_table(bq_client, table_name)
+        index_fields(es, fields_index_name, table, sample_id_column)
+        create_mappings(es, index_name, table_name, table.schema,
+                        participant_id_column, sample_id_column,
+                        sample_file_columns)
+        index_table(es, bq_client, storage_client, index_name, table,
+                    participant_id_column, sample_id_column,
+                    sample_file_columns, deploy_project_id)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
-    create_samples_json_export_file(es, index_name, deploy_project_id)
+    create_samples_json_export_file(es, storage_client, index_name,
+                                    deploy_project_id)
 
 
 if __name__ == '__main__':

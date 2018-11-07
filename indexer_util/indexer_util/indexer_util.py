@@ -88,11 +88,18 @@ def _wait_elasticsearch_healthy(es):
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
-def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
-    """Creates Elasticsearchindex if it doesn't already exist."""
-    es = Elasticsearch([elasticsearch_url])
+def get_es_client(elasticsearch_url):
+    # Retry flags needed for large datasets.
+    es = Elasticsearch([elasticsearch_url],
+                       retry_on_timeout=True,
+                       max_retries=10)
 
     _wait_elasticsearch_healthy(es)
+    return es
+
+
+def maybe_create_elasticsearch_index(es, elasticsearch_url, index_name):
+    """Creates Elasticsearchindex if it doesn't already exist."""
 
     if es.indices.exists(index=index_name):
         logger.info(
@@ -100,8 +107,29 @@ def maybe_create_elasticsearch_index(elasticsearch_url, index_name):
     else:
         logger.info(
             'Creating %s index at %s.' % (index_name, elasticsearch_url))
-        es.indices.create(index=index_name, body={})
-    return es
+        es.indices.create(
+            index=index_name,
+            body={
+                'settings': {
+                    # Default of 1000 fields is not enough for some datasets
+                    'index.mapping.total_fields.limit': 15000,
+                },
+            })
+
+
+def _prepare_for_indexing(es):
+    # Temporarily Update the settings to temporarily optimize for write-heavy performance.
+    es.indices.put_settings({
+        'index.refresh_interval': '-1',
+        'index.number_of_replicas': 0,
+    })
+
+
+def _complete_indexing(es):
+    es.indices.put_settings({
+        'index.refresh_interval': '1s',
+        'index.number_of_replicas': 1,
+    })
 
 
 def bulk_index_scripts(es, index_name, scripts_by_id):
@@ -121,9 +149,11 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
                 'upsert': {},
             })
 
+    _prepare_for_indexing(es)
     # For writing large amounts of data, the default timeout of 10s is
     # sometimes not enough.
-    bulk(es, es_actions(scripts_by_id), request_timeout=60)
+    bulk(es, es_actions(scripts_by_id), request_timeout=120)
+    _complete_indexing(es)
 
 
 def bulk_index_docs(es, index_name, docs_by_id):
@@ -142,6 +172,8 @@ def bulk_index_docs(es, index_name, docs_by_id):
                 'doc_as_upsert': True
             })
 
+    _prepare_for_indexing(es)
     # For writing large amounts of data, the default timeout of 10s is
     # sometimes not enough.
-    bulk(es, es_actions(docs_by_id), request_timeout=60)
+    bulk(es, es_actions(docs_by_id), request_timeout=120)
+    _complete_indexing(es)
