@@ -9,7 +9,7 @@ set -o nounset
 
 if (( $# != 1 ))
 then
-  echo "Usage: bigquery/deploy/deploy-api.sh <dataset>"
+  echo "Usage: bigquery/deploy/deploy-indexer.sh <dataset>"
   echo "  where <dataset> is the name of a directory in dataset_config/"
   echo "Run this script from project root"
   exit 1
@@ -38,7 +38,9 @@ docker push gcr.io/${project_id}/bq-indexer
 
 # Deploy indexer
 cd deploy
-kubectl delete configmap dataset-config
+kubectl delete configmap dataset-config || true
 kubectl create configmap dataset-config --from-file=../../dataset_config/${dataset}
-kubectl delete -f bq-indexer.yaml
+# Do not fail on errors (from set -o errexit) when deleting the bq-indexer because 
+# it may not yet exist.
+kubectl delete -f bq-indexer.yaml || true
 kubectl create -f bq-indexer.yaml

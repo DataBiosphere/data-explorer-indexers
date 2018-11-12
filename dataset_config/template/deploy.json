@@ -2,9 +2,14 @@
 // - Elasticsearch and indexer GCP deployment
 // - Paying for BigQuery query to read dataset BigQuery tables
 // - Storing files for sending data to Terra
-//
 // The project in this file may be different from the project containing
 // dataset BigQuery tables.
+// 
+// es_java_opts:
+//   Optional. Set if you need more than default Elasticsearch heap size of 1G.
+//   This is only used for GKE deployment. For local deployment, use:
+//     ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up -d elasticsearch
 {
-  "project_id": "PROJECT_ID_TO_DEPLOY_TO"
+  "project_id": "PROJECT_ID_TO_DEPLOY_TO",
+  "es_java_opts": ""
 }

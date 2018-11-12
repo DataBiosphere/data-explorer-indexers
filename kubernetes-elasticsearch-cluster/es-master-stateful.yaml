@@ -1,17 +1,24 @@
 apiVersion: apps/v1beta1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: es-data
+  name: es-master
   labels:
     component: elasticsearch
-    role: data
+    role: master
 spec:
-  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: elasticsearch
+      role: master
+  serviceName: elasticsearch-master
+  replicas: 3
   template:
     metadata:
       labels:
         component: elasticsearch
-        role: data
+        role: master
     spec:
       initContainers:
       - name: init-sysctl
@@ -23,7 +30,7 @@ spec:
         securityContext:
           privileged: true
       containers:
-      - name: es-data
+      - name: es-master
         image: quay.io/pires/docker-elasticsearch-kubernetes:6.2.4
         env:
         - name: NAMESPACE
@@ -36,9 +43,13 @@ spec:
               fieldPath: metadata.name
         - name: CLUSTER_NAME
           value: myesdb
+        - name: NUMBER_OF_MASTERS
+          value: "2"
         - name: NODE_MASTER
-          value: "false"
+          value: "true"
         - name: NODE_INGEST
+          value: "false"
+        - name: NODE_DATA
           value: "false"
         - name: HTTP_ENABLE
           value: "false"
@@ -62,7 +73,12 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /data
-      volumes:
-          - emptyDir:
-              medium: ""
-            name: storage
+  volumeClaimTemplates:
+  - metadata:
+      name: storage
+    spec:
+      storageClassName: standard
+      accessModes: [ ReadWriteOnce ]
+      resources:
+        requests:
+          storage: 2Gi
