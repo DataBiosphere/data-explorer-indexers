@@ -387,8 +387,8 @@ def main():
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
-    deploy_project_id = indexer_util.parse_json_file(deploy_config_path)[
-        'project_id']
+    deploy_project_id = indexer_util.parse_json_file(
+        deploy_config_path)['project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   index_name)
