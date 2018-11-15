@@ -56,7 +56,7 @@ fi
 curl -s 'http://localhost:9200/1000_genomes/_mappings' | jq -rS '.' > 'tests/1000_genomes_mappings.json'
 DIFF=$(diff tests/1000_genomes_mappings_golden.json tests/1000_genomes_mappings.json)
 if [ "$DIFF" != "" ]; then
-  echo "Index does not match golden json file, diff:"
+  echo "Mappings do not match golden json file, diff:"
   echo "$DIFF"
   exit 1
 fi
