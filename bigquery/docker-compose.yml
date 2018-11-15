@@ -10,7 +10,7 @@ services:
       # deployments; bootstrap checks are still enabled for production
       # deployments.
       - "transport.host=localhost"
-      - ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms256m -Xmx256m}
+      - ES_JAVA_OPTS
   indexer:
     build:
       # Context is project root, to pick up indexer_util and dataset_config
