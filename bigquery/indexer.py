@@ -269,17 +269,26 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
     for field in fields:
         if field.name == sample_id_column:
             is_samples_table = True
-            properties['samples'] = {'type': 'nested', 'properties': {}}
+            properties['samples'] = {
+                'type': 'nested',
+                'properties': {
+                    sample_id_column: {
+                        'type': 'keyword',
+                        'ignore_above': 256,
+                    }
+                }
+            }
             properties = properties['samples']['properties']
 
     for field in fields:
+        if field.name == sample_id_column:
+            continue
         field_name = '%s.%s' % (table_name, field.name)
         if is_samples_table:
             # Ignore the participant_id_column since it's the
             # root ID of documents.
             if field.name == participant_id_column:
                 continue
-            field_name = 'samples.%s' % field_name
 
         field_type = _get_es_field_type(field.field_type, field.mode)
         properties[field_name] = {'type': field_type}
@@ -297,8 +306,8 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                 }
             }
 
-        has_field_name = _get_has_file_field_name(
-            field_name.replace('samples.', ''), sample_file_columns)
+        has_field_name = _get_has_file_field_name(field_name,
+                                                  sample_file_columns)
         if has_field_name:
             properties[has_field_name] = {'type': 'boolean'}
 
@@ -378,8 +387,8 @@ def main():
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
-    deploy_project_id = indexer_util.parse_json_file(
-        deploy_config_path)['project_id']
+    deploy_project_id = indexer_util.parse_json_file(deploy_config_path)[
+        'project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   index_name)
