@@ -10,8 +10,7 @@ services:
       # deployments; bootstrap checks are still enabled for production
       # deployments.
       - "transport.host=localhost"
-      - "HEAP_SIZE=${HEAP_SIZE:-256m}"
-      - "ES_JAVA_OPTS=-Xms$HEAP_SIZE -Xmx$HEAP_SIZE"
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms256m -Xmx256m}
   indexer:
     build:
       # Context is project root, to pick up indexer_util and dataset_config
