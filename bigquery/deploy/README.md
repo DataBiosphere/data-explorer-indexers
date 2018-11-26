@@ -107,11 +107,3 @@
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
     curl localhost:9200/_cat/indices?v
     ```
-
-## Bringing down Elasticsearch
-
-If you no longer need this Elasticsearch deployment:
-```
-kubectl config get-clusters
-kubectl config delete-cluster CLUSTER_NAME
-```
