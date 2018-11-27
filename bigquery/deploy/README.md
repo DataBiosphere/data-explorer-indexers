@@ -32,6 +32,7 @@
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
       * We recommend the name `indexer` to make it clear what this service account does.
         The full service account email would be `indexer@DATASET-explorer.iam.gserviceaccount.com`
+      * Click `Create`
       * Add the `Storage > Storage Admin` role. This is for temporarily
       exporting BigQuery tables to GCS during indexing, reading
       docker images from GCR, and creating the sample export file.
@@ -41,6 +42,7 @@
       for the BigQuery query, not the project containing the BigQuery tables.
       * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
       appear at https://console.cloud.google.com/logs/viewer
+      * Click `Continue`
     * In the project with the BigQuery dataset, make the service account a
     BigQuery Data Viewer.
   * Create cluster
