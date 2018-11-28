@@ -10,6 +10,7 @@ services:
       # deployments; bootstrap checks are still enabled for production
       # deployments.
       - "transport.host=localhost"
+      - ES_JAVA_OPTS
   indexer:
     build:
       # Context is project root, to pick up indexer_util and dataset_config

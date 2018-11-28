@@ -44,6 +44,10 @@ create it by running `gcloud auth application-default login`.
     ```
     docker-compose up -d elasticsearch
     ```
+  * If ES crashes due to OOM, you can increase [heap size](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html):
+    ```
+    ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up -d elasticsearch
+    ```
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.

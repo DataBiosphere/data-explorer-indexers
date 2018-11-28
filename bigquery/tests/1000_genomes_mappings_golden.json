@@ -2,6 +2,7 @@
   "1000_genomes": {
     "mappings": {
       "type": {
+        "dynamic": "false",
         "properties": {
           "samples": {
             "properties": {
@@ -30,13 +31,8 @@
                 "type": "boolean"
               },
               "sample_id": {
-                "fields": {
-                  "keyword": {
-                    "ignore_above": 256,
-                    "type": "keyword"
-                  }
-                },
-                "type": "text"
+                "ignore_above": 256,
+                "type": "keyword"
               },
               "verily-public-data": {
                 "properties": {
@@ -936,6 +932,15 @@
                         "type": "text"
                       },
                       "Unknown_Second_Order": {
+                        "fields": {
+                          "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                          }
+                        },
+                        "type": "text"
+                      },
+                      "participant_id": {
                         "fields": {
                           "keyword": {
                             "ignore_above": 256,

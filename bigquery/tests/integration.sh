@@ -12,6 +12,9 @@
 #   curl -s 'http://localhost:9200/1000_genomes/_mappings?pretty' | jq -rS '.' > 'tests/1000_genomes_mappings_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
 
+set -o errexit
+set -o nounset
+
 waitForClusterHealthy() {
   status=''
   # For some reason, cluster health is green on CircleCI
@@ -56,7 +59,7 @@ fi
 curl -s 'http://localhost:9200/1000_genomes/_mappings' | jq -rS '.' > 'tests/1000_genomes_mappings.json'
 DIFF=$(diff tests/1000_genomes_mappings_golden.json tests/1000_genomes_mappings.json)
 if [ "$DIFF" != "" ]; then
-  echo "Index does not match golden json file, diff:"
+  echo "Mappings do not match golden json file, diff:"
   echo "$DIFF"
   exit 1
 fi
