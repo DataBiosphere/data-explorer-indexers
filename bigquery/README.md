@@ -36,17 +36,17 @@ create it by running `gcloud auth application-default login`.
   * If you intend to run the [Data Explorer UI](https://github.com/DataBiosphere/data-explorer/)
   after this, run inside the *data-explorer* repo:
     ```
-    docker-compose up -d elasticsearch
+    docker-compose up elasticsearch
     ```
   * If you do not intend to run the Data Explorer UI after this, and just want
   to inspect the index in Elasticsearch, run inside this repo from the
   `bigquery` directory:
     ```
-    docker-compose up -d elasticsearch
+    docker-compose up elasticsearch
     ```
   * If ES crashes due to OOM, you can increase [heap size](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html):
     ```
-    ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up -d elasticsearch
+    ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up elasticsearch
     ```
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this

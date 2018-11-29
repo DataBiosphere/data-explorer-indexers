@@ -5,7 +5,7 @@
   access to the dataset.  
   * If you intend for users to work with your dataset in Terra, you must use
     Terra groups ([group management UI](https://app.terra.bio/#groups),
-    [more info](https://software.broadinstitute.org/firecloud/documentation/article?id=9553) for access control. Terra groups are automatically synced to a
+    [more info](https://software.broadinstitute.org/firecloud/documentation/article?id=9553)) for access control. Terra groups are automatically synced to a
     firecloud.org Google Group. For example, for Terra group foo:
       * Terra workspaces for your dataset will be shared to the Terra group foo.
       * Terra workspaces for your dataset must set [Authorization Domain](https://gatkforums.broadinstitute.org/firecloud/discussion/9524/authorization-domains)
@@ -31,7 +31,8 @@
     * Create the service account
       * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
       * We recommend the name `indexer` to make it clear what this service account does.
-        The full service account email would be `indexer@DATASET-data-explorer.iam.gserviceaccount.com`
+        The full service account email would be `indexer@DATASET-explorer.iam.gserviceaccount.com`
+      * Click `Create`
       * Add the `Storage > Storage Admin` role. This is for temporarily
       exporting BigQuery tables to GCS during indexing, reading
       docker images from GCR, and creating the sample export file.
@@ -41,6 +42,7 @@
       for the BigQuery query, not the project containing the BigQuery tables.
       * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
       appear at https://console.cloud.google.com/logs/viewer
+      * Click `Continue`
     * In the project with the BigQuery dataset, make the service account a
     BigQuery Data Viewer.
   * Create cluster
@@ -63,10 +65,9 @@
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch. From project root:
     ```
-    cd kubernetes-elasticsearch-cluster
-    ./deploy.sh MY_DATASET
-    ```. 
-    Note: This will delete all existing data in the index, re-deploy 
+    kubernetes-elasticsearch-cluster/deploy.sh MY_DATASET
+    ```
+    Note: This will delete all existing data in the index; re-deploy 
     with caution.
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
   `es-client-595585f9d4-7jw9v`.
@@ -107,11 +108,3 @@
     kubectl exec -it ES_CLIENT_POD -- /bin/bash
     curl localhost:9200/_cat/indices?v
     ```
-
-## Bringing down Elasticsearch
-
-If you no longer need this Elasticsearch deployment:
-```
-kubectl config get-clusters
-kubectl config delete-cluster CLUSTER_NAME
-```
