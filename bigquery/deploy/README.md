@@ -65,10 +65,9 @@
 * Run Elasticsearch on GKE
   * Deploy Elasticsearch. From project root:
     ```
-    cd kubernetes-elasticsearch-cluster
-    ./deploy.sh MY_DATASET
-    ```. 
-    Note: This will delete all existing data in the index, re-deploy 
+    kubernetes-elasticsearch-cluster/deploy.sh MY_DATASET
+    ```
+    Note: This will delete all existing data in the index; re-deploy 
     with caution.
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
   `es-client-595585f9d4-7jw9v`.
