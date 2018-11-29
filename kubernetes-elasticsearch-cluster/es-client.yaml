@@ -43,7 +43,7 @@ spec:
         - name: HTTP_ENABLE
           value: "true"
         - name: ES_JAVA_OPTS
-          value: -Xms256m -Xmx256m
+          value: -Xms1024m -Xmx1024m
         - name: NETWORK_HOST
           value: _site_,_lo_
         - name: PROCESSORS
@@ -65,8 +65,8 @@ spec:
           httpGet:
             path: /_cluster/health
             port: http
-          initialDelaySeconds: 20
-          timeoutSeconds: 5
+          initialDelaySeconds: 60
+          timeoutSeconds: 30
         volumeMounts:
         - name: storage
           mountPath: /data

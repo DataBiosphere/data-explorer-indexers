@@ -46,7 +46,9 @@
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
-    * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)
+    * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)  
+    If you need more memory for Elasticsearch, you may need `n1-highmem-4`. [Elasticsearch recommends](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html) the VM has at least
+    twice the memory you are using for Elasticsearch.
     * Click `Advanced edit` and under `Service account`, select the service account you just created. Click `Save`.
     * Click `Create`.
   * After cluster has finished creating, run this command to point `kubectl` to
@@ -62,8 +64,10 @@
   * Deploy Elasticsearch. From project root:
     ```
     cd kubernetes-elasticsearch-cluster
-    ./deploy.sh
-    ```
+    ./deploy.sh MY_DATASET
+    ```. 
+    Note: This will delete all existing data in the index, re-deploy 
+    with caution.
   * Test that Elasticsearch is up. ES_CLIENT_POD is something like
   `es-client-595585f9d4-7jw9v`.
     ```

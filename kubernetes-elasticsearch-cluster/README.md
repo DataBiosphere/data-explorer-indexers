@@ -1,3 +1,3 @@
-The configs here were taken from the [kubernetes-elasticsearch-cluster](https://github.com/pires/kubernetes-elasticsearch-cluster)
-repository with some modifications for our use case such as internal load
-balancing.
+The configs here were taken from the kubernetes-elasticsearch-cluster repository with some modifications:
+- Using [StatefulSet](https://github.com/pires/kubernetes-elasticsearch-cluster/tree/master/stateful) for persistent storage
+- Internal load balancing
