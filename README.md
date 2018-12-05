@@ -40,7 +40,9 @@ document:
 
 #### Fields index
 
-This index is used for field search. TODO: Include screenshot.
+This index is used for the search box:
+
+![Screenshot of search box](https://i.imgur.com/A595p69.png)
 
 Each document represents a field. The document id is name of the
 Elasticsearch field from the main dataset index. Example fields
@@ -52,6 +54,8 @@ are age, gender, etc. Here's an example document from `1000_genomes_fields`:
   "description" : "The sample is in the low coverage pilot experiment"
 }
 ```
+(We need a separate index because there's no place to put BigQuery column
+descriptions in the main index.)
 
 ### One-time setup
 
