@@ -109,3 +109,24 @@ deactivate
 
 When indexing a large table on a Mac, Elasticsearch may crash with no error
 message in the logs. Try increasing Docker's memory, for example from 2G to 3G.
+
+### Tips for indexing large tables locally
+
+A 2G table can take 4 hours to index. Here are some tips to ensure you don't
+accidentally wipe your Elasticsearch index and have to reindex.
+
+Tip 1: Use a different computer from your normal development computer.
+
+Tip 2: Always pass `--no-recreate` to `docker-compose up elasticsearch`.
+
+What you want to avoid at all costs is this `docker-compose` output:
+```
+Recreating data-explorer_elasticsearch_1 ... done
+```
+If you see this, your indices have been deleted. Regardless of whether you running `docker-compose up` on just the `elasticsearch` service or all services, pass `--no-recreate`.
+
+So the basic flow is:
+- In one window, run `ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up --no-recreate elasticsearch`
+  - You can confirm 10g heap with `http://localhost:9200/_cluster/stats?human&pretty`.
+  Look for `jvm`/`mem` section.
+- In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
