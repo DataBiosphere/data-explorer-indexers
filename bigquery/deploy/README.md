@@ -49,7 +49,7 @@
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
     * Set zone
-      * If you have deployed the [UI server and/or API server](https://github.com/DataBiosphere/data-explorer/tree/master/deploy),
+      * If you have [deployed the UI server and/or API server](https://github.com/DataBiosphere/data-explorer/tree/master/deploy),
         select a zone in the same region as UI/API server. (Search for `Region`
         in the App Engine Dashbaord.)
       * If you not not yet deployed the UI/API servers, make a note what region
