@@ -113,12 +113,10 @@ message in the logs. Try increasing Docker's memory, for example from 2G to 3G.
 
 ### Tips for indexing large tables locally
 
-A 2G table can take 4 hours to index. Here are some tips to ensure you don't
+A 2G table can take 4 hours to index. You don't want to
 accidentally wipe your Elasticsearch index and have to reindex.
 
-Tip 1: Use a different computer from your normal development computer.
-
-Tip 2: Always pass `--no-recreate` to `docker-compose up elasticsearch`.
+Always pass `--no-recreate` to `docker-compose up elasticsearch`.
 
 What you want to avoid at all costs is this `docker-compose` output:
 ```
