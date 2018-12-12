@@ -64,7 +64,8 @@
     twice the memory you are using for Elasticsearch.
     * Click `Advanced edit` and under `Service account`, select the indexer service account you just created. Click `Save`.
       * If you are using the default Compute service account instead of indexer,
-        click `Allow full access to all Cloud APIs`.
+        click `Allow full access to all Cloud APIs`. (This is automatically
+        selected for custom service accounts.)
     * Click `Create`.
   * After cluster has finished creating, run this command to point `kubectl` to
   the right cluster.
