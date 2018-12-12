@@ -128,5 +128,5 @@ So the basic flow is:
 - Run `ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up elasticsearch`, then Ctrl-C
   - You can confirm 10g heap with `http://localhost:9200/_cluster/stats?human&pretty`.
   Look for `jvm`/`mem` section.
-- Run `docker-compose up elasticsearch`. Leave this one running.
+- Run `docker-compose up --no-recreate elasticsearch`. Leave this one running.
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
