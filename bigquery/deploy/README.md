@@ -48,6 +48,17 @@
   * Create cluster
     * Go to https://console.cloud.google.com/kubernetes/list and click `Create Cluster`
     * Change name to `elasticsearch-cluster`
+    * Set zone
+      * If you have deployed the [UI server and/or API server](https://github.com/DataBiosphere/data-explorer/tree/master/deploy),
+        select a zone in the same region as UI/API server. (Search for `Region`
+        in the App Engine Dashbaord.)
+      * If you not not yet deployed the UI/API servers, make a note what region
+        your cluster is in. Later when you run `gcloud app create`, select this
+        region. This is important because App Engine app regions cannot be
+        changed after `gcloud app create`. (The Elasticsearch deployement uses
+        [Internal Load Balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing),
+        so the API server will only be able to talk to Elasticsearch if it's in
+        the same region.)
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)  
     If you need more memory for Elasticsearch, you may need `n1-highmem-4`. [Elasticsearch recommends](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html) the VM has at least
     twice the memory you are using for Elasticsearch.
