@@ -48,6 +48,7 @@ create it by running `gcloud auth application-default login`.
     ```
     ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up elasticsearch
     ```
+    See [tips for indexing large tables](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery#tips-for-indexing-large-tables-locally).
 * Determine the project that will be billed for querying the BigQuery tables.
 Your account must have `bigquery.jobs.create` permission on this project; this
 includes any project where you have the Viewer/Editor/Owner role.
@@ -126,7 +127,8 @@ Recreating data-explorer_elasticsearch_1 ... done
 If you see this, your indices have been deleted. Regardless of whether you running `docker-compose up` on just the `elasticsearch` service or all services, pass `--no-recreate`.
 
 So the basic flow is:
-- In one window, run `ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up --no-recreate elasticsearch`
+- Run `ES_JAVA_OPTS="-Xms10g -Xmx10g" docker-compose up elasticsearch`, then Ctrl-C
   - You can confirm 10g heap with `http://localhost:9200/_cluster/stats?human&pretty`.
   Look for `jvm`/`mem` section.
+- Run `docker-compose up elasticsearch`. Leave this one running.
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
