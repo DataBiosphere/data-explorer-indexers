@@ -62,7 +62,9 @@
     * Change `Machine type` to `4 vCPUs`. (Otherwise will get Insufficient CPU error.)  
     If you need more memory for Elasticsearch, you may need `n1-highmem-4`. [Elasticsearch recommends](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html) the VM has at least
     twice the memory you are using for Elasticsearch.
-    * Click `Advanced edit` and under `Service account`, select the service account you just created. Click `Save`.
+    * Click `Advanced edit` and under `Service account`, select the indexer service account you just created. Click `Save`.
+      * If you are using the default Compute service account instead of indexer,
+        click `Allow full access to all Cloud APIs`.
     * Click `Create`.
   * After cluster has finished creating, run this command to point `kubectl` to
   the right cluster.
