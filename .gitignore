@@ -7,6 +7,9 @@ dataset_config/1000_genomes/ui.json
 bigquery/deploy/bq-indexer.yaml
 bigquery/deploy/bq-indexer-cronjob.yaml
 
+# For some reason these are created when deploying to GKE on Mac
+*.yaml-e
+
 # Allow developers to symlink their preferred configuration.
 /docker-compose.yml
 
