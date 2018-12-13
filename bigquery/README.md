@@ -130,3 +130,5 @@ So the basic flow is:
   Look for `jvm`/`mem` section.
 - Run `docker-compose up --no-recreate elasticsearch`. Leave this one running.
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
+- Then if you want to run Data Explorer UI, don't include `elasticsearch` in
+  `docker-compose up`: `docker-compose up --build -t 0 nginx_proxy ui apise kibana`
