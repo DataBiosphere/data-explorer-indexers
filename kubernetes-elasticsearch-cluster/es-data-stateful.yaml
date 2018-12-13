@@ -20,6 +20,22 @@ spec:
         component: elasticsearch
         role: data
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - elasticsearch
+                - key: role
+                  operator: In
+                  values:
+                  - data
+              topologyKey: kubernetes.io/hostname
       initContainers:
       - name: init-sysctl
         image: busybox:1.27.2
@@ -48,17 +64,23 @@ spec:
         - name: NODE_INGEST
           value: "false"
         - name: HTTP_ENABLE
-          value: "false"
+          value: "true"
         - name: ES_JAVA_OPTS
-          value: -Xms1g -Xmx1g
+          value: -Xms2g -Xmx2g
+        - name: NETWORK_HOST
+          value: _site_,_lo_
         - name: PROCESSORS
           valueFrom:
             resourceFieldRef:
               resource: limits.cpu
         resources:
+          requests:
+            cpu: 2
           limits:
-            cpu: 1
+            cpu: 3
         ports:
+        - containerPort: 9200
+          name: http
         - containerPort: 9300
           name: transport
         livenessProbe:
@@ -66,6 +88,12 @@ spec:
             port: transport
           initialDelaySeconds: 20
           periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: http
+          initialDelaySeconds: 20
+          timeoutSeconds: 5
         volumeMounts:
         - name: storage
           mountPath: /data

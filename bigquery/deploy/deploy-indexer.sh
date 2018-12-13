@@ -23,8 +23,8 @@ echo
 
 # Initialize gcloud and kubectl commands
 gcloud config set project ${project_id}
-gke_cluster_zone=$(gcloud container clusters list | grep elasticsearch-cluster | awk '{print $2}')
-gcloud container clusters get-credentials elasticsearch-cluster --zone ${gke_cluster_zone}
+zone=$(gcloud container clusters list | grep elasticsearch-cluster | awk '{print $2}')
+gcloud container clusters get-credentials elasticsearch-cluster --zone ${zone}
 
 # Create bigquery/deploy/bq-indexer.yaml from bigquery/deploy/bq-indexer.yaml.templ
 elasticsearch_url=$(kubectl get svc elasticsearch | grep elasticsearch | awk '{print $4}')

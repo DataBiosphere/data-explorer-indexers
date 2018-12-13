@@ -150,10 +150,9 @@ only works on Linux machines.
 ```
 gcloud config set project MY_PROJECT
 gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
-kubectl get pods
-kubectl port-forward ES_CLIENT 9200:9200
+kubectl port-forward es-data-0 9200:9200
 # Run this from inside data-explorer repo
-git cherry-pick --no-commit b1561b796833d2f1f82ce7cce579b6262016f76c
-DATASET_CONFIG_DIR=/app/dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
+git cherry-pick --no-commit 6cee79dab14fc9707b5936345e35bd0b54578425
+DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
 ```
 Now UI will be at `localhost:4401`.
