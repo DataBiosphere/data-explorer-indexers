@@ -191,22 +191,18 @@ def _create_table_from_view(bq_client, view):
     except exceptions.NotFound:
         dataset = bigquery.Dataset(dataset_ref)
         dataset = bq_client.create_dataset(dataset)
-        logger.info('Created new dataset {}'.format(dataset.dataset_id))
-    new_table_name = '{}_copy'.format(view.table_id)
+        logger.info('Created new dataset %s' % dataset.dataset_id)
+    new_table_name = '%s_copy' % view.table_id
     new_table_ref = dataset_ref.table(new_table_name)
     new_table_job_config = bigquery.QueryJobConfig()
     new_table_job_config.destination = new_table_ref
-    new_table_job_config.use_legacy_sql = view.view_use_legacy_sql
-    if view.view_use_legacy_sql:
-        sql = 'SELECT * from [{}]'.format(view.full_table_id)
-    else:
-        sql = 'SELECT * from {}'.format(_table_name_from_table(view))
+    sql = 'SELECT * from `%s`' % _table_name_from_table(view)
     query_job = bq_client.query(sql, job_config=new_table_job_config)
     query_job.result()
-    table = bq_client.get_table(new_table_ref)
-    logger.info('Created new table {} as copy of view'.format(
-        _table_name_from_table(table)))
-    return table
+    new_table = bq_client.get_table(new_table_ref)
+    logger.info('Created new table %s as copy of view' %
+                _table_name_from_table(new_table))
+    return new_table
 
 
 def index_table(es, bq_client, storage_client, index_name, table,
@@ -230,7 +226,7 @@ def index_table(es, bq_client, storage_client, index_name, table,
         # BigQuery cannot export data from a view. So as a workaround,
         # create a table from the view and use that instead.
         logger.info(
-            '{} is a view, attempting to create new table'.format(table_name))
+            '%s is a view, attempting to create new table' % table_name)
         table = _create_table_from_view(bq_client, table)
 
     job = bq_client.extract_table(
@@ -255,8 +251,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
     if table_is_view:
         # Delete the temporary copy table we created
         bq_client.delete_table(table)
-        logger.info('Deleted temporary copy table {}'.format(
-            _table_name_from_table(table)))
+        logger.info(
+            'Deleted temporary copy table %s' % _table_name_from_table(table))
 
 
 def index_fields(es, index_name, table, sample_id_column):
