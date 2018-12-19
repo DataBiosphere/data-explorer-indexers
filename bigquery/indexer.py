@@ -180,6 +180,36 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
         yield participant_id, row
 
 
+def _create_table_from_view(bq_client, view):
+    # Creates a table named {}_copy that is a copy of view into
+    # dataset 'dataset_for_view_exports'.
+    # Creates the dataset if it doesn't exist.
+    # Both the table and the dataset are created in the deploy project
+    dataset_ref = bq_client.dataset('dataset_for_view_exports')
+    try:
+        bq_client.get_dataset(dataset_ref)
+    except exceptions.NotFound:
+        dataset = bigquery.Dataset(dataset_ref)
+        dataset = bq_client.create_dataset(dataset)
+        logger.info('Created new dataset {}'.format(dataset.dataset_id))
+    new_table_name = '{}_copy'.format(view.table_id)
+    new_table_ref = dataset_ref.table(new_table_name)
+    new_table_job_config = bigquery.QueryJobConfig()
+    new_table_job_config.destination = new_table_ref
+    new_table_job_config.use_legacy_sql = view.view_use_legacy_sql
+    if view.view_use_legacy_sql:
+        sql = 'SELECT * from [{}]'.format(view.full_table_id)
+    else:
+        sql = 'SELECT * from {}'.format(_table_name_from_table(view))
+    print sql
+    query_job = bq_client.query(sql, job_config=new_table_job_config)
+    query_job.result()
+    table = bq_client.get_table(new_table_ref)
+    logger.info('Created new table {} as copy of view'.format(
+        _table_name_from_table(table)))
+    return table
+
+
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
                 deploy_project_id):
@@ -196,20 +226,13 @@ def index_table(es, bq_client, storage_client, index_name, table,
         bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
     logger.info('Running extract table job for: %s' % table_name)
 
-    # Begin Willy's hack
-    if table.table_type == 'VIEW':
-        new_table_name = '{}_copy'.format(table.table_id)
-        dataset_ref = bq_client.dataset(table.dataset_id)
-        new_table_ref = dataset_ref.table(new_table_name)
-        new_table_job_config = bigquery.QueryJobConfig()
-        new_table_job_config.destination = new_table_ref
-        print new_table_ref
-        sql = table.view_query.replace('[', '`').replace(']', '`').replace(':','.')
-        query_job = bq_client.query(sql, job_config=new_table_job_config)
-        query_job.result()
-        table = bq_client.get_table(new_table_ref)
-        print 'successfully made {}'.format(table)
-    # End Willy's hack
+    table_is_view = table.table_type == 'VIEW'
+    if table_is_view:
+        # BigQuery cannot export data from a view. So as a workaround,
+        # create a table from the view and use that instead.
+        logger.info('{} is a view, attempting to create new table'.format(
+            table_name))
+        table = _create_table_from_view(bq_client, table)
 
     job = bq_client.extract_table(
         table,
@@ -229,6 +252,12 @@ def index_table(es, bq_client, storage_client, index_name, table,
                                              export_obj_prefix, table_name,
                                              participant_id_column)
         indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+
+    if table_is_view:
+        # Delete the temporary copy table we created
+        bq_client.delete_table(table)
+        logger.info('Deleted temporary copy table {}'.format(
+            _table_name_from_table(table)))
 
 
 def index_fields(es, index_name, table, sample_id_column):
@@ -396,16 +425,12 @@ def create_samples_json_export_file(es, storage_client, index_name,
 
 def main():
     args = _parse_args()
-    print 'args', args
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
-    print 'index_name', index_name
     fields_index_name = '%s_fields' % index_name
     bigquery_config_path = os.path.join(args.dataset_config_dir,
                                         'bigquery.json')
-    print 'bigquery_config_path', bigquery_config_path
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
-    print 'bigquery_config', bigquery_config
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     deploy_project_id = indexer_util.parse_json_file(
         deploy_config_path)['project_id']
@@ -423,19 +448,13 @@ def main():
 
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        print 'indexing fields'
         index_fields(es, fields_index_name, table, sample_id_column)
-        print 'indexing fields complete'
-        print 'creating mappings'
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
-        print 'creating mappings complete'
-        print 'indexing table {}'.format(table_name)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
                     sample_file_columns, deploy_project_id)
-        print 'indexing table complete'
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
