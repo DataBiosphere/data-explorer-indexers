@@ -195,6 +195,22 @@ def index_table(es, bq_client, storage_client, index_name, table,
     job_config.destination_format = (
         bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
     logger.info('Running extract table job for: %s' % table_name)
+
+    # Begin Willy's hack
+    if table.table_type == 'VIEW':
+        new_table_name = '{}_copy'.format(table.table_id)
+        dataset_ref = bq_client.dataset(table.dataset_id)
+        new_table_ref = dataset_ref.table(new_table_name)
+        new_table_job_config = bigquery.QueryJobConfig()
+        new_table_job_config.destination = new_table_ref
+        print new_table_ref
+        sql = table.view_query.replace('[', '`').replace(']', '`').replace(':','.')
+        query_job = bq_client.query(sql, job_config=new_table_job_config)
+        query_job.result()
+        table = bq_client.get_table(new_table_ref)
+        print 'successfully made {}'.format(table)
+    # End Willy's hack
+
     job = bq_client.extract_table(
         table,
         # The '*'' enables file sharding, which is required for larger datasets.
@@ -380,12 +396,16 @@ def create_samples_json_export_file(es, storage_client, index_name,
 
 def main():
     args = _parse_args()
+    print 'args', args
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
+    print 'index_name', index_name
     fields_index_name = '%s_fields' % index_name
     bigquery_config_path = os.path.join(args.dataset_config_dir,
                                         'bigquery.json')
+    print 'bigquery_config_path', bigquery_config_path
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
+    print 'bigquery_config', bigquery_config
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     deploy_project_id = indexer_util.parse_json_file(
         deploy_config_path)['project_id']
@@ -403,13 +423,19 @@ def main():
 
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
+        print 'indexing fields'
         index_fields(es, fields_index_name, table, sample_id_column)
+        print 'indexing fields complete'
+        print 'creating mappings'
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
+        print 'creating mappings complete'
+        print 'indexing table {}'.format(table_name)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
                     sample_file_columns, deploy_project_id)
+        print 'indexing table complete'
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
