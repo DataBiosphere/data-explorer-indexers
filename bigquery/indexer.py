@@ -229,8 +229,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
     if table_is_view:
         # BigQuery cannot export data from a view. So as a workaround,
         # create a table from the view and use that instead.
-        logger.info('{} is a view, attempting to create new table'.format(
-            table_name))
+        logger.info(
+            '{} is a view, attempting to create new table'.format(table_name))
         table = _create_table_from_view(bq_client, table)
 
     job = bq_client.extract_table(
