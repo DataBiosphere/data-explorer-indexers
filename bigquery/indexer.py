@@ -180,6 +180,31 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
         yield participant_id, row
 
 
+def _create_table_from_view(bq_client, view):
+    # Creates a table named {}_copy that is a copy of view into
+    # dataset 'dataset_for_view_exports'.
+    # Creates the dataset if it doesn't exist.
+    # Both the table and the dataset are created in the deploy project
+    dataset_ref = bq_client.dataset('dataset_for_view_exports')
+    try:
+        bq_client.get_dataset(dataset_ref)
+    except exceptions.NotFound:
+        dataset = bigquery.Dataset(dataset_ref)
+        dataset = bq_client.create_dataset(dataset)
+        logger.info('Created new dataset %s' % dataset.dataset_id)
+    new_table_name = '%s_copy' % view.table_id
+    new_table_ref = dataset_ref.table(new_table_name)
+    new_table_job_config = bigquery.QueryJobConfig()
+    new_table_job_config.destination = new_table_ref
+    sql = 'SELECT * from `%s`' % _table_name_from_table(view)
+    query_job = bq_client.query(sql, job_config=new_table_job_config)
+    query_job.result()
+    new_table = bq_client.get_table(new_table_ref)
+    logger.info('Created new table %s as copy of view' %
+                _table_name_from_table(new_table))
+    return new_table
+
+
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
                 deploy_project_id):
@@ -195,6 +220,15 @@ def index_table(es, bq_client, storage_client, index_name, table,
     job_config.destination_format = (
         bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
     logger.info('Running extract table job for: %s' % table_name)
+
+    table_is_view = table.table_type == 'VIEW'
+    if table_is_view:
+        # BigQuery cannot export data from a view. So as a workaround,
+        # create a table from the view and use that instead.
+        logger.info(
+            '%s is a view, attempting to create new table' % table_name)
+        table = _create_table_from_view(bq_client, table)
+
     job = bq_client.extract_table(
         table,
         # The '*'' enables file sharding, which is required for larger datasets.
@@ -213,6 +247,12 @@ def index_table(es, bq_client, storage_client, index_name, table,
                                              export_obj_prefix, table_name,
                                              participant_id_column)
         indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+
+    if table_is_view:
+        # Delete the temporary copy table we created
+        bq_client.delete_table(table)
+        logger.info(
+            'Deleted temporary copy table %s' % _table_name_from_table(table))
 
 
 def index_fields(es, index_name, table, sample_id_column):
