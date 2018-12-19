@@ -201,7 +201,6 @@ def _create_table_from_view(bq_client, view):
         sql = 'SELECT * from [{}]'.format(view.full_table_id)
     else:
         sql = 'SELECT * from {}'.format(_table_name_from_table(view))
-    print sql
     query_job = bq_client.query(sql, job_config=new_table_job_config)
     query_job.result()
     table = bq_client.get_table(new_table_ref)
