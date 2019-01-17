@@ -109,11 +109,12 @@ deactivate
 ### Troubleshooting
 
 When indexing a large table on a Mac, Elasticsearch may crash with no error
-message in the logs. Try increasing Docker's memory, for example from 2G to 3G.
+message in the logs. Try increasing Docker's memory, for example from 2 GB to
+3 GB.
 
 ### Tips for working locally with large tables
 
-A 2G table can take 4 hours to index. Here are tips so you don't have to wait
+A 2 GB table can take 4 hours to index. Here are tips so you don't have to wait
 for reindexing.
 
 #### Index not in GKE
@@ -146,6 +147,7 @@ your index is static; you are working on a change to the UI or API server.
 ```
 kubectl get pods
 kubectl port-forward ES_CLIENT 9200:9200
+# Run this from inside data-explorer repo
 git cherry-pick --no-commit b1561b796833d2f1f82ce7cce579b6262016f76c
 DATASET_CONFIG_DIR=/app/dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
 ```
