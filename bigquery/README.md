@@ -109,12 +109,18 @@ deactivate
 ### Troubleshooting
 
 When indexing a large table on a Mac, Elasticsearch may crash with no error
-message in the logs. Try increasing Docker's memory, for example from 2G to 3G.
+message in the logs. Try increasing Docker's memory, for example from 2 GB to
+3 GB.
 
-### Tips for indexing large tables locally
+### Tips for working locally with large tables
 
-A 2G table can take 4 hours to index. You don't want to
-accidentally wipe your Elasticsearch index and have to reindex.
+A 2 GB table can take 4 hours to index. Here are tips so you don't have to wait
+for reindexing.
+
+#### Index not in GKE
+
+This section applies if your Elasticsearch index is not yet in GKE. For example,
+you may be working on a change to the indexer.
 
 Always pass `--no-recreate` to `docker-compose up elasticsearch`.
 
@@ -132,3 +138,17 @@ So the basic flow is:
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
 - Then if you want to run Data Explorer UI, don't include `elasticsearch` in
   `docker-compose up`: `docker-compose up --build -t 0 nginx_proxy ui apise kibana`
+
+#### Index in GKE
+
+This section applies if your Elasticsearch index is in GKE. For example,
+your index is static; you are working on a change to the UI or API server.
+
+```
+kubectl get pods
+kubectl port-forward ES_CLIENT 9200:9200
+# Run this from inside data-explorer repo
+git cherry-pick --no-commit b1561b796833d2f1f82ce7cce579b6262016f76c
+DATASET_CONFIG_DIR=/app/dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
+```
+Now UI will be at `localhost:4401`.
