@@ -144,10 +144,10 @@ This section applies if your Elasticsearch index is in GKE. For example,
 your index is static; you are working on a change to the UI or API server.
 
 * Set up kubectl port forwarding
-```
-kubectl get pods
-kubectl port-forward ES_CLIENT 9200:9200
-```
+  ```
+  kubectl get pods
+  kubectl port-forward ES_CLIENT 9200:9200
+  ```
 * Edit the following files in data-explorer repo:
 [docker-compose.yml](https://i.imgur.com/DewtfPa.png), [nginx.proxy](https://i.imgur.com/WQ4yvJR.png)
 * UI server will be at `localhost:4401`
