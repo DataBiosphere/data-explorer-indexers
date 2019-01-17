@@ -147,6 +147,6 @@ your index is static; you are working on a change to the UI or API server.
 kubectl get pods
 kubectl port-forward ES_CLIENT 9200:9200
 git cherry-pick --no-commit b1561b796833d2f1f82ce7cce579b6262016f76c
-DATASET_CONFIG_DIR=/app/dataset_config/MY_DATASET docker-compose up --build -t 0 ui apise nginx_proxy
+DATASET_CONFIG_DIR=/app/dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
 ```
 Now UI will be at `localhost:4401`.
