@@ -150,4 +150,8 @@ your index is static; you are working on a change to the UI or API server.
   ```
 * Edit the following files in data-explorer repo:
 [docker-compose.yml](https://i.imgur.com/DewtfPa.png), [nginx.proxy](https://i.imgur.com/WQ4yvJR.png)
+* Run:
+  ```
+  DATASET_CONFIG_DIR=/app/dataset_config/MY_DATASET docker-compose up --build -t 0 ui apise nginx_proxy
+  ```
 * UI server will be at `localhost:4401`
