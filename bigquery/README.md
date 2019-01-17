@@ -143,15 +143,10 @@ So the basic flow is:
 This section applies if your Elasticsearch index is in GKE. For example,
 your index is static; you are working on a change to the UI or API server.
 
-* Set up kubectl port forwarding
-  ```
-  kubectl get pods
-  kubectl port-forward ES_CLIENT 9200:9200
-  ```
-* Edit the following files in data-explorer repo:
-[docker-compose.yml](https://i.imgur.com/DewtfPa.png), [nginx.proxy](https://i.imgur.com/WQ4yvJR.png)
-* Run:
-  ```
-  DATASET_CONFIG_DIR=/app/dataset_config/MY_DATASET docker-compose up --build -t 0 ui apise nginx_proxy
-  ```
-* UI server will be at `localhost:4401`
+```
+kubectl get pods
+kubectl port-forward ES_CLIENT 9200:9200
+git cherry-pick --no-commit b1561b796833d2f1f82ce7cce579b6262016f76c
+DATASET_CONFIG_DIR=/app/dataset_config/MY_DATASET docker-compose up --build -t 0 ui apise nginx_proxy
+```
+Now UI will be at `localhost:4401`.
