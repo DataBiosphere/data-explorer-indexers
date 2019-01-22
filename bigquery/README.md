@@ -144,7 +144,12 @@ So the basic flow is:
 This section applies if your Elasticsearch index is in GKE. For example,
 your index is static; you are working on a change to the UI or API server.
 
+This only works on Linux machines because [docker host networking](https://docs.docker.com/network/host/)
+only works on Linux machines.
+
 ```
+gcloud config set project MY_PROJECT
+gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
 kubectl get pods
 kubectl port-forward ES_CLIENT 9200:9200
 # Run this from inside data-explorer repo
