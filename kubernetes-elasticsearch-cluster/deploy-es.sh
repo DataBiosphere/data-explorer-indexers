@@ -19,19 +19,21 @@ gcloud config set project $project_id
 zone=$(gcloud container clusters list | grep elasticsearch-cluster | awk '{print $2}')
 gcloud container clusters get-credentials elasticsearch-cluster --zone ${zone}
 
-node_pool_machine_type=$(jq --raw-output '.node_pool_machine_type' dataset_config/${dataset}/deploy.json)
-node_pool_num_nodes=$(jq --raw-output '.node_pool_num_nodes' dataset_config/${dataset}/deploy.json)
+# select (.!=null) makes jq return empty string instead of null
+# See https://github.com/stedolan/jq/issues/354#issuecomment-46641827
+node_pool_machine_type=$(jq --raw-output '.node_pool_machine_type|select (.!=null)' dataset_config/${dataset}/deploy.json)
+node_pool_num_nodes=$(jq --raw-output '.node_pool_num_nodes|select (.!=null)' dataset_config/${dataset}/deploy.json)
 
 cd kubernetes-elasticsearch-cluster
 cp es-data-stateful.yaml es-data-stateful-deploy.yaml
 
 # If node_pool_num_nodes is set in deploy.json, replace it in the deploy yaml file.
-if [ "$node_pool_num_nodes" != "null" ] || [ ! -z "$node_pool_num_nodes" ]; then
+if [ -n "$node_pool_num_nodes" ]; then
   sed -i -e "s/replicas: 3/replicas: $node_pool_num_nodes/g" es-data-stateful-deploy.yaml
 fi
 # If node_pool_machine_type is set in deploy.json, update the deploy yaml file with
 # the correct resource requirements.
-if [ "$node_pool_machine_type" != "null" ] && [ ! -z "$node_pool_machine_type" ]; then
+if [ -n "$node_pool_machine_type" ]; then
   if [ "$node_pool_machine_type" == "n1-standard-1" ] || [ "$node_pool_machine_type" == "n1-standard-2" ]; then
     echo "A minimum of n1-standard-4 machine type must be used to avoid out of memory errors."
     exit 1
