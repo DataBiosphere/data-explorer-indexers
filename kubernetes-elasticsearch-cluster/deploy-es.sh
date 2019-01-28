@@ -64,19 +64,25 @@ if [ -n "$node_pool_machine_type" ]; then
   sed -i -e "s/-Xms2g -Xmx2g/-Xms${heap_mem}m -Xmx${heap_mem}m/g" es-data-stateful-deploy.yaml
 fi
 
-# Do not fail on errors (from set -o errexit) when because things might not exist.
+# Do not fail on errors (from set -o errexit) because things might not exist.
 kubectl delete -f es-discovery-svc.yaml || true
 kubectl delete -f es-svc.yaml || true
-kubectl delete -f es-master-svc.yaml || true
+# Delete data nodes before master nodes. If master nodes were deleted first,
+# deleting data nodes would fail because after the master nodes deletion, data
+# pods are in "Pods have warnings" state.
 kubectl delete -f es-data-svc.yaml || true
-kubectl delete -f es-master-stateful.yaml || true
 kubectl delete -f es-data-stateful-deploy.yaml || true
-
+kubectl delete -f es-data-pdb.yaml || true
+kubectl delete -f es-master-svc.yaml || true
+kubectl delete -f es-master-stateful.yaml || true
+kubectl delete -f es-master-pdb.yaml || true
 
 kubectl create -f es-discovery-svc.yaml
 kubectl create -f es-svc.yaml
 kubectl create -f es-master-svc.yaml
+kubectl create -f es-master-pdb.yaml
 kubectl create -f es-data-svc.yaml
+kubectl create -f es-data-pdb.yaml
 
 kubectl create -f es-master-stateful.yaml
 kubectl rollout status -f es-master-stateful.yaml
