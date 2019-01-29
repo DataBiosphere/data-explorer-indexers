@@ -108,7 +108,7 @@ assume the service account has this name.
 
 For a 2.3G BigQuery table, we have found the following `deploy.json` works well:
 ```
-  "node_pool_machine_type": "n1-standard-4",
+  "node_pool_machine_type": "n1-highmem-8",
   "node_pool_num_nodes": "5",
 ```
 The smallest machine type that can be used is `n1-standard-4` otherwise there
