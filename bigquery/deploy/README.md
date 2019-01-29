@@ -161,6 +161,7 @@ only works on Linux machines.
 gcloud config set project MY_PROJECT
 gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
 kubectl port-forward es-data-0 9200:9200
+# Now Chrome tab with localhost:9200/_cat/indices?v works
 # Run this from inside data-explorer repo
 git cherry-pick --no-commit 6cee79dab14fc9707b5936345e35bd0b54578425
 DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
