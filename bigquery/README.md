@@ -117,10 +117,8 @@ message in the logs. Try increasing Docker's memory, for example from 2 GB to
 A 2 GB table can take 4 hours to index. Here are tips so you don't have to wait
 for reindexing.
 
-#### Index not in GKE
-
-This section applies if your Elasticsearch index is not yet in GKE. For example,
-you may be working on a change to the indexer.
+Note that if your index is already on GKE and you want to test out the UI,
+[follow these instructions instead](https://github.com/DataBiosphere/data-explorer-indexers/tree/master/bigquery/deploy#running-a-local-ui-with-an-index-from-gke).
 
 Always pass `--no-recreate` to `docker-compose up elasticsearch`.
 
@@ -138,21 +136,3 @@ So the basic flow is:
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
 - Then if you want to run Data Explorer UI, don't include `elasticsearch` in
   `docker-compose up`: `docker-compose up --build -t 0 nginx_proxy ui apise kibana`
-
-#### Index in GKE
-
-This section applies if your Elasticsearch index is in GKE. For example,
-your index is static; you are working on a change to the UI or API server.
-
-This only works on Linux machines because [docker host networking](https://docs.docker.com/network/host/)
-only works on Linux machines.
-
-```
-gcloud config set project MY_PROJECT
-gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
-kubectl port-forward es-data-0 9200:9200
-# Run this from inside data-explorer repo
-git cherry-pick --no-commit 6cee79dab14fc9707b5936345e35bd0b54578425
-DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
-```
-Now UI will be at `localhost:4401`.

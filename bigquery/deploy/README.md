@@ -31,8 +31,8 @@ example, for Terra group `foo`:
   This is needed to view GKE monitoring charts.
 * Set up service account  
 [Following the principle of least privilege](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#why_use_service_accounts),
-we require using a new `indexer` service account with only the necessary permissions. 
-Only this service account will be given access to the BigQuery tables. Some of the deploy scripts 
+we require using a new `indexer` service account with only the necessary permissions.
+Only this service account will be given access to the BigQuery tables. Some of the deploy scripts
 assume the service account has this name.
   * Create service account
     * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
@@ -151,3 +151,18 @@ In `deploy.json`, try increasing `node_pool_num_nodes` to 5.
 By default, Elasticsearch indices use 5 shards. With 5 replicas, each replica
 will have 1 shard. (As opposed to one replica having 2 shards and being a
 bottleneck.)
+
+## Running a local UI with an index from GKE
+
+This only works on Linux machines because [docker host networking](https://docs.docker.com/network/host/)
+only works on Linux machines.
+
+```
+gcloud config set project MY_PROJECT
+gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
+kubectl port-forward es-data-0 9200:9200
+# Run this from inside data-explorer repo
+git cherry-pick --no-commit 6cee79dab14fc9707b5936345e35bd0b54578425
+DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build -t 0 ui apise nginx_proxy
+```
+Now UI will be at `localhost:4401`.
