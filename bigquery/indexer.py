@@ -291,6 +291,24 @@ def _get_es_field_type(bq_type, bq_mode):
         raise Exception('Invalid BigQuery column type')
 
 
+def _get_datetime_formatted_string(bq_type):
+    # When the es field type is date, we need to add a format string
+    # according to ISO 8601 standards.
+    bq_type_to_iso_formatted_date = {
+        'TIMESTAMP': 'yyyy-MM-dd HH:mm:ss z',
+        'DATE': 'yyyy-MM-dd',
+        'TIME': 'HH:mm:ss',
+        'DATETIME': '',  # Intentionally not altering datetime.
+    }
+    if bq_type not in bq_type_to_iso_formatted_date:
+        raise Exception('Invalid BigQuery date type {}'.format(bq_type))
+    formatted_date = bq_type_to_iso_formatted_date[bq_type]
+    if formatted_date:
+        return {'format': formatted_date, 'type': 'date'}
+    else:
+        return {'type': 'date'}
+
+
 def _get_has_file_field_name(field_name, sample_file_columns):
     for file_type, col in sample_file_columns.iteritems():
         if field_name in col:
@@ -330,21 +348,24 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
             if field.name == participant_id_column:
                 continue
 
-        field_type = _get_es_field_type(field.field_type, field.mode)
-        properties[field_name] = {'type': field_type}
+        es_field_type = _get_es_field_type(field.field_type, field.mode)
+        properties[field_name] = {'type': es_field_type}
 
-        if field_type == 'nested' or field_type == 'object':
+        if es_field_type == 'nested' or es_field_type == 'object':
             inner_mappings = create_mappings(
                 es, index_name, field.fields, participant_id_column,
                 sample_id_column, sample_file_columns)
             properties[field_name]['properties'] = inner_mappings['properties']
-        elif field_type == 'text':
+        elif es_field_type == 'text':
             properties[field_name]['fields'] = {
                 'keyword': {
                     'type': 'keyword',
                     'ignore_above': 256
                 }
             }
+        elif es_field_type == 'date':
+            properties[field_name] = _get_datetime_formatted_string(
+                field.field_type)
 
         has_field_name = _get_has_file_field_name(field_name,
                                                   sample_file_columns)
