@@ -36,20 +36,16 @@ Only this service account will be given access to the BigQuery tables. Some of t
 assume the service account has this name.
   * Create service account
     * Navigate to `IAM & Admin > Service Accounts > Create Service Account`.
-    * The name must be `indexer`; some scripts assume this.
-    * Click `Create`
-    * Add the `Storage > Storage Admin` role. This is for temporarily
+    * Name is `indexer`; some scripts assume this.
+    * Click `Create` and add roles:
+      * `Storage Admin`: Temporarily
     exporting BigQuery tables to GCS during indexing, reading
     docker images from GCR, and creating the sample export file.
-    * Add the `BigQuery > BigQuery Job User` role. This allows the service
-    account to run a BigQuery query, which takes place while indexing the
-    BigQuery tables into Elasticsearch. Note that [this project will be billed](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/bigquery/indexer.py#L131)
-    for the BigQuery query, not the project containing the BigQuery tables.
-    * Add the `Logging -> Logs Writer` role. This is needed for GKE logs to
-    appear at https://console.cloud.google.com/logs/viewer
-    * Add the `Monitoring -> Monitoring Metric Writer` role. This is needed to
-    view GKE monitoring charts.
-    * Click `Continue`
+      * `BigQuery User`:
+        * `bigquery.jobs.create` permission: Run BigQuery query.
+        * `bigquery.datasets.get` permission: Used if dataset contains a view.
+      * `Logs Writer`: For [GKE logs](https://console.cloud.google.com/logs/viewer).
+      * `Monitoring Metric Writer`: For GKE monitoring charts.
   * In the project with the BigQuery dataset, make the service account a
   BigQuery Data Viewer.
 * Create cluster. From project root, run:
@@ -98,6 +94,7 @@ assume the service account has this name.
 * From project root, run:
   ```
   bigquery/deploy/deploy-indexer.sh DATASET
+  kubectl logs -f $(kubectl get pods | awk '/bq-indexer/ {print $1;exit}')
   ```
 * Verify the indexer was successful:
   ```
