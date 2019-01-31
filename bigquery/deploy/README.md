@@ -41,9 +41,9 @@ assume the service account has this name.
       * `Storage Admin` Temporarily
     exporting BigQuery tables to GCS during indexing, reading
     docker images from GCR, and creating the sample export file.
-      * `BigQuery User`
+      * `BigQuery Admin`
         * `bigquery.jobs.create` permission: Run BigQuery query.
-        * `bigquery.datasets.get` permission: Used if dataset contains a view.
+        * `bigquery.datasets.get`, `bigquery.tables.create` permissions: Used for temporarily copying view to table. Only needed if dataset contains a view.
       * `Logs Writer` For [GKE logs](https://console.cloud.google.com/logs/viewer).
       * `Monitoring Metric Writer` For GKE monitoring charts.
   * In the project with the BigQuery dataset, make the service account a
