@@ -4,13 +4,13 @@ metadata:
   name: elasticsearch
   labels:
     component: elasticsearch
-    role: client
+    role: data
   annotations:
     cloud.google.com/load-balancer-type: "Internal"
 spec:
   selector:
     component: elasticsearch
-    role: client
+    role: data
   ports:
   - name: http
     port: 9200
