@@ -18,7 +18,9 @@ fi
 dataset=$1
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
 
-echo "Deploying BigQuery indexer for ${dataset} to project ${project_id}"
+bold=$(tput bold)
+normal=$(tput sgr0)
+echo "Deploying BigQuery indexer for ${bold}dataset ${dataset}${normal} to ${bold}project ${project_id}${normal}"
 echo
 
 # Initialize gcloud and kubectl commands

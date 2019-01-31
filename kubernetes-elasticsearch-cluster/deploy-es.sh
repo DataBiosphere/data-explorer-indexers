@@ -13,7 +13,10 @@ fi
 
 dataset=$1
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
-echo "Deploying Elasticsearch for dataset $dataset in project $project_id"
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+echo "Deploying Elasticsearch for ${bold}dataset $dataset${normal} in ${bold}project $project_id${normal}"
 
 gcloud config set project $project_id
 zone=$(gcloud container clusters list | grep elasticsearch-cluster | awk '{print $2}')

@@ -16,7 +16,10 @@ fi
 dataset=$1
 zone=""
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
-echo "Creating Kubernetes cluster for dataset $dataset in project $project_id"
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+echo "Creating Kubernetes cluster for ${bold}dataset $dataset${normal} in ${bold}project $project_id${normal}"
 
 gcloud config set project $project_id
 
