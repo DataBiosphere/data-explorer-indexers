@@ -47,7 +47,7 @@ assume the service account has this name.
       * `Logs Writer` For [GKE logs](https://console.cloud.google.com/logs/viewer).
       * `Monitoring Metric Writer` For GKE monitoring charts.
   * In the project with the BigQuery dataset, make the service account a
-  BigQuery Data Viewer.
+  `BigQuery Data Viewer`.
 * Create cluster. From project root, run:
   ```
   kubernetes-elasticsearch-cluster/create-cluster.sh DATASET [ZONE]
