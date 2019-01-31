@@ -290,6 +290,7 @@ def _get_es_field_type(bq_type, bq_mode):
     else:
         raise Exception('Invalid BigQuery column type')
 
+
 def _get_datetime_formatted_string(bq_type):
     # When the es field type is date, we need to add a format string
     # according to ISO 8601 standards.
@@ -297,21 +298,15 @@ def _get_datetime_formatted_string(bq_type):
         'TIMESTAMP': 'yyyy-MM-dd HH:mm:ss z',
         'DATE': 'yyyy-MM-dd',
         'TIME': 'HH:mm:ss',
-        'DATETIME': '', # Intentionally not altering datetime.
+        'DATETIME': '',  # Intentionally not altering datetime.
     }
     if bq_type not in bq_type_to_iso_formatted_date:
         raise Exception('Invalid BigQuery date type {}'.format(bq_type))
     formatted_date = bq_type_to_iso_formatted_date[bq_type]
     if formatted_date:
-        return {
-            'format': formatted_date,
-            'type': 'date'
-        }
+        return {'format': formatted_date, 'type': 'date'}
     else:
-        return {
-            'type': 'date'
-        }
-
+        return {'type': 'date'}
 
 
 def _get_has_file_field_name(field_name, sample_file_columns):
