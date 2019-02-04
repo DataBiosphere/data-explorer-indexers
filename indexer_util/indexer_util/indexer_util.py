@@ -136,7 +136,7 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
     # Use generator so we can index arbitrarily large iterators (like tables),
     # without having to load into memory.
     def es_actions(scripts_by_id):
-        for _id, script in scripts_by_id:
+        for _id, script in scripts_by_id.iteritems():
             yield ({
                 '_op_type': 'update',
                 '_index': index_name,
@@ -159,7 +159,7 @@ def bulk_index_docs(es, index_name, docs_by_id):
     # Use generator so we can index arbitrarily large iterators (like tables),
     # without having to load into memory.
     def es_actions(docs_by_id):
-        for _id, doc in docs_by_id:
+        for _id, doc in docs_by_id.iteritems():
             yield ({
                 '_op_type': 'update',
                 '_index': index_name,

@@ -207,7 +207,7 @@ def _create_table_from_view(bq_client, view):
 
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
-                deploy_project_id):
+                deploy_project_id, all_table_documents, all_sample_documents):
     table_name = _table_name_from_table(table)
     bucket_name = '%s-table-export' % deploy_project_id
     table_export_bucket = storage_client.lookup_bucket(bucket_name)
@@ -241,12 +241,20 @@ def index_table(es, bq_client, storage_client, index_name, table,
         scripts_by_id = _sample_scripts_by_id_from_export(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, sample_id_column, sample_file_columns)
-        indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
+        for participant_id, script in scripts_by_id:
+            if participant_id in all_sample_documents:
+                all_sample_documents[participant_id].update(script)
+            else:
+                all_sample_documents[participant_id] = script
     else:
         docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
                                              export_obj_prefix, table_name,
                                              participant_id_column)
-        indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+        for participant_id, doc in docs_by_id:
+            if participant_id in all_table_documents:
+                all_table_documents[participant_id].update(doc)
+            else:
+                all_table_documents[participant_id] = doc
 
     if table_is_view:
         # Delete the temporary copy table we created
@@ -269,7 +277,13 @@ def index_fields(es, index_name, table, sample_id_column):
             id_prefix = "samples." + id_prefix
 
     field_docs = _field_docs_by_id(id_prefix, '', fields)
-    indexer_util.bulk_index_docs(es, index_name, field_docs)
+    field_docs_dict = {}
+    for field_doc_id, field_doc in field_docs:
+        if field_doc_id in field_docs_dict:
+            field_docs_dict[field_doc_id].update(field_doc)
+        else:
+            field_docs_dict[field_doc_id] = field_doc
+    indexer_util.bulk_index_docs(es, index_name, field_docs_dict)
 
 
 def _get_es_field_type(bq_type, bq_mode):
@@ -462,6 +476,8 @@ def main():
     bq_client = bigquery.Client(project=deploy_project_id)
     storage_client = storage.Client(project=deploy_project_id)
 
+    all_table_documents = {}
+    all_sample_documents = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
         index_fields(es, fields_index_name, table, sample_id_column)
@@ -470,7 +486,9 @@ def main():
                         sample_file_columns)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
-                    sample_file_columns, deploy_project_id)
+                    sample_file_columns, deploy_project_id, all_table_documents, all_sample_documents)
+    indexer_util.bulk_index_scripts(es, index_name, all_sample_documents)
+    indexer_util.bulk_index_docs(es, index_name, all_table_documents)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
