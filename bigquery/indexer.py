@@ -486,7 +486,8 @@ def main():
                         sample_file_columns)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
-                    sample_file_columns, deploy_project_id, all_table_documents, all_sample_documents)
+                    sample_file_columns, deploy_project_id,
+                    all_table_documents, all_sample_documents)
     indexer_util.bulk_index_scripts(es, index_name, all_sample_documents)
     indexer_util.bulk_index_docs(es, index_name, all_table_documents)
 
