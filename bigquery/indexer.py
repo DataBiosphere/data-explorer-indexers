@@ -384,7 +384,7 @@ def read_table(bq_client, table_name):
 
 
 def create_samples_json_export_file(es, storage_client, index_name,
-                                    deploy_project_id):
+                                    deploy_project_id, sample_id_column):
     """
     Writes the samples export JSON file to a GCS bucket. This significantly
     speeds up exporting the samples table to Terra in the Data Explorer.
@@ -400,7 +400,7 @@ def create_samples_json_export_file(es, storage_client, index_name,
         participant_id = hit.meta['id']
         doc = hit.to_dict()
         for sample in doc.get('samples', []):
-            sample_id = sample['sample_id']
+            sample_id = sample[sample_id_column]
             export_sample = {'participant': participant_id}
             for es_field_name, value in sample.iteritems():
                 # es_field_name looks like "_has_chr_18_vcf", "sample_id" or
@@ -475,7 +475,7 @@ def main():
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
     create_samples_json_export_file(es, storage_client, index_name,
-                                    deploy_project_id)
+                                    deploy_project_id, sample_id_column)
 
 
 if __name__ == '__main__':
