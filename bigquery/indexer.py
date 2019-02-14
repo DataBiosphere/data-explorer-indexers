@@ -217,6 +217,7 @@ def add_table_to_participant_docs(es, bq_client, storage_client, index_name,
         bq_client.delete_table(table)
         logger.info(
             'Deleted temporary copy table %s' % _table_name_from_table(table))
+    return participant_docs
 
 
 def add_table_to_fields_docs(es, index_name, table, sample_id_column,
@@ -233,6 +234,7 @@ def add_table_to_fields_docs(es, index_name, table, sample_id_column,
         if field.name == sample_id_column:
             id_prefix = "samples." + id_prefix
     _update_fields_docs(id_prefix, '', fields, field_docs)
+    return field_docs
 
 
 def _get_es_field_type(bq_type, bq_mode):
@@ -429,15 +431,15 @@ def main():
     field_docs = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        add_table_to_fields_docs(es, fields_index_name, table,
-                                 sample_id_column, field_docs)
+        field_docs = add_table_to_fields_docs(es, fields_index_name, table,
+                                              sample_id_column, field_docs)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
-        add_table_to_participant_docs(es, bq_client, storage_client,
-                                      index_name, table, participant_id_column,
-                                      sample_id_column, sample_file_columns,
-                                      deploy_project_id, participant_docs)
+        participant_docs = add_table_to_participant_docs(
+            es, bq_client, storage_client, index_name, table,
+            participant_id_column, sample_id_column, sample_file_columns,
+            deploy_project_id, participant_docs)
     indexer_util.bulk_index_docs(es, fields_index_name, field_docs)
     indexer_util.bulk_index_docs(es, index_name, participant_docs)
 
