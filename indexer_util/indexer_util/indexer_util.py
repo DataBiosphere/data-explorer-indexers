@@ -133,8 +133,8 @@ def _complete_indexing(es):
 
 
 def bulk_index_docs(es, index_name, docs_by_id):
-    # es_docs is a dict containing documents to be indexed into Elasticsearch.
-    # Key is participant id; value is document contents.
+    # docs_by_id is a dict containing documents to be indexed into Elasticsearch.
+    # Key is document id; value is document contents.
     def es_actions(docs_by_id):
         for _id, doc in docs_by_id.iteritems():
             yield ({
