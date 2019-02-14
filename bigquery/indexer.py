@@ -19,28 +19,6 @@ logging.basicConfig(
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
 
-UPDATE_SAMPLES_SCRIPT = """
-if (!ctx._source.containsKey('samples')) {
-   ctx._source.samples = [params.sample]
-} else {
-   // If this sample already exists, merge it with the new one.
-   int removeIdx = -1;
-   for (int i = 0; i < ctx._source.samples.size(); i++) {
-      if (ctx._source.samples.get(i).get('%s').equals(params.sample.get('%s'))) {
-         removeIdx = i;
-      }
-   }
-
-   if (removeIdx >= 0) {
-      Map merged = ctx._source.samples.remove(removeIdx);
-      merged.putAll(params.sample);
-      ctx._source.samples.add(merged);
-   } else {
-      ctx._source.samples.add(params.sample);
-   }
-}
-"""
-
 
 # Copied from https://stackoverflow.com/a/45392259
 def _environ_or_required(key):
@@ -117,26 +95,7 @@ def _rows_from_export(
         blob.delete()
 
 
-# Sample and participant tables need to be indexed differently.
-# For participant tables, we can use partial updates
-# (https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#_updates_with_a_partial_document)
-#
-# If one participant table has weight and another has height:
-# - First weight table is indexed. Participant documents get a weight field.
-# - Then height table is indexed. Participant documents get a height field. The
-#   weight fields are unchanged.
-#
-# Now say one sample table has center and another has platform.
-# - First center table is indexed. For each participant document, a samples
-#   field is created. The samples field contains an array of nested objects,
-#   each of which has a center field.
-# - Then platform table is indexed. For each participant document, the samples
-#   field is overwritten to the new value, which contains platform and not
-#   center.
-# In order to keep the center field, one must use a script. See
-# https://discuss.elastic.co/t/updating-nested-objects/87586/2 and
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
-def _sample_scripts_by_id_from_export(
+def _sample_docs_by_id_from_export(
         storage_client, bucket_name, export_obj_prefix, table_name,
         participant_id_column, sample_id_column, sample_file_columns):
     for row in _rows_from_export(storage_client, bucket_name,
@@ -160,14 +119,7 @@ def _sample_scripts_by_id_from_export(
                 else:
                     row[has_name] = False
 
-        script = UPDATE_SAMPLES_SCRIPT % (sample_id_column, sample_id_column)
-        yield participant_id, {
-            'source': script,
-            'lang': 'painless',
-            'params': {
-                'sample': row
-            }
-        }
+        yield participant_id, row
 
 
 def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
@@ -207,7 +159,7 @@ def _create_table_from_view(bq_client, view):
 
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
-                deploy_project_id, all_table_documents, all_sample_documents):
+                deploy_project_id, all_table_documents):
     table_name = _table_name_from_table(table)
     bucket_name = '%s-table-export' % deploy_project_id
     table_export_bucket = storage_client.lookup_bucket(bucket_name)
@@ -238,14 +190,18 @@ def index_table(es, bq_client, storage_client, index_name, table,
     # Wait up to 10 minutes for the resulting export files to be created.
     job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
-        scripts_by_id = _sample_scripts_by_id_from_export(
+        sample_docs_by_id = _sample_docs_by_id_from_export(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, sample_id_column, sample_file_columns)
-        for participant_id, script in scripts_by_id:
-            if participant_id in all_sample_documents:
-                all_sample_documents[participant_id].update(script)
+        for participant_id, sample_doc in sample_docs_by_id:
+            if participant_id in all_table_documents and 'samples' in all_table_documents[
+                    participant_id]:
+                all_table_documents[participant_id]['samples'][0].update(
+                    sample_doc)
+            elif participant_id in all_table_documents:
+                all_table_documents[participant_id]['samples'] = [sample_doc]
             else:
-                all_sample_documents[participant_id] = script
+                all_table_documents[participant_id] = {'samples': [sample_doc]}
     else:
         docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
                                              export_obj_prefix, table_name,
@@ -283,7 +239,8 @@ def index_fields(es, index_name, table, sample_id_column):
             field_docs_dict[field_doc_id].update(field_doc)
         else:
             field_docs_dict[field_doc_id] = field_doc
-    indexer_util.bulk_index_docs(es, index_name, field_docs_dict)
+    indexer_util.bulk_index_docs(
+        es, index_name, field_docs_dict, op_type='update')
 
 
 def _get_es_field_type(bq_type, bq_mode):
@@ -477,7 +434,6 @@ def main():
     storage_client = storage.Client(project=deploy_project_id)
 
     all_table_documents = {}
-    all_sample_documents = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
         index_fields(es, fields_index_name, table, sample_id_column)
@@ -487,8 +443,7 @@ def main():
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
                     sample_file_columns, deploy_project_id,
-                    all_table_documents, all_sample_documents)
-    indexer_util.bulk_index_scripts(es, index_name, all_sample_documents)
+                    all_table_documents)
     indexer_util.bulk_index_docs(es, index_name, all_table_documents)
 
     # Ensure all of the newly indexed documents are loaded into ES.
