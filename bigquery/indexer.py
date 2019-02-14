@@ -104,6 +104,7 @@ def _add_sample_table_to_participant_docs(
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
+        sample_id = row[sample_id_column]
         del row[participant_id_column]
         row = {
             '%s.%s' % (table_name, k) if k != sample_id_column else k: v
@@ -121,13 +122,14 @@ def _add_sample_table_to_participant_docs(
                     row[has_name] = True
                 else:
                     row[has_name] = False
-        if participant_id in participant_docs and 'samples' in participant_docs[
-                participant_id]:
-            participant_docs[participant_id]['samples'][0].update(row)
-        elif participant_id in participant_docs:
-            participant_docs[participant_id]['samples'] = [row]
+        if participant_id not in participant_docs:
+            participant_docs[participant_id] = {'samples': {sample_id: row}}
+        elif 'samples' not in participant_docs[participant_id]:
+            participant_docs[participant_id]['samples'] = {sample_id: row}
+        elif sample_id not in participant_docs[participant_id]['samples']:
+            participant_docs[participant_id]['samples'][sample_id] = row
         else:
-            participant_docs[participant_id] = {'samples': [row]}
+            participant_docs[participant_id]['samples'][sample_id].update(row)
 
 
 def _add_participant_table_to_participant_docs(
@@ -404,6 +406,44 @@ def create_samples_json_export_file(es, storage_client, index_name,
     logger.info('Wrote gs://%s/%s' % (bucket_name, samples_file_name))
 
 
+def fix_samples_data_for_es(participant_docs):
+    """
+    Currently our samples are stored as a dictionary keyed by sample_ids:
+    samples: {
+        sample_id_1: {
+            SAMPLE_ID: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        },
+        sample_id_2: {
+            SAMPLE_ID: sample_id_2,
+            column_name_1: value_c,
+            column_name_2: value_d,
+        }
+    }
+    We need to change it to the structure readable by elasticsearch
+    samples: [
+        {
+            SAMPLE_ID: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        },
+        {
+            SAMPLE_ID: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        }
+    ]
+    """
+    for participant_id in participant_docs:
+        if 'samples' not in participant_docs[participant_id]:
+            continue
+        participant_docs[participant_id]['samples'] = [
+            doc
+            for doc in participant_docs[participant_id]['samples'].values()
+        ]
+
+
 def main():
     args = _parse_args()
     # Read dataset config files
@@ -440,6 +480,11 @@ def main():
             es, bq_client, storage_client, index_name, table,
             participant_id_column, sample_id_column, sample_file_columns,
             deploy_project_id, participant_docs)
+
+    # Before pushing to elasticsearch, fix the structure of the samples data
+    fix_samples_data_for_es(participant_docs)
+
+    # Actually push the indexed table data to elasticsearch
     indexer_util.bulk_index_docs(es, fields_index_name, field_docs)
     indexer_util.bulk_index_docs(es, index_name, participant_docs)
 
