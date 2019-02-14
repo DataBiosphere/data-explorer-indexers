@@ -52,7 +52,8 @@ def _table_name_from_table(table):
     return project_id + '.' + dataset_table_id
 
 
-def _field_docs_by_id(id_prefix, name_prefix, fields):
+def _get_field_docs_and_add_to_dict(id_prefix, name_prefix, fields,
+                                    all_fields_documents):
     # This method is recursive to handle nested fields (BigQuery RECORD columns).
     # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
@@ -66,14 +67,17 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
         # if 'address' has {city, state, zip}, we want to index 'address.city',
         # 'address.state' and 'address.zip'.
         if field.field_type == 'RECORD':
-            for field_doc in _field_docs_by_id(field_id, field_name,
-                                               field.fields):
-                yield field_doc
+            _get_field_docs_and_add_to_dict(field_id, field_name, field.fields,
+                                            all_fields_documents)
         else:
             field_dict = {'name': field_name}
             if field.description:
                 field_dict['description'] = field.description
-            yield field_id, field_dict
+
+            if field_id in all_fields_documents:
+                all_fields_documents[field_id].update(field_dict)
+            else:
+                all_fields_documents[field_id] = field_dict
 
 
 def _rows_from_export(
@@ -95,9 +99,10 @@ def _rows_from_export(
         blob.delete()
 
 
-def _sample_docs_by_id_from_export(
-        storage_client, bucket_name, export_obj_prefix, table_name,
-        participant_id_column, sample_id_column, sample_file_columns):
+def _get_sample_docs_and_add_to_dict(storage_client, bucket_name,
+                                     export_obj_prefix, table_name,
+                                     participant_id_column, sample_id_column,
+                                     sample_file_columns, all_table_documents):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
@@ -118,18 +123,27 @@ def _sample_docs_by_id_from_export(
                     row[has_name] = True
                 else:
                     row[has_name] = False
+        if participant_id in all_table_documents and 'samples' in all_table_documents[
+                participant_id]:
+            all_table_documents[participant_id]['samples'][0].update(row)
+        elif participant_id in all_table_documents:
+            all_table_documents[participant_id]['samples'] = [row]
+        else:
+            all_table_documents[participant_id] = {'samples': [row]}
 
-        yield participant_id, row
 
-
-def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
-                            table_name, participant_id_column):
+def _get_participant_docs_and_add_to_dict(
+        storage_client, bucket_name, export_obj_prefix, table_name,
+        participant_id_column, all_table_documents):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
         row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
-        yield participant_id, row
+        if participant_id in all_table_documents:
+            all_table_documents[participant_id].update(row)
+        else:
+            all_table_documents[participant_id] = row
 
 
 def _create_table_from_view(bq_client, view):
@@ -190,27 +204,14 @@ def index_table(es, bq_client, storage_client, index_name, table,
     # Wait up to 10 minutes for the resulting export files to be created.
     job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
-        sample_docs_by_id = _sample_docs_by_id_from_export(
+        _get_sample_docs_and_add_to_dict(
             storage_client, bucket_name, export_obj_prefix, table_name,
-            participant_id_column, sample_id_column, sample_file_columns)
-        for participant_id, sample_doc in sample_docs_by_id:
-            if participant_id in all_table_documents and 'samples' in all_table_documents[
-                    participant_id]:
-                all_table_documents[participant_id]['samples'][0].update(
-                    sample_doc)
-            elif participant_id in all_table_documents:
-                all_table_documents[participant_id]['samples'] = [sample_doc]
-            else:
-                all_table_documents[participant_id] = {'samples': [sample_doc]}
+            participant_id_column, sample_id_column, sample_file_columns,
+            all_table_documents)
     else:
-        docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
-                                             export_obj_prefix, table_name,
-                                             participant_id_column)
-        for participant_id, doc in docs_by_id:
-            if participant_id in all_table_documents:
-                all_table_documents[participant_id].update(doc)
-            else:
-                all_table_documents[participant_id] = doc
+        _get_participant_docs_and_add_to_dict(
+            storage_client, bucket_name, export_obj_prefix, table_name,
+            participant_id_column, all_table_documents)
 
     if table_is_view:
         # Delete the temporary copy table we created
@@ -219,7 +220,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
             'Deleted temporary copy table %s' % _table_name_from_table(table))
 
 
-def index_fields(es, index_name, table, sample_id_column):
+def index_fields(es, index_name, table, sample_id_column,
+                 all_fields_documents):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -231,16 +233,8 @@ def index_fields(es, index_name, table, sample_id_column):
     for field in fields:
         if field.name == sample_id_column:
             id_prefix = "samples." + id_prefix
-
-    field_docs = _field_docs_by_id(id_prefix, '', fields)
-    field_docs_dict = {}
-    for field_doc_id, field_doc in field_docs:
-        if field_doc_id in field_docs_dict:
-            field_docs_dict[field_doc_id].update(field_doc)
-        else:
-            field_docs_dict[field_doc_id] = field_doc
-    indexer_util.bulk_index_docs(
-        es, index_name, field_docs_dict, op_type='update')
+    _get_field_docs_and_add_to_dict(id_prefix, '', fields,
+                                    all_fields_documents)
 
 
 def _get_es_field_type(bq_type, bq_mode):
@@ -434,9 +428,11 @@ def main():
     storage_client = storage.Client(project=deploy_project_id)
 
     all_table_documents = {}
+    all_fields_documents = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        index_fields(es, fields_index_name, table, sample_id_column)
+        index_fields(es, fields_index_name, table, sample_id_column,
+                     all_fields_documents)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
@@ -444,6 +440,7 @@ def main():
                     participant_id_column, sample_id_column,
                     sample_file_columns, deploy_project_id,
                     all_table_documents)
+    indexer_util.bulk_index_docs(es, fields_index_name, all_fields_documents)
     indexer_util.bulk_index_docs(es, index_name, all_table_documents)
 
     # Ensure all of the newly indexed documents are loaded into ES.

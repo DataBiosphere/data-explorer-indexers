@@ -132,35 +132,20 @@ def _complete_indexing(es):
     })
 
 
-def bulk_index_docs(es, index_name, docs_by_id, op_type='create'):
+def bulk_index_docs(es, index_name, docs_by_id):
     # es_docs is a dict containing documents to be indexed into Elasticsearch.
     # Key is participant id; value is document contents.
     def es_actions(docs_by_id):
         for _id, doc in docs_by_id.iteritems():
-            if op_type == 'create':
-                es_action = {
-                    '_op_type': 'create',
-                    '_index': index_name,
-                    # type will go away in future versions of Elasticsearch. Just
-                    # use any string here.
-                    '_type': 'type',
-                    '_id': _id,
-                    '_source': doc,
-                }
-            elif op_type == 'update':
-                es_action = {
-                    '_op_type': 'update',
-                    '_index': index_name,
-                    # type will go away in future versions of Elasticsearch. Just
-                    # use any string here.
-                    '_type': 'type',
-                    '_id': _id,
-                    'doc': doc,
-                    'doc_as_upsert': True,
-                }
-            else:
-                raise Exception('Invalid op type')
-            yield (es_action)
+            yield ({
+                '_op_type': 'create',
+                '_index': index_name,
+                # type will go away in future versions of Elasticsearch. Just
+                # use any string here.
+                '_type': 'type',
+                '_id': _id,
+                '_source': doc,
+            })
 
     _prepare_for_indexing(es)
     # For large datasets, the default timeout of 10s is sometimes not enough.
