@@ -97,6 +97,20 @@ def _rows_from_export(
         blob.delete()
 
 
+def _add_table_name_to_row(row, sample_id_column, table_name):
+    """
+    A row is a dictionary of column names to values.
+    For indexing purposes, we need to prepend the column with the table.
+    """
+    formatted_row = {}
+    for k, v in row.iteritems():
+        if k != sample_id_column:
+            formatted_row['{}.{}'.format(table_name, k)] = v
+        else:
+            formatted_row[k] = v
+    return formatted_row
+
+
 def _add_sample_table_to_participant_docs(
         storage_client, bucket_name, export_obj_prefix, table_name,
         participant_id_column, sample_id_column, sample_file_columns,
@@ -106,10 +120,7 @@ def _add_sample_table_to_participant_docs(
         participant_id = row[participant_id_column]
         sample_id = row[sample_id_column]
         del row[participant_id_column]
-        row = {
-            '%s.%s' % (table_name, k) if k != sample_id_column else k: v
-            for k, v in row.iteritems()
-        }
+        row = _add_table_name_to_row(row, sample_id_column, table_name)
 
         # Use the sample_file_columns configuration to add the internal
         # '_has_<sample_file_type>' fields to the samples index.
@@ -130,6 +141,7 @@ def _add_sample_table_to_participant_docs(
             participant_docs[participant_id]['samples'][sample_id] = row
         else:
             participant_docs[participant_id]['samples'][sample_id].update(row)
+    return participant_docs
 
 
 def _add_participant_table_to_participant_docs(
@@ -144,6 +156,7 @@ def _add_participant_table_to_participant_docs(
             participant_docs[participant_id].update(row)
         else:
             participant_docs[participant_id] = row
+    return participant_docs
 
 
 def _create_table_from_view(bq_client, view):
@@ -205,12 +218,12 @@ def add_table_to_participant_docs(es, bq_client, storage_client, index_name,
     # Wait up to 10 minutes for the resulting export files to be created.
     job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
-        _add_sample_table_to_participant_docs(
+        participant_docs = _add_sample_table_to_participant_docs(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, sample_id_column, sample_file_columns,
             participant_docs)
     else:
-        _add_participant_table_to_participant_docs(
+        participant_docs = _add_participant_table_to_participant_docs(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, participant_docs)
 
@@ -222,7 +235,7 @@ def add_table_to_participant_docs(es, bq_client, storage_client, index_name,
     return participant_docs
 
 
-def add_table_to_fields_docs(es, index_name, table, sample_id_column,
+def add_table_to_field_docs(es, index_name, table, sample_id_column,
                              field_docs):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
@@ -411,12 +424,12 @@ def fix_samples_data_for_es(participant_docs):
     Currently our samples are stored as a dictionary keyed by sample_ids:
     samples: {
         sample_id_1: {
-            SAMPLE_ID: sample_id_1
+            sample_id_column: sample_id_1
             column_name_1: value_a,
             column_name_2: value_b,
         },
         sample_id_2: {
-            SAMPLE_ID: sample_id_2,
+            sample_id_column: sample_id_2,
             column_name_1: value_c,
             column_name_2: value_d,
         }
@@ -424,16 +437,20 @@ def fix_samples_data_for_es(participant_docs):
     We need to change it to the structure readable by elasticsearch
     samples: [
         {
-            SAMPLE_ID: sample_id_1
+            sample_id_column: sample_id_1
             column_name_1: value_a,
             column_name_2: value_b,
         },
         {
-            SAMPLE_ID: sample_id_1
+            sample_id_column: sample_id_1
             column_name_1: value_a,
             column_name_2: value_b,
         }
     ]
+
+    We use the first format for indexing so that if there are two sample tables
+    containing information on the same sample, we can look up the sample when
+    indexing the second table.
     """
     for participant_id in participant_docs:
         if 'samples' not in participant_docs[participant_id]:
@@ -471,20 +488,18 @@ def main():
     field_docs = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        field_docs = add_table_to_fields_docs(es, fields_index_name, table,
-                                              sample_id_column, field_docs)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
+        field_docs = add_table_to_field_docs(es, fields_index_name, table,
+                                              sample_id_column, field_docs)
         participant_docs = add_table_to_participant_docs(
             es, bq_client, storage_client, index_name, table,
             participant_id_column, sample_id_column, sample_file_columns,
             deploy_project_id, participant_docs)
 
-    # Before pushing to elasticsearch, fix the structure of the samples data
     fix_samples_data_for_es(participant_docs)
 
-    # Actually push the indexed table data to elasticsearch
     indexer_util.bulk_index_docs(es, fields_index_name, field_docs)
     indexer_util.bulk_index_docs(es, index_name, participant_docs)
 
