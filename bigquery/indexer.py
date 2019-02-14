@@ -236,7 +236,7 @@ def add_table_to_participant_docs(es, bq_client, storage_client, index_name,
 
 
 def add_table_to_field_docs(es, index_name, table, sample_id_column,
-                             field_docs):
+                            field_docs):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -492,7 +492,7 @@ def main():
                         participant_id_column, sample_id_column,
                         sample_file_columns)
         field_docs = add_table_to_field_docs(es, fields_index_name, table,
-                                              sample_id_column, field_docs)
+                                             sample_id_column, field_docs)
         participant_docs = add_table_to_participant_docs(
             es, bq_client, storage_client, index_name, table,
             participant_id_column, sample_id_column, sample_file_columns,
