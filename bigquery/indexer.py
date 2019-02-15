@@ -19,28 +19,6 @@ logging.basicConfig(
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
 
-UPDATE_SAMPLES_SCRIPT = """
-if (!ctx._source.containsKey('samples')) {
-   ctx._source.samples = [params.sample]
-} else {
-   // If this sample already exists, merge it with the new one.
-   int removeIdx = -1;
-   for (int i = 0; i < ctx._source.samples.size(); i++) {
-      if (ctx._source.samples.get(i).get('%s').equals(params.sample.get('%s'))) {
-         removeIdx = i;
-      }
-   }
-
-   if (removeIdx >= 0) {
-      Map merged = ctx._source.samples.remove(removeIdx);
-      merged.putAll(params.sample);
-      ctx._source.samples.add(merged);
-   } else {
-      ctx._source.samples.add(params.sample);
-   }
-}
-"""
-
 
 # Copied from https://stackoverflow.com/a/45392259
 def _environ_or_required(key):
@@ -74,7 +52,7 @@ def _table_name_from_table(table):
     return project_id + '.' + dataset_table_id
 
 
-def _field_docs_by_id(id_prefix, name_prefix, fields):
+def _update_fields_docs(id_prefix, name_prefix, fields, field_docs):
     # This method is recursive to handle nested fields (BigQuery RECORD columns).
     # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
@@ -88,14 +66,16 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
         # if 'address' has {city, state, zip}, we want to index 'address.city',
         # 'address.state' and 'address.zip'.
         if field.field_type == 'RECORD':
-            for field_doc in _field_docs_by_id(field_id, field_name,
-                                               field.fields):
-                yield field_doc
+            _update_fields_docs(field_id, field_name, field.fields, field_docs)
         else:
-            field_dict = {'name': field_name}
+            field_doc = {'name': field_name}
             if field.description:
-                field_dict['description'] = field.description
-            yield field_id, field_dict
+                field_doc['description'] = field.description
+
+            if field_id in field_docs:
+                field_docs[field_id].update(field_doc)
+            else:
+                field_docs[field_id] = field_doc
 
 
 def _rows_from_export(
@@ -117,36 +97,30 @@ def _rows_from_export(
         blob.delete()
 
 
-# Sample and participant tables need to be indexed differently.
-# For participant tables, we can use partial updates
-# (https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#_updates_with_a_partial_document)
-#
-# If one participant table has weight and another has height:
-# - First weight table is indexed. Participant documents get a weight field.
-# - Then height table is indexed. Participant documents get a height field. The
-#   weight fields are unchanged.
-#
-# Now say one sample table has center and another has platform.
-# - First center table is indexed. For each participant document, a samples
-#   field is created. The samples field contains an array of nested objects,
-#   each of which has a center field.
-# - Then platform table is indexed. For each participant document, the samples
-#   field is overwritten to the new value, which contains platform and not
-#   center.
-# In order to keep the center field, one must use a script. See
-# https://discuss.elastic.co/t/updating-nested-objects/87586/2 and
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
-def _sample_scripts_by_id_from_export(
+def _add_table_name_to_row(row, sample_id_column, table_name):
+    """
+    A row is a dictionary of column names to values.
+    For indexing purposes, we need to prepend the column with the table.
+    """
+    formatted_row = {}
+    for k, v in row.iteritems():
+        if k != sample_id_column:
+            formatted_row['{}.{}'.format(table_name, k)] = v
+        else:
+            formatted_row[k] = v
+    return formatted_row
+
+
+def _add_sample_table_to_participant_docs(
         storage_client, bucket_name, export_obj_prefix, table_name,
-        participant_id_column, sample_id_column, sample_file_columns):
+        participant_id_column, sample_id_column, sample_file_columns,
+        participant_docs):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
+        sample_id = row[sample_id_column]
         del row[participant_id_column]
-        row = {
-            '%s.%s' % (table_name, k) if k != sample_id_column else k: v
-            for k, v in row.iteritems()
-        }
+        row = _add_table_name_to_row(row, sample_id_column, table_name)
 
         # Use the sample_file_columns configuration to add the internal
         # '_has_<sample_file_type>' fields to the samples index.
@@ -159,25 +133,30 @@ def _sample_scripts_by_id_from_export(
                     row[has_name] = True
                 else:
                     row[has_name] = False
+        if participant_id not in participant_docs:
+            participant_docs[participant_id] = {'samples': {sample_id: row}}
+        elif 'samples' not in participant_docs[participant_id]:
+            participant_docs[participant_id]['samples'] = {sample_id: row}
+        elif sample_id not in participant_docs[participant_id]['samples']:
+            participant_docs[participant_id]['samples'][sample_id] = row
+        else:
+            participant_docs[participant_id]['samples'][sample_id].update(row)
+    return participant_docs
 
-        script = UPDATE_SAMPLES_SCRIPT % (sample_id_column, sample_id_column)
-        yield participant_id, {
-            'source': script,
-            'lang': 'painless',
-            'params': {
-                'sample': row
-            }
-        }
 
-
-def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
-                            table_name, participant_id_column):
+def _add_participant_table_to_participant_docs(
+        storage_client, bucket_name, export_obj_prefix, table_name,
+        participant_id_column, participant_docs):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
         row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
-        yield participant_id, row
+        if participant_id in participant_docs:
+            participant_docs[participant_id].update(row)
+        else:
+            participant_docs[participant_id] = row
+    return participant_docs
 
 
 def _create_table_from_view(bq_client, view):
@@ -205,9 +184,10 @@ def _create_table_from_view(bq_client, view):
     return new_table
 
 
-def index_table(es, bq_client, storage_client, index_name, table,
-                participant_id_column, sample_id_column, sample_file_columns,
-                deploy_project_id):
+def add_table_to_participant_docs(es, bq_client, storage_client, index_name,
+                                  table, participant_id_column,
+                                  sample_id_column, sample_file_columns,
+                                  deploy_project_id, participant_docs):
     table_name = _table_name_from_table(table)
     bucket_name = '%s-table-export' % deploy_project_id
     table_export_bucket = storage_client.lookup_bucket(bucket_name)
@@ -238,24 +218,25 @@ def index_table(es, bq_client, storage_client, index_name, table,
     # Wait up to 10 minutes for the resulting export files to be created.
     job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
-        scripts_by_id = _sample_scripts_by_id_from_export(
+        participant_docs = _add_sample_table_to_participant_docs(
             storage_client, bucket_name, export_obj_prefix, table_name,
-            participant_id_column, sample_id_column, sample_file_columns)
-        indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
+            participant_id_column, sample_id_column, sample_file_columns,
+            participant_docs)
     else:
-        docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
-                                             export_obj_prefix, table_name,
-                                             participant_id_column)
-        indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+        participant_docs = _add_participant_table_to_participant_docs(
+            storage_client, bucket_name, export_obj_prefix, table_name,
+            participant_id_column, participant_docs)
 
     if table_is_view:
         # Delete the temporary copy table we created
         bq_client.delete_table(table)
         logger.info(
             'Deleted temporary copy table %s' % _table_name_from_table(table))
+    return participant_docs
 
 
-def index_fields(es, index_name, table, sample_id_column):
+def add_table_to_field_docs(es, index_name, table, sample_id_column,
+                            field_docs):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -267,9 +248,8 @@ def index_fields(es, index_name, table, sample_id_column):
     for field in fields:
         if field.name == sample_id_column:
             id_prefix = "samples." + id_prefix
-
-    field_docs = _field_docs_by_id(id_prefix, '', fields)
-    indexer_util.bulk_index_docs(es, index_name, field_docs)
+    _update_fields_docs(id_prefix, '', fields, field_docs)
+    return field_docs
 
 
 def _get_es_field_type(bq_type, bq_mode):
@@ -439,6 +419,48 @@ def create_samples_json_export_file(es, storage_client, index_name,
     logger.info('Wrote gs://%s/%s' % (bucket_name, samples_file_name))
 
 
+def fix_samples_data_for_es(participant_docs):
+    """
+    Currently our samples are stored as a dictionary keyed by sample_ids:
+    samples: {
+        sample_id_1: {
+            sample_id_column: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        },
+        sample_id_2: {
+            sample_id_column: sample_id_2,
+            column_name_1: value_c,
+            column_name_2: value_d,
+        }
+    }
+    We need to change it to the structure readable by elasticsearch
+    samples: [
+        {
+            sample_id_column: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        },
+        {
+            sample_id_column: sample_id_1
+            column_name_1: value_a,
+            column_name_2: value_b,
+        }
+    ]
+
+    We use the first format for indexing so that if there are two sample tables
+    containing information on the same sample, we can look up the sample when
+    indexing the second table.
+    """
+    for participant_id in participant_docs:
+        if 'samples' not in participant_docs[participant_id]:
+            continue
+        participant_docs[participant_id]['samples'] = [
+            doc
+            for doc in participant_docs[participant_id]['samples'].values()
+        ]
+
+
 def main():
     args = _parse_args()
     # Read dataset config files
@@ -462,15 +484,24 @@ def main():
     bq_client = bigquery.Client(project=deploy_project_id)
     storage_client = storage.Client(project=deploy_project_id)
 
+    participant_docs = {}
+    field_docs = {}
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        index_fields(es, fields_index_name, table, sample_id_column)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns)
-        index_table(es, bq_client, storage_client, index_name, table,
-                    participant_id_column, sample_id_column,
-                    sample_file_columns, deploy_project_id)
+        field_docs = add_table_to_field_docs(es, fields_index_name, table,
+                                             sample_id_column, field_docs)
+        participant_docs = add_table_to_participant_docs(
+            es, bq_client, storage_client, index_name, table,
+            participant_id_column, sample_id_column, sample_file_columns,
+            deploy_project_id, participant_docs)
+
+    fix_samples_data_for_es(participant_docs)
+
+    indexer_util.bulk_index_docs(es, fields_index_name, field_docs)
+    indexer_util.bulk_index_docs(es, index_name, participant_docs)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)
