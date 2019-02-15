@@ -63,4 +63,4 @@ if [ "$node_pool_num_nodes" == "null" ] || [ -z "$node_pool_num_nodes" ]; then
 	node_pool_num_nodes="3"
 fi
 
-gcloud container clusters create elasticsearch-cluster --num-nodes=${node_pool_num_nodes} --machine-type=${node_pool_machine_type} --service-account=indexer@${project_id}.iam.gserviceaccount.com --zone=${zone}
+gcloud container clusters create elasticsearch-cluster --num-nodes=${node_pool_num_nodes} --machine-type=${node_pool_machine_type} --service-account=indexer@${project_id}.iam.gserviceaccount.com --zone=${zone} --enable-autoupgrade
