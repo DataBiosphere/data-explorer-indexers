@@ -122,6 +122,9 @@ assume the service account has this name.
   gcloud container clusters list # find old cluster name
   gcloud container clusters delete OLD_CLUSTER_NAME --zone ZONE
   ```
+* Since these scripts esentially double the amount of clusters, you may need
+  to request more quota for certain resources from GCP. To do so, go to the
+  [quotas page on GCP.](https://pantheon.corp.google.com/iam-admin/quotas?usage=USED)
 
 ## Elasticsearch performance tuning
 
