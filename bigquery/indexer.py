@@ -267,8 +267,33 @@ def index_fields(es, index_name, table, sample_id_column):
     for field in fields:
         if field.name == sample_id_column:
             id_prefix = "samples." + id_prefix
+    mappings = {
+        'dynamic': False,
+        'properties': {
+            'description': {
+                'type': 'text',
+                'fields': {
+                    'keyword': {
+                        'type': 'keyword',
+                        'ignore_above': 256
+                    }
+                }
+            },
+            'name': {
+                'type': 'text',
+                'fields': {
+                    'keyword': {
+                        'type': 'keyword',
+                        'ignore_above': 256
+                    }
+                },
+                'analyzer': 'simple'
+            },
+        }
+    }
 
     field_docs = _field_docs_by_id(id_prefix, '', fields)
+    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
