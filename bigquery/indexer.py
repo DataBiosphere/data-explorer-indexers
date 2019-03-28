@@ -388,6 +388,7 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                     'ignore_above': 256
                 }
             }
+            properties[field_name]['analyzer'] = 'simple'
         elif es_field_type == 'date':
             properties[field_name] = _get_datetime_formatted_string(
                 field.field_type)
