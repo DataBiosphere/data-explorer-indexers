@@ -3,6 +3,12 @@
 set -o errexit
 set -o nounset
 
+function timestamp() {
+  # Outputs something like 20180124-130651
+  date +%Y%m%d-%H%M%S
+}
+readonly -f timestamp
+
 help_text="Usage: kubernetes-elasticsearch-cluster/create-cluster.sh <dataset> <zone>
   where <dataset> is the name of a directory in dataset_config/
   <zone> is only needed if 'gcloud app create' hasn't yet been run in this project.
@@ -15,11 +21,14 @@ fi
 
 dataset=$1
 zone=""
+cluster_name="elasticsearch-cluster-$(timestamp)"
+
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
 
 bold=$(tput bold)
 normal=$(tput sgr0)
-echo "Creating Kubernetes cluster for ${bold}dataset $dataset${normal} in ${bold}project $project_id${normal}"
+echo "Creating Kubernetes cluster ${bold}$cluster_name${normal} for" \
+  "${bold}dataset" "$dataset${normal} in ${bold}project $project_id${normal}"
 
 gcloud config set project $project_id
 
@@ -63,4 +72,7 @@ if [ "$node_pool_num_nodes" == "null" ] || [ -z "$node_pool_num_nodes" ]; then
 	node_pool_num_nodes="3"
 fi
 
-gcloud container clusters create elasticsearch-cluster --num-nodes=${node_pool_num_nodes} --machine-type=${node_pool_machine_type} --service-account=indexer@${project_id}.iam.gserviceaccount.com --zone=${zone} --enable-autoupgrade
+gcloud container clusters create "${cluster_name}" --num-nodes=${node_pool_num_nodes} --machine-type=${node_pool_machine_type} --service-account=indexer@${project_id}.iam.gserviceaccount.com --zone=${zone} --enable-autoupgrade
+echo "Successfully created Kubernetes cluster ${bold}$cluster_name${normal} for" \
+  "${bold}dataset" "$dataset${normal} in ${bold}project $project_id${normal}"
+echo "Please remember to run 'gcloud container clusters delete [CLUSTER_NAME]' to delete older clusters."
