@@ -102,26 +102,29 @@ assume the service account has this name.
   ```
 
 ## Reindex with no downtime
-* Creating a new index in the existing elasticsearch cluster would cause downtime
-  for your users. If you need to reindex, we reccommend you have the app engine 
-  point to a new elasticsearch service containing the new index. Run the following
-  scripts from project root to create new clusters, deploy elasticsearch, and 
-  reindex:
+* If you don't have any users and aren't worried about downtime, the easiest
+  way to reindex is to simply rerun deploy-indexer.sh.
+  ```
+  # We recommend deleting the index to start from a clean slate
+  kubectl exec -it es-data-0 -- curl -XDELETE localhost:9200/DATASET*
+  bigquery/deploy/deploy-indexer.sh DATASET
+  # Verily indexing was successful
+  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+  ```
+* If you have users and don't want them to experience downtime, you can create
+  a second cluster.
   ```
   kubernetes-elasticsearch-cluster/create-cluster.sh DATASET
   kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
-  bigquery/deploy/deploy-indexer.sh DATASET
-  ```
-* Verify the indexer was successful:
-  ```
+  # Verily elasticsearch was deployed
   kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+  bigquery/deploy/deploy-indexer.sh DATASET
+  # Verily indexing was successful
+  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+  # Run from data-explorer repo
+  deploy/deploy-api.sh DATASET
   ```
-* Then run the deploy-api script in the data-explorer repo.
-* Verify that your new version is deployed, then delete the old clusters:
-  ```
-  gcloud container clusters list # find old cluster name
-  gcloud container clusters delete OLD_CLUSTER_NAME --zone ZONE
-  ```
+* After verifying Data Explorer UI works, don't forget to **delete the old cluster.**
 * Since these scripts esentially double the amount of clusters, you may need
   to request more quota for certain resources from GCP. To do so, go to the
   [quotas page on GCP.](https://pantheon.corp.google.com/iam-admin/quotas?usage=USED)
