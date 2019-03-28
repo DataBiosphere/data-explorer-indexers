@@ -101,6 +101,28 @@ assume the service account has this name.
   kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
   ```
 
+## Reindex with no downtime
+* Creating a new index in the existing elasticsearch cluster would cause downtime
+  for your users. If you need to reindex, we reccommend you have the app engine 
+  point to a new elasticsearch service containing the new index. Run the following
+  scripts from project root to create new clusters, deploy elasticsearch, and 
+  reindex:
+  ```
+  kubernetes-elasticsearch-cluster/create-cluster.sh DATASET
+  kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
+  bigquery/deploy/deploy-indexer.sh DATASET
+  ```
+* Verify the indexer was successful:
+  ```
+  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+  ```
+* Then run the deploy-api script in the data-explorer repo.
+* Verify that your new version is deployed, then delete the old clusters:
+  ```
+  gcloud container clusters list # find old cluster name
+  gcloud container clusters delete OLD_CLUSTER_NAME --zone ZONE
+  ```
+
 ## Elasticsearch performance tuning
 
 For a 2.3G BigQuery table, we have found the following `deploy.json` works well:
