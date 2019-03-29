@@ -267,19 +267,23 @@ def index_fields(es, index_name, table, sample_id_column):
     for field in fields:
         if field.name == sample_id_column:
             id_prefix = "samples." + id_prefix
+    # Use simple analyzer so underscores are treated as a word delimiter.
+    # With default analyzer, searching for "baseline" would not find BQ column named "age_at_baseline".
+    # With simple analyzer searching for "baseline" would find BQ column named "age_at_baseline".
     mappings = {
         'dynamic': False,
         'properties': {
-            'description': {
+            'name': {
                 'type': 'text',
                 'fields': {
                     'keyword': {
                         'type': 'keyword',
                         'ignore_above': 256
                     }
-                }
+                },
+                'analyzer': 'simple'
             },
-            'name': {
+            'description': {
                 'type': 'text',
                 'fields': {
                     'keyword': {
@@ -388,6 +392,9 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                     'ignore_above': 256
                 }
             }
+            # Use simple analyzer so underscores are treated as a word delimiter.
+            # Underscores in BQ column contents are not as common as underscores in column names, but
+            # some datasets have them (such as Baseline).
             properties[field_name]['analyzer'] = 'simple'
         elif es_field_type == 'date':
             properties[field_name] = _get_datetime_formatted_string(
