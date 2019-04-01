@@ -13,6 +13,7 @@ fi
 
 dataset=$1
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
+gcloud config set project ${project_id}
 
 # Need to get cluster name by sorting the list of clusters, and choosing to
 # use the one with the greatest timestamp (most recent)
@@ -26,7 +27,6 @@ echo "Deploying Elasticsearch in cluster ${bold}$cluster_name${normal} for" \
   "${bold}dataset" "$dataset${normal} in ${bold}project $project_id${normal}"
 echo
 
-gcloud config set project $project_id
 gcloud container clusters get-credentials ${cluster_name} --zone ${zone}
 
 # select (.!=null) makes jq return empty string instead of null
