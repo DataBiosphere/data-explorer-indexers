@@ -13,7 +13,7 @@ fi
 
 dataset=$1
 project_id=$(jq --raw-output '.project_id' dataset_config/${dataset}/deploy.json)
-gcloud config set project $project_id
+gcloud config set project ${project_id}
 
 # Need to get cluster name by sorting the list of clusters, and choosing to
 # use the one with the greatest timestamp (most recent)
