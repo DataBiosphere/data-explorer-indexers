@@ -59,75 +59,51 @@ assume the service account has this name.
 
 
 ## Run Elasticsearch on GKE
-* From project root, run:
-  ```
-  kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
-  ```
-  Where DATASET is the name of the config directory in `dataset_config`.
-* Test that Elasticsearch is up:
-  ```
-  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
-  ```
+From project root, run:
+```
+kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
+# Test that Elasticsearch is up
+kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+```
+Where DATASET is the name of the config directory in `dataset_config`.
 
 ## Run Indexer on GKE
-* If you did the "Run Elasticsearch on GKE" step a while ago, run
-  these commands to point `gcloud` and `kubectl` to the right project.
-  ```
-  # See what projects gcloud and kubectl are configured for
-  gcloud config get-value project
-  kubectl config current-context
-  # Point gcloud and kubetl to the right project
-  gcloud config set project PROJECT
-  gcloud container clusters get-credentials elasticsearch-cluster --zone ZONE
-  ```
-  Where `ZONE` is the
-  [zone](https://console.cloud.google.com/kubernetes/list) in which
-  elasticsearch-cluster is running, e.g. `us-central1-a`.
-* We recommend you delete the index, to start from a clean slate.
-  ```
-  kubectl exec -it es-data-0 -- curl -XDELETE localhost:9200/DATASET*
-  ```
-  Where DATASET is the name of the config directory in `dataset_config`.
-* Make sure the files in `dataset_config/DATASET` are filled out.
-  * Make sure `deploy.json` (and the `authorization_domain` field in
-    `dataset.json`, if the dataset is private) are filled out.
-* From project root, run:
-  ```
-  bigquery/deploy/deploy-indexer.sh DATASET
-  kubectl logs -f $(kubectl get pods | awk '/bq-indexer/ {print $1;exit}')
-  ```
-* Verify the indexer was successful:
-  ```
-  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
-  ```
+Make sure the files in `dataset_config/DATASET` are filled out, Including `deploy.json`, and the `authorization_domain` field in
+`dataset.json`, if the dataset is private.
+
+Run indexer:
+```
+util/setup-gcloud.sh DATASET
+# We recommend deleting the index to start from a clean slate
+kubectl exec -it es-data-0 -- curl -XDELETE localhost:9200/DATASET*
+bigquery/deploy/deploy-indexer.sh DATASET
+kubectl logs -f $(kubectl get pods | awk '/bq-indexer/ {print $1;exit}')
+# Verily indexing was successful
+kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+```
 
 ## Reindex with no downtime
-* If you don't have any users and aren't worried about downtime, the easiest
-  way to reindex is to simply rerun deploy-indexer.sh.
-  ```
-  # We recommend deleting the index to start from a clean slate
-  kubectl exec -it es-data-0 -- curl -XDELETE localhost:9200/DATASET*
-  bigquery/deploy/deploy-indexer.sh DATASET
-  # Verily indexing was successful
-  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
-  ```
-* If you have users and don't want them to experience downtime, you can create
-  a second cluster.
-  ```
-  kubernetes-elasticsearch-cluster/create-cluster.sh DATASET
-  kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
-  # Verily elasticsearch was deployed
-  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
-  bigquery/deploy/deploy-indexer.sh DATASET
-  # Verily indexing was successful
-  kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
-  # Run from data-explorer repo
-  deploy/deploy-api.sh DATASET
-  ```
-* After verifying Data Explorer UI works, don't forget to **delete the old cluster.**
-* Since these scripts esentially double the amount of clusters, you may need
-  to request more quota for certain resources from GCP. To do so, go to the
-  [quotas page on GCP.](https://pantheon.corp.google.com/iam-admin/quotas?usage=USED)
+If you don't have any users and aren't worried about downtime, the easiest
+way to reindex is to simply rerun the commands in the previous section.
+
+If you have users and don't want them to experience downtime, you can create
+a second cluster:
+```
+kubernetes-elasticsearch-cluster/create-cluster.sh DATASET
+kubernetes-elasticsearch-cluster/deploy-es.sh DATASET
+# Verily elasticsearch was deployed
+kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+bigquery/deploy/deploy-indexer.sh DATASET
+# Verily indexing was successful
+kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
+# Run from data-explorer repo
+deploy/deploy-api.sh DATASET
+```
+After verifying Data Explorer UI works, don't forget to **delete the old cluster.**
+
+Since these scripts essentially double the amount of clusters, you may need
+to request more quota for certain resources from GCP. To do so, go to the
+[quotas page on GCP.](https://console.cloud.google.com/iam-admin/quotas?usage=USED)
 
 ## Elasticsearch performance tuning
 
@@ -167,12 +143,9 @@ give the data nodes more cpu. We can do this by changing the data node
 
 ### Query performance
 
-If your Data Explorer UI has [enable_search_values](https://github.com/DataBiosphere/data-explorer/blob/2daf10777470b17f3f43df1685eca0e41323389b/dataset_config/template/ui.json#L24)
-set to true, Elasticsearch queries may be slow. For example, if I type `pre`
-into the Data Explorer UI search box, it may take 5+ seconds before I get
-results back.
+If you type something into search box and it takes more than 5 seconds for
+results to appear, try increasing `node_pool_num_nodes` to 5.
 
-In `deploy.json`, try increasing `node_pool_num_nodes` to 5.
 By default, Elasticsearch indices use 5 shards. With 5 replicas, each replica
 will have 1 shard. (As opposed to one replica having 2 shards and being a
 bottleneck.)
@@ -183,8 +156,7 @@ This only works on Linux machines because [docker host networking](https://docs.
 only works on Linux machines.
 
 ```
-gcloud config set project MY_PROJECT
-gcloud container clusters get-credentials elasticsearch-cluster --zone MY_ZONE
+util/setup-gcloud.sh DATASET
 kubectl port-forward es-data-0 9200:9200
 # Now Chrome tab with localhost:9200/_cat/indices?v works
 # Run this from inside data-explorer repo
