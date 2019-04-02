@@ -143,12 +143,9 @@ give the data nodes more cpu. We can do this by changing the data node
 
 ### Query performance
 
-If your Data Explorer UI has [enable_search_values](https://github.com/DataBiosphere/data-explorer/blob/2daf10777470b17f3f43df1685eca0e41323389b/dataset_config/template/ui.json#L24)
-set to true, Elasticsearch queries may be slow. For example, if I type `pre`
-into the Data Explorer UI search box, it may take 5+ seconds before I get
-results back.
+If you type something into search box and it takes more than 5 seconds for
+results to appear, try increasing `node_pool_num_nodes` to 5.
 
-In `deploy.json`, try increasing `node_pool_num_nodes` to 5.
 By default, Elasticsearch indices use 5 shards. With 5 replicas, each replica
 will have 1 shard. (As opposed to one replica having 2 shards and being a
 bottleneck.)
