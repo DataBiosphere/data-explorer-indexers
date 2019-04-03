@@ -98,8 +98,9 @@ bigquery/deploy/deploy-indexer.sh DATASET
 kubectl exec -it es-data-0 curl localhost:9200/_cat/indices?v
 # Run from data-explorer repo
 deploy/deploy-api.sh DATASET
+# If everything looks good, delete old cluster. Run from this repo:
+util/delete-cluster.sh DATASET
 ```
-After verifying Data Explorer UI works, don't forget to **delete the old cluster.**
 
 Since these scripts essentially double the amount of clusters, you may need
 to request more quota for certain resources from GCP. To do so, go to the
