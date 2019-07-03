@@ -102,11 +102,11 @@ def maybe_create_elasticsearch_index(es, elasticsearch_url, index_name):
     """Creates Elasticsearchindex if it doesn't already exist."""
 
     if es.indices.exists(index=index_name):
-        logger.info(
-            'Using existing %s index at %s.' % (index_name, elasticsearch_url))
+        logger.info('Using existing %s index at %s.' %
+                    (index_name, elasticsearch_url))
     else:
-        logger.info(
-            'Creating %s index at %s.' % (index_name, elasticsearch_url))
+        logger.info('Creating %s index at %s.' %
+                    (index_name, elasticsearch_url))
         es.indices.create(
             index=index_name,
             body={

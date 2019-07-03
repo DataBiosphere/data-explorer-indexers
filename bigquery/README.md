@@ -136,3 +136,10 @@ So the basic flow is:
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
 - Then if you want to run Data Explorer UI, don't include `elasticsearch` in
   `docker-compose up`: `docker-compose up --build -t 0 nginx_proxy ui apise kibana`
+
+### Authenticating as a different user
+
+To see which Google account you are authenticated to GCP as, run `gcloud auth list`.
+If you need to run the indexer as a different account (eg because the other
+account has BigQuery access), run `gcloud auth application-default login` and
+select the other account.
