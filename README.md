@@ -38,6 +38,26 @@ document:
 }
 ```
 
+Participant fields can optionally have time series data, in which case the field's value is an object that stores values over different times. For example, here's an excerpt of a `framingham_teaching` document with time series data for two participant fields:
+
+```
+"_id" : "68397",
+"_source" : {
+  "bvdp-experiment-test.fram_teaching.frmgham2.DIABETES" : {
+    "1" : "0",
+    "_is_time_series" : true,
+    "2" : "0",
+    "3" : "0"
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.HEARTRTE" : {
+    "1" : "86",
+    "_is_time_series" : true,
+    "2" : "60",
+    "3" : "80"
+  }
+}
+```
+
 #### Fields index
 
 This index is used for the search box:

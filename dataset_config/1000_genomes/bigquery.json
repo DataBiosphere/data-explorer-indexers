@@ -30,5 +30,6 @@
         "WGS Low Coverage CRAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_cram",
         "Exome BAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bam",
         "Exome CRAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_cram"
-   }
+    },
+    "time_series_column": ""
 }

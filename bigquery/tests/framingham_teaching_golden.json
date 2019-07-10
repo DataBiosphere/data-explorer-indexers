@@ -1,0 +1,177 @@
+{
+  "bvdp-experiment-test.fram_teaching.frmgham2.AGE": {
+    "1": "66",
+    "2": "72",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.ANGINA": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.ANYCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.BMI": {
+    "1": 23.48,
+    "2": 24.74,
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.BPMEDS": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.CIGPDAY": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.CURSMOKE": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.CVD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.DEATH": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.DIABETES": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.DIABP": {
+    "1": 90,
+    "2": 94,
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.GLUCOSE": {
+    "1": "57",
+    "2": "76",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.HEARTRTE": {
+    "1": "80",
+    "2": "80",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.HOSPMI": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.HYPERTEN": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.MI_FCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.PREVAP": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.PREVCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.PREVHYP": {
+    "1": "0",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.PREVMI": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.PREVSTRK": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.SEX": {
+    "1": "2",
+    "2": "2",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.STROKE": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.SYSBP": {
+    "1": 161,
+    "2": 176,
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIME": {
+    "1": "0",
+    "2": "2108",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMEAP": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMECHD": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMECVD": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMEDTH": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMEHYP": {
+    "1": "1444",
+    "2": "1444",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMEMI": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMEMIFC": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TIMESTRK": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.TOTCHOL": {
+    "1": "304",
+    "2": "278",
+    "_is_time_series": true
+  },
+  "bvdp-experiment-test.fram_teaching.frmgham2.educ": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  }
+}

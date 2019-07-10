@@ -1,0 +1,353 @@
+[
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.CIGPDAY",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "CIGPDAY"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PREVCHD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PREVCHD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIME",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIME"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.MI_FCHD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "MI_FCHD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.STROKE",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "STROKE"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.HYPERTEN",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "HYPERTEN"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMEMIFC",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMEMIFC"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.HEARTRTE",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "HEARTRTE"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.GLUCOSE",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "GLUCOSE"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PERIOD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PERIOD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.HDLC",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "HDLC"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMESTRK",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMESTRK"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMEDTH",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMEDTH"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.SEX",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "SEX"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.SYSBP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "SYSBP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.CURSMOKE",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "CURSMOKE"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.BMI",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "BMI"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.DIABETES",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "DIABETES"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMEAP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMEAP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMEMI",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMEMI"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMECVD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMECVD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.RANDID",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "RANDID"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.AGE",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "AGE"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.DIABP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "DIABP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.LDLC",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "LDLC"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.DEATH",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "DEATH"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMECHD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMECHD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TIMEHYP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TIMEHYP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.TOTCHOL",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "TOTCHOL"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.BPMEDS",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "BPMEDS"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.educ",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "educ"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PREVAP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PREVAP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PREVMI",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PREVMI"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PREVSTRK",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PREVSTRK"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.PREVHYP",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "PREVHYP"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.ANGINA",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "ANGINA"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.HOSPMI",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "HOSPMI"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.ANYCHD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "ANYCHD"
+    },
+    "_type": "type"
+  },
+  {
+    "_id": "bvdp-experiment-test.fram_teaching.frmgham2.CVD",
+    "_index": "framingham_teaching_fields",
+    "_score": 1,
+    "_source": {
+      "name": "CVD"
+    },
+    "_type": "type"
+  }
+]
