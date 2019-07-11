@@ -1,0 +1,177 @@
+{
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.AGE": {
+    "1": "66",
+    "2": "72",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANGINA": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANYCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BMI": {
+    "1": 23.48,
+    "2": 24.74,
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BPMEDS": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CIGPDAY": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CURSMOKE": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CVD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DEATH": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABETES": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABP": {
+    "1": 90,
+    "2": 94,
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE": {
+    "1": "57",
+    "2": "76",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE": {
+    "1": "80",
+    "2": "80",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HOSPMI": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HYPERTEN": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.MI_FCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVAP": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVCHD": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVHYP": {
+    "1": "0",
+    "2": "1",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVMI": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVSTRK": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SEX": {
+    "1": "2",
+    "2": "2",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.STROKE": {
+    "1": "0",
+    "2": "0",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SYSBP": {
+    "1": 161,
+    "2": 176,
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIME": {
+    "1": "0",
+    "2": "2108",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEAP": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECHD": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECVD": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEDTH": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEHYP": {
+    "1": "1444",
+    "2": "1444",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMI": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMIFC": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMESTRK": {
+    "1": "3646",
+    "2": "3646",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TOTCHOL": {
+    "1": "304",
+    "2": "278",
+    "_is_time_series": true
+  },
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.educ": {
+    "1": "1",
+    "2": "1",
+    "_is_time_series": true
+  }
+}

@@ -1,14 +1,14 @@
 {
-  "framingham_teaching": {
+  "framingham_heart_study_teaching": {
     "mappings": {
       "type": {
         "dynamic": "false",
         "properties": {
-          "bvdp-experiment-test": {
+          "verily-public-data": {
             "properties": {
-              "fram_teaching": {
+              "framingham_heart_study_teaching": {
                 "properties": {
-                  "frmgham2": {
+                  "framingham_heart_study_teaching": {
                     "properties": {
                       "AGE": {
                         "properties": {
