@@ -69,16 +69,17 @@ In [`bigquery.json`](https://github.com/DataBiosphere/data-explorer-indexers/blo
 the dataset curator specifies:
 
 - A list of BigQuery tables
-- Name of participant id and sample id columns
+- Name of participant id, sample id, and time series columns
 
 For each table, the entire contents of the table are indexed.
 (The dataset curator specifies which fields appear in the Data
 Explorer UI in [`ui.json`](https://github.com/DataBiosphere/data-explorer/blob/master/dataset_config/template/ui.json).)
 
 For the main dataset index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#main-dataset-index)):
-- Each table must contain the participant id column, and optionally can contain the sample id column.
-- If a table contains only the participant id column, the other columns are treated as participant fields and indexed in a top-level participant document.
-- If a table has both id columns, the other columns are treated as sample fields and are added to a nested sample object under the participant document. Note that there cannot be more than one row per (partcipant x sample) pair.
+- Each table must contain the participant id column, and optionally can contain either the sample id column or the time series column, but not both.
+- If a table does not contain the sample id column or the time series column, then all columns other than the participant id column are treated as participant fields and indexed in a top-level participant document.
+- If a table has the participant id and sample id column, then all other columns are treated as sample fields and are added to a nested sample object under the participant document. Note that there cannot be more than one row per (participant x sample) pair.
+- If a table has the participant id and time series column, then all other columns are treated as participant fields with time series data. The time series column cannot contain any null values. There should only be one row per (participant x time series) pair; if there are multiple such rows, the values from one row will take precedence, and other rows will be ignored by the indexer.
 
 For the fields index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#fields-index)):
 - Document id is the name of the Elasticsearch field from the main dataset index

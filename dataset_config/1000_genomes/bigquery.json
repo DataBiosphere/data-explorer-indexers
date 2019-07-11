@@ -14,7 +14,10 @@
 //   An (optional) map from file type to BigQuery column containing file paths.
 //   File types will appear in special Samples Overview facet. BigQuery column
 //   format is: <project>.<dataset>.<table>.<column>
-{  
+// time_series_column:
+//   The (optional) name of BigQuery column that holds the time
+//   associated with a data point.
+{
     "table_names":[
         "verily-public-data.human_genome_variants.1000_genomes_participant_info",
         "verily-public-data.human_genome_variants.1000_genomes_sample_info"
@@ -30,5 +33,6 @@
         "WGS Low Coverage CRAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.wgs_low_cov_mapped_cram",
         "Exome BAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bam",
         "Exome CRAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_cram"
-   }
+    },
+    "time_series_column": ""
 }
