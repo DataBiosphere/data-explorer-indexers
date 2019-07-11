@@ -14,12 +14,11 @@ VERSION = "1.0.0"
 
 REQUIRES = ['elasticsearch', 'jsmin']
 
-setup(
-    name=NAME,
-    version=VERSION,
-    description="Utilities for Data Explorer indexers",
-    author_email="",
-    url="",
-    install_requires=REQUIRES,
-    packages=find_packages(),
-    include_package_data=True)
+setup(name=NAME,
+      version=VERSION,
+      description="Utilities for Data Explorer indexers",
+      author_email="",
+      url="",
+      install_requires=REQUIRES,
+      packages=find_packages(),
+      include_package_data=True)

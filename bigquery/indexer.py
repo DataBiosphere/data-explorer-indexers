@@ -62,11 +62,10 @@ def _environ_or_required(key):
 
 def _parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--elasticsearch_url',
-        type=str,
-        help='Elasticsearch url. Must start with http://',
-        default=os.environ.get('ELASTICSEARCH_URL'))
+    parser.add_argument('--elasticsearch_url',
+                        type=str,
+                        help='Elasticsearch url. Must start with http://',
+                        default=os.environ.get('ELASTICSEARCH_URL'))
     parser.add_argument(
         '--dataset_config_dir',
         type=str,
@@ -125,8 +124,8 @@ def _rows_from_export(
 ):
     bucket = storage_client.get_bucket(bucket_name)
     for blob in bucket.list_blobs(prefix=export_obj_prefix):
-        logger.info(
-            'Reading sharded BigQuery JSON export file: %s' % blob.path)
+        logger.info('Reading sharded BigQuery JSON export file: %s' %
+                    blob.path)
         json_text = blob.download_as_string()
         for row in json_text.split('\n'):
             # Ignore any blank lines
@@ -156,9 +155,10 @@ def _rows_from_export(
 # In order to keep the center field, one must use a script. See
 # https://discuss.elastic.co/t/updating-nested-objects/87586/2 and
 # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docs-update.html
-def _sample_scripts_by_id_from_export(
-        storage_client, bucket_name, export_obj_prefix, table_name,
-        participant_id_column, sample_id_column, sample_file_columns):
+def _sample_scripts_by_id_from_export(storage_client, bucket_name,
+                                      export_obj_prefix, table_name,
+                                      participant_id_column, sample_id_column,
+                                      sample_file_columns):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
@@ -266,8 +266,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
     if table_is_view:
         # BigQuery cannot export data from a view. So as a workaround,
         # create a table from the view and use that instead.
-        logger.info(
-            '%s is a view, attempting to create new table' % table_name)
+        logger.info('%s is a view, attempting to create new table' %
+                    table_name)
         table = _create_table_from_view(bq_client, table)
 
     job = bq_client.extract_table(
@@ -301,8 +301,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
     if table_is_view:
         # Delete the temporary copy table we created
         bq_client.delete_table(table)
-        logger.info(
-            'Deleted temporary copy table %s' % _table_name_from_table(table))
+        logger.info('Deleted temporary copy table %s' %
+                    _table_name_from_table(table))
 
 
 def index_fields(es, index_name, table, sample_id_column):
@@ -451,10 +451,12 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
         entry = {}
 
         if es_field_type == 'nested' or es_field_type == 'object':
-            inner_mappings = create_mappings(
-                es, index_name, field.fields, participant_id_column,
-                sample_id_column, sample_file_columns, time_series_column,
-                time_series_vals)
+            inner_mappings = create_mappings(es, index_name, field.fields,
+                                             participant_id_column,
+                                             sample_id_column,
+                                             sample_file_columns,
+                                             time_series_column,
+                                             time_series_vals)
             properties[field_name]['properties'] = inner_mappings['properties']
         elif es_field_type == 'text':
             entry = {
@@ -564,8 +566,8 @@ def main():
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
-    deploy_project_id = indexer_util.parse_json_file(deploy_config_path)[
-        'project_id']
+    deploy_project_id = indexer_util.parse_json_file(
+        deploy_config_path)['project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   index_name)
