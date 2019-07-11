@@ -201,9 +201,8 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
 
 
 def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
-                                         export_obj_prefix, table_name,
-                                         participant_id_column,
-                                         time_series_column):
+                                   export_obj_prefix, table_name,
+                                   participant_id_column, time_series_column):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
@@ -401,14 +400,15 @@ def _add_field_to_mapping(properties, field_name, entry, time_series_column,
     if time_series_column:
         properties[field_name] = {
             'type': 'object',
-            'properties': {
-                tsv: entry for tsv in time_series_vals
-            }
+            'properties': {tsv: entry
+                           for tsv in time_series_vals}
         }
         # _is_time_series should only ever be set to true; its
         # existence in the mapping is used by the data explorer to
         # determine which fields have time series data
-        properties[field_name]['properties']['_is_time_series'] = {'type': 'boolean'}
+        properties[field_name]['properties']['_is_time_series'] = {
+            'type': 'boolean'
+        }
     else:
         properties[field_name] = entry
 
@@ -453,7 +453,8 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
         if es_field_type == 'nested' or es_field_type == 'object':
             inner_mappings = create_mappings(
                 es, index_name, field.fields, participant_id_column,
-                sample_id_column, sample_file_columns, time_series_column, time_series_vals)
+                sample_id_column, sample_file_columns, time_series_column,
+                time_series_vals)
             properties[field_name]['properties'] = inner_mappings['properties']
         elif es_field_type == 'text':
             entry = {
@@ -481,8 +482,9 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
         has_field_name = _get_has_file_field_name(field_name,
                                                   sample_file_columns)
         if has_field_name:
-            _add_field_to_mapping(properties, has_field_name, {'type': 'boolean'},
-                                  time_series_column, time_series_vals)
+            _add_field_to_mapping(properties, has_field_name,
+                                  {'type': 'boolean'}, time_series_column,
+                                  time_series_vals)
 
     # Default limit on total number of fields is too small for some datasets.
     es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
@@ -562,8 +564,8 @@ def main():
                                         'bigquery.json')
     bigquery_config = indexer_util.parse_json_file(bigquery_config_path)
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
-    deploy_project_id = indexer_util.parse_json_file(
-        deploy_config_path)['project_id']
+    deploy_project_id = indexer_util.parse_json_file(deploy_config_path)[
+        'project_id']
     es = indexer_util.get_es_client(args.elasticsearch_url)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   index_name)
@@ -588,8 +590,7 @@ def main():
         index_fields(es, fields_index_name, table, sample_id_column)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
-                        sample_file_columns, table_tsc,
-                        time_series_vals)
+                        sample_file_columns, table_tsc, time_series_vals)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
                     sample_file_columns, table_tsc, deploy_project_id)

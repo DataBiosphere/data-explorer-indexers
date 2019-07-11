@@ -90,9 +90,8 @@ def _wait_elasticsearch_healthy(es):
 
 def get_es_client(elasticsearch_url):
     # Retry flags needed for large datasets.
-    es = Elasticsearch([elasticsearch_url],
-                       retry_on_timeout=True,
-                       max_retries=10)
+    es = Elasticsearch(
+        [elasticsearch_url], retry_on_timeout=True, max_retries=10)
 
     _wait_elasticsearch_healthy(es)
     return es
