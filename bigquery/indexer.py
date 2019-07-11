@@ -74,8 +74,8 @@ def _parse_args():
     return parser.parse_args()
 
 
-def get_time_series_vals(bq_client, time_series_column, table_name):
-    if not time_series_column:
+def get_time_series_vals(bq_client, time_series_column, table_name, table):
+    if time_series_column not in [field.name for field in table.schema]:
         return []
 
     sql = 'SELECT DISTINCT %s from `%s`' % (time_series_column, table_name)
@@ -248,7 +248,7 @@ def _create_table_from_view(bq_client, view):
 
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
-                time_series_column, deploy_project_id):
+                time_series_column, time_series_vals, deploy_project_id):
     table_name = _table_name_from_table(table)
     bucket_name = '%s-table-export' % deploy_project_id
     table_export_bucket = storage_client.lookup_bucket(bucket_name)
@@ -280,23 +280,22 @@ def index_table(es, bq_client, storage_client, index_name, table,
     job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
         # Cannot have time series data for samples.
-        assert not time_series_column
+        assert not time_series_vals
         scripts_by_id = _sample_scripts_by_id_from_export(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, sample_id_column, sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
+    elif time_series_vals:
+        assert time_series_column in [f.name for f in table.schema]
+        scripts_by_id = _tsv_scripts_by_id_from_export(
+            storage_client, bucket_name, export_obj_prefix, table_name,
+            participant_id_column, time_series_column)
+        indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     else:
-        if time_series_column:
-            assert time_series_column in [f.name for f in table.schema]
-            scripts_by_id = _tsv_scripts_by_id_from_export(
-                storage_client, bucket_name, export_obj_prefix, table_name,
-                participant_id_column, time_series_column)
-            indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
-        else:
-            docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
-                                                 export_obj_prefix, table_name,
-                                                 participant_id_column)
-            indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+        docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
+                                             export_obj_prefix, table_name,
+                                             participant_id_column)
+        indexer_util.bulk_index_docs(es, index_name, docs_by_id)
 
     if table_is_view:
         # Delete the temporary copy table we created
@@ -395,9 +394,8 @@ def _get_has_file_field_name(field_name, sample_file_columns):
     return ''
 
 
-def _add_field_to_mapping(properties, field_name, entry, time_series_column,
-                          time_series_vals):
-    if time_series_column:
+def _add_field_to_mapping(properties, field_name, entry, time_series_vals):
+    if time_series_vals:
         properties[field_name] = {
             'type': 'object',
             'properties': {tsv: entry
@@ -479,14 +477,13 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
 
         if entry:
             _add_field_to_mapping(properties, field_name, entry,
-                                  time_series_column, time_series_vals)
+                                  time_series_vals)
 
         has_field_name = _get_has_file_field_name(field_name,
                                                   sample_file_columns)
         if has_field_name:
             _add_field_to_mapping(properties, has_field_name,
-                                  {'type': 'boolean'}, time_series_column,
-                                  time_series_vals)
+                                  {'type': 'boolean'}, time_series_vals)
 
     # Default limit on total number of fields is too small for some datasets.
     es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
@@ -583,19 +580,17 @@ def main():
 
     for table_name in bigquery_config['table_names']:
         table = read_table(bq_client, table_name)
-        if time_series_column in [field.name for field in table.schema]:
-            table_tsc = time_series_column
-        else:
-            table_tsc = ""
-        time_series_vals = get_time_series_vals(bq_client, table_tsc,
-                                                table_name)
+        time_series_vals = get_time_series_vals(bq_client, time_series_column,
+                                                table_name, table)
         index_fields(es, fields_index_name, table, sample_id_column)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
-                        sample_file_columns, table_tsc, time_series_vals)
+                        sample_file_columns, time_series_column,
+                        time_series_vals)
         index_table(es, bq_client, storage_client, index_name, table,
                     participant_id_column, sample_id_column,
-                    sample_file_columns, table_tsc, deploy_project_id)
+                    sample_file_columns, time_series_column, time_series_vals,
+                    deploy_project_id)
 
     # Ensure all of the newly indexed documents are loaded into ES.
     time.sleep(5)

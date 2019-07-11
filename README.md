@@ -45,20 +45,16 @@ Participant fields can optionally have time series data, in which case the field
 "_source" : {
   "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE" : {
     "1" : "79",
-    "_is_time_series" : true,
     "2" : "78",
     "3" : "110"
   },
   "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE" : {
     "1" : "86",
-    "_is_time_series" : true,
     "2" : "60",
     "3" : "80"
   }
 }
 ```
-
-All objects corresponding to participant fields with time series data should contain the field `_is_time_series`, which should be set to true, as in the excerpt above. No other objects in the index should contain a field with this name.
 
 #### Fields index
 
