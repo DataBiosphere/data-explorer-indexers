@@ -79,7 +79,7 @@ For the main dataset index (see [1000 Genomes example document](https://github.c
 - Each table must contain the participant id column, and optionally can contain either the sample id column or the time series column, but not both.
 - If a table does not contain the sample id column or the time series column, then all columns other than the participant id column are treated as participant fields and indexed in a top-level participant document.
 - If a table has the participant id and sample id columns, then all other columns are treated as sample fields and are added to a nested sample object under the participant document. Note that there cannot be more than one row per (participant x sample) pair.
-- If a table has the participant id and time series columns, then all other columns are treated as participant fields with time series data. The time series column cannot contain any null values.
+- If a table has the participant id and time series columns, then all other columns are treated as participant fields with time series data. The time series column cannot contain any null values. There should only be one row per (participant x time series) pair; if there are multiple such rows, the values from one row will take precedence, and other rows will be ignored by the indexer.
 
 For the fields index (see [1000 Genomes example document](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/README.md#fields-index)):
 - Document id is the name of the Elasticsearch field from the main dataset index
@@ -137,3 +137,10 @@ So the basic flow is:
 - In another window, run `DATASET_CONFIG_DIR=dataset_config/<my dataset> docker-compose up --build indexer`
 - Then if you want to run Data Explorer UI, don't include `elasticsearch` in
   `docker-compose up`: `docker-compose up --build -t 0 nginx_proxy ui apise kibana`
+
+### Authenticating as a different user
+
+To see which Google account you are authenticated to GCP as, run `gcloud auth list`.
+If you need to run the indexer as a different account (eg because the other
+account has BigQuery access), run `gcloud auth application-default login` and
+select the other account.

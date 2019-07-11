@@ -38,18 +38,18 @@ document:
 }
 ```
 
-Participant fields can optionally have time series data, in which case the field's value is an object that stores values over different times. For example, here's an excerpt of a `framingham_teaching` document with time series data for two participant fields:
+Participant fields can optionally have time series data, in which case the field's value is an object that stores values over different times. For example, here's an excerpt of a `framingham_heart_study_teaching` document with time series data for two participant fields:
 
 ```
 "_id" : "68397",
 "_source" : {
-  "bvdp-experiment-test.fram_teaching.frmgham2.DIABETES" : {
-    "1" : "0",
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE" : {
+    "1" : "79",
     "_is_time_series" : true,
-    "2" : "0",
-    "3" : "0"
+    "2" : "78",
+    "3" : "110"
   },
-  "bvdp-experiment-test.fram_teaching.frmgham2.HEARTRTE" : {
+  "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE" : {
     "1" : "86",
     "_is_time_series" : true,
     "2" : "60",
@@ -57,6 +57,8 @@ Participant fields can optionally have time series data, in which case the field
   }
 }
 ```
+
+All objects corresponding to participant fields with time series data should contain the field `_is_time_series`, which should be set to true, as in the excerpt above. No other objects in the index should contain a field with this name.
 
 #### Fields index
 

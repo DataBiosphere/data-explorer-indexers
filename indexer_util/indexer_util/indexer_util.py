@@ -151,7 +151,7 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
 
     _prepare_for_indexing(es)
     # For large datasets, the default timeout of 10s is sometimes not enough.
-    bulk(es, es_actions(scripts_by_id), request_timeout=600)
+    bulk(es, es_actions(scripts_by_id), request_timeout=300)
     _complete_indexing(es)
 
 
@@ -173,5 +173,5 @@ def bulk_index_docs(es, index_name, docs_by_id):
 
     _prepare_for_indexing(es)
     # For large datasets, the default timeout of 10s is sometimes not enough.
-    bulk(es, es_actions(docs_by_id), request_timeout=1200)
+    bulk(es, es_actions(docs_by_id), request_timeout=300)
     _complete_indexing(es)
