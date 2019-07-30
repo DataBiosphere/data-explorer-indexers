@@ -81,7 +81,9 @@ def get_time_series_vals(bq_client, time_series_column, table_name, table):
     sql = 'SELECT DISTINCT %s from `%s`' % (time_series_column, table_name)
     query_job = bq_client.query(sql)
     query_job.result()
-    return [str(row[time_series_column]).replace('.', '_') for row in query_job]
+    return [
+        str(row[time_series_column]).replace('.', '_') for row in query_job
+    ]
 
 
 def _table_name_from_table(table):
@@ -202,8 +204,7 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
 
 def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                    export_obj_prefix, table_name,
-                                   participant_id_column,
-                                   time_series_column,
+                                   participant_id_column, time_series_column,
                                    time_series_type):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
