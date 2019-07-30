@@ -210,6 +210,11 @@ def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
+        # Say time series value is 4.5. If the field name ended with
+        # "4.5", then when we lookup this field in Elasticsearch,
+        # Elasticsearch thinks we are looking for a field "5" inside
+        # a nested object named "4".  Use _ instead of . to avoid this
+        # confusion.
         tsv = str(time_series_type(row[time_series_column])).replace('.', '_')
         del row[time_series_column]
         row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
