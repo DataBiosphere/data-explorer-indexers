@@ -95,10 +95,14 @@ def _table_name_from_table(table):
     return project_id + '.' + dataset_table_id
 
 
-def _field_docs_by_id(id_prefix, name_prefix, fields):
+def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
+                      sample_id_column):
     # This method is recursive to handle nested fields (BigQuery RECORD columns).
     # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
+        if (field.name == participant_id_column
+                or field.name == sample_id_column):
+            continue
         field_name = field.name
         field_id = field.name
         if name_prefix:
@@ -110,7 +114,9 @@ def _field_docs_by_id(id_prefix, name_prefix, fields):
         # 'address.state' and 'address.zip'.
         if field.field_type == 'RECORD':
             for field_doc in _field_docs_by_id(field_id, field_name,
-                                               field.fields):
+                                               field.fields,
+                                               participant_id_column,
+                                               sample_id_column):
                 yield field_doc
         else:
             field_dict = {'name': field_name}
@@ -313,7 +319,8 @@ def index_table(es, bq_client, storage_client, index_name, table,
                     _table_name_from_table(table))
 
 
-def index_fields(es, index_name, table, sample_id_column):
+def index_fields(es, index_name, table, participant_id_column,
+                 sample_id_column):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -354,7 +361,8 @@ def index_fields(es, index_name, table, sample_id_column):
         }
     }
 
-    field_docs = _field_docs_by_id(id_prefix, '', fields)
+    field_docs = _field_docs_by_id(id_prefix, '', fields,
+                                   participant_id_column, sample_id_column)
     es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
@@ -591,7 +599,8 @@ def main():
         table = read_table(bq_client, table_name)
         time_series_vals = get_time_series_vals(bq_client, time_series_column,
                                                 table_name, table)
-        index_fields(es, fields_index_name, table, sample_id_column)
+        index_fields(es, fields_index_name, table, participant_id_column,
+                     sample_id_column)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns, time_series_column,

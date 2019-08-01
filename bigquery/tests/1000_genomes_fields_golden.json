@@ -150,16 +150,6 @@
     "_type": "type"
   },
   {
-    "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.participant_id",
-    "_index": "1000_genomes_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
-      "name": "participant_id"
-    },
-    "_type": "type"
-  },
-  {
     "_id": "verily-public-data.human_genome_variants.1000_genomes_participant_info.Relationship",
     "_index": "1000_genomes_fields",
     "_score": 1,
@@ -476,16 +466,6 @@
     "_source": {
       "description": "From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv",
       "name": "Super_Population"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.participant_id",
-    "_index": "1000_genomes_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
-      "name": "participant_id"
     },
     "_type": "type"
   },
@@ -926,16 +906,6 @@
     "_source": {
       "description": "sample ids for any unknown second order relations",
       "name": "Unknown_Second_Order"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.sample_id",
-    "_index": "1000_genomes_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Identical to Sample in bigquery-public-data.human_genome_variants.1000_genomes_sample_info. This column was created for demonstration purposes.",
-      "name": "sample_id"
     },
     "_type": "type"
   },
