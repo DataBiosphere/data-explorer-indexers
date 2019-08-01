@@ -54,15 +54,6 @@
     "_type": "type"
   },
   {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.RANDID",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "name": "RANDID"
-    },
-    "_type": "type"
-  },
-  {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TOTCHOL",
     "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
