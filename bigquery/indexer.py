@@ -81,7 +81,9 @@ def get_time_series_vals(bq_client, time_series_column, table_name, table):
     sql = 'SELECT DISTINCT %s from `%s`' % (time_series_column, table_name)
     query_job = bq_client.query(sql)
     query_job.result()
-    return [row[time_series_column] for row in query_job]
+    return [
+        str(row[time_series_column]).replace('.', '_') for row in query_job
+    ]
 
 
 def _table_name_from_table(table):
@@ -202,12 +204,18 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
 
 def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                    export_obj_prefix, table_name,
-                                   participant_id_column, time_series_column):
+                                   participant_id_column, time_series_column,
+                                   time_series_type):
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
-        tsv = row[time_series_column]
+        # Say time series value is 4.5. If the field name ended with
+        # "4.5", then when we lookup this field in Elasticsearch,
+        # Elasticsearch thinks we are looking for a field "5" inside
+        # a nested object named "4".  Use _ instead of . to avoid this
+        # confusion.
+        tsv = str(time_series_type(row[time_series_column])).replace('.', '_')
         del row[time_series_column]
         row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
         script = UPDATE_TSV_SCRIPT
@@ -287,9 +295,10 @@ def index_table(es, bq_client, storage_client, index_name, table,
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     elif time_series_vals:
         assert time_series_column in [f.name for f in table.schema]
+        time_series_type = (float if '_' in time_series_vals[0] else int)
         scripts_by_id = _tsv_scripts_by_id_from_export(
             storage_client, bucket_name, export_obj_prefix, table_name,
-            participant_id_column, time_series_column)
+            participant_id_column, time_series_column, time_series_type)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     else:
         docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,

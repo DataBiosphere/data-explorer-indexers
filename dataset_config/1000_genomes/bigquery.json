@@ -16,7 +16,11 @@
 //   format is: <project>.<dataset>.<table>.<column>
 // time_series_column:
 //   The (optional) name of BigQuery column that holds the time
-//   associated with a data point.
+//   associated with a data point. This column must have a numeric
+//   type.
+// time_series_unit:
+//   Unit of time_series_column. If time_series_column is set, this
+//   must be set. Examples: Month, Year.
 {
     "table_names":[
         "verily-public-data.human_genome_variants.1000_genomes_participant_info",
@@ -34,5 +38,6 @@
         "Exome BAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_bam",
         "Exome CRAM":"verily-public-data.human_genome_variants.1000_genomes_sample_info.exome_mapped_cram"
     },
-    "time_series_column": ""
+    "time_series_column": "",
+    "time_series_unit": ""
 }
