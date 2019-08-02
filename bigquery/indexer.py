@@ -89,11 +89,9 @@ def get_time_series_vals(bq_client, time_series_column, table_name, table):
     query_job = bq_client.query(sql)
     query_job.result()
     if None in [row[time_series_column] for row in query_job]:
-        logger.warning('Table %s has null values in time series column %s'
-                       % (table_name, time_series_column))
-    return [
-        _encode_tsv(row[time_series_column]) for row in query_job
-    ]
+        logger.warning('Table %s has null values in time series column %s' %
+                       (table_name, time_series_column))
+    return [_encode_tsv(row[time_series_column]) for row in query_job]
 
 
 def _table_name_from_table(table):
