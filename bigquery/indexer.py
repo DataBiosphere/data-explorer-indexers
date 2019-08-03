@@ -363,7 +363,11 @@ def index_fields(es, index_name, table, participant_id_column,
 
     field_docs = _field_docs_by_id(id_prefix, '', fields,
                                    participant_id_column, sample_id_column)
-    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+    es.indices.put_mapping(doc_type='type',
+                           index=index_name,
+                           body=mappings,
+                           request_timeout=120)
+
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
@@ -504,7 +508,10 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
 
     # Default limit on total number of fields is too small for some datasets.
     es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
-    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+    es.indices.put_mapping(doc_type='type',
+                           index=index_name,
+                           body=mappings,
+                           request_timeout=120)
 
 
 def read_table(bq_client, table_name):
