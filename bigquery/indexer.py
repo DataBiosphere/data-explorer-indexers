@@ -203,8 +203,14 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
     for row in _rows_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
+        # Document id is participant id; don't need it as a field.
         del row[participant_id_column]
-        row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
+        for k in row.keys():
+            # A BigQuery FLOAT column can have Infinity. Elasticsearch float
+            # doesn't handle Infinity, so discard.
+            if row[k] != 'Infinity' and row[k] != '-Infinity':
+                row['%s.%s' % (table_name, k)] = row[k]
+            del row[k]
         yield participant_id, row
 
 
@@ -503,7 +509,7 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                                   {'type': 'boolean'}, time_series_vals)
 
     # Default limit on total number of fields is too small for some datasets.
-    es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
+    es.indices.put_settings({"index.mapping.total_fields.limit": 1000000})
     es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
 
 
