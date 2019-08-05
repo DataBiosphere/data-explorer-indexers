@@ -1,5 +1,5 @@
 {
-  "framingham_heart_study_teaching": {
+  "framingham_heart_study_teaching_dataset": {
     "mappings": {
       "type": {
         "dynamic": "false",

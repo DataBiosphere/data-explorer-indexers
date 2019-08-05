@@ -1,7 +1,7 @@
 [
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CURSMOKE",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "CURSMOKE"
@@ -10,7 +10,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "GLUCOSE"
@@ -19,7 +19,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIME",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIME"
@@ -28,7 +28,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.MI_FCHD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "MI_FCHD"
@@ -37,7 +37,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANYCHD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "ANYCHD"
@@ -46,7 +46,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMESTRK",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMESTRK"
@@ -54,17 +54,8 @@
     "_type": "type"
   },
   {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.RANDID",
-    "_index": "framingham_heart_study_teaching_fields",
-    "_score": 1,
-    "_source": {
-      "name": "RANDID"
-    },
-    "_type": "type"
-  },
-  {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TOTCHOL",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TOTCHOL"
@@ -73,7 +64,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.AGE",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "AGE"
@@ -82,7 +73,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "DIABP"
@@ -91,7 +82,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BMI",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "BMI"
@@ -100,7 +91,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABETES",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "DIABETES"
@@ -109,7 +100,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "HEARTRTE"
@@ -118,7 +109,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVAP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PREVAP"
@@ -127,7 +118,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVMI",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PREVMI"
@@ -136,7 +127,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVSTRK",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PREVSTRK"
@@ -145,7 +136,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVHYP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PREVHYP"
@@ -154,7 +145,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.LDLC",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "LDLC"
@@ -163,7 +154,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMIFC",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMEMIFC"
@@ -172,7 +163,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECVD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMECVD"
@@ -181,7 +172,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEDTH",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMEDTH"
@@ -190,7 +181,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEHYP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMEHYP"
@@ -199,7 +190,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SEX",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "SEX"
@@ -208,7 +199,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CIGPDAY",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "CIGPDAY"
@@ -217,7 +208,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.educ",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "educ"
@@ -226,7 +217,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PERIOD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PERIOD"
@@ -235,7 +226,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HDLC",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "HDLC"
@@ -244,7 +235,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HYPERTEN",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "HYPERTEN"
@@ -253,7 +244,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMI",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMEMI"
@@ -262,7 +253,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVCHD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "PREVCHD"
@@ -271,7 +262,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANGINA",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "ANGINA"
@@ -280,7 +271,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECHD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMECHD"
@@ -289,7 +280,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SYSBP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "SYSBP"
@@ -298,7 +289,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BPMEDS",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "BPMEDS"
@@ -307,7 +298,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DEATH",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "DEATH"
@@ -316,7 +307,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HOSPMI",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "HOSPMI"
@@ -325,7 +316,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.STROKE",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "STROKE"
@@ -334,7 +325,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CVD",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "CVD"
@@ -343,7 +334,7 @@
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEAP",
-    "_index": "framingham_heart_study_teaching_fields",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
       "name": "TIMEAP"
