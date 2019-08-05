@@ -208,7 +208,7 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
         for k in row.keys():
             # A BigQuery FLOAT column can have Infinity. Elasticsearch float
             # doesn't handle Infinity, so discard.
-            if row[k] != 'Infinity':
+            if row[k] != 'Infinity' and row[k] != '-Infinity':
                 row['%s.%s' % (table_name, k)] = row[k]
             del row[k]
         yield participant_id, row
