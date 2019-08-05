@@ -78,6 +78,11 @@ def _encode_tsv(tsv, num_type=str):
     if tsv == None:
         return 'unknown'
     else:
+        # Say time series value is 4.5. If the field name ended with
+        # "4.5", then when we lookup this field in Elasticsearch,
+        # Elasticsearch thinks we are looking for a field "5" inside
+        # a nested object named "4".  Use _ instead of . to avoid this
+        # confusion.
         return str(num_type(tsv)).replace('.', '_')
 
 
@@ -230,11 +235,6 @@ def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
-        # Say time series value is 4.5. If the field name ended with
-        # "4.5", then when we lookup this field in Elasticsearch,
-        # Elasticsearch thinks we are looking for a field "5" inside
-        # a nested object named "4".  Use _ instead of . to avoid this
-        # confusion.
         if time_series_column in row:
             tsv = _encode_tsv(row[time_series_column], time_series_type)
             del row[time_series_column]
