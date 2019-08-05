@@ -10,11 +10,38 @@ For each dataset, two Elasticsearch indices are created:
 1. The main dataset index, named DATASET
 1. The fields index, named DATASET_fields
 
-#### Main dataset index
+The indexers create a facet for each variable in your dataset for faceted search, for example:
+
+![Super Population facet](https://i.imgur.com/qSmeD4l.png)
+
+### Main dataset index
 
 This index is used for faceted search.
 
 Each Elasticsearch document represents a participant. The document id is participant id.  
+
+### Fields index
+
+This index is used for the search box:
+
+![Screenshot of search box](https://i.imgur.com/A595p69.png)
+
+Each document represents a field. The document id is name of the
+Elasticsearch field from the main dataset index. Example fields
+are age, gender, etc. Here's an example document from `1000_genomes_fields`:
+```
+"_id" : "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot",
+"_source" : {
+  "name" : "In_Low_Coverage_Pilot",
+  "description" : "The sample is in the low coverage pilot experiment"
+}
+```
+(We need a separate index because there's no place to put BigQuery column
+descriptions in the main index.)
+
+### Sample file support
+
+If your dataset includes sample files (VCF, BAM, etc), Data Explorer facets can show sample count, instead of participant count. See the [1000 Genomes Data Explorer](https://test-data-explorer.appspot.com). (Look for facets with `(samples)` in the name.)
 
 A participant can have
 zero or more samples. Within a participant document, a sample is a
@@ -38,7 +65,13 @@ document:
 }
 ```
 
-Participant fields can optionally have time series data, in which case the field's value is an object that stores values over different times. For example, here's an excerpt of a `framingham_heart_study_teaching` document with time series data for two participant fields:
+### Time series support
+
+If your dataset contains longitudinal data, Data Explorer can show time series visualizations. See the [Framingham Heart Study Teaching Dataset Data Explorer](https://time-series-data-explorer.appspot.com).
+
+![Time series facet](https://i.imgur.com/2AgdKBY.png)
+
+For example, here's an excerpt of a `framingham_heart_study_teaching` document with time series data for two participant fields:
 
 ```
 "_id" : "68397",
@@ -55,25 +88,6 @@ Participant fields can optionally have time series data, in which case the field
   }
 }
 ```
-
-#### Fields index
-
-This index is used for the search box:
-
-![Screenshot of search box](https://i.imgur.com/A595p69.png)
-
-Each document represents a field. The document id is name of the
-Elasticsearch field from the main dataset index. Example fields
-are age, gender, etc. Here's an example document from `1000_genomes_fields`:
-```
-"_id" : "samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot",
-"_source" : {
-  "name" : "In_Low_Coverage_Pilot",
-  "description" : "The sample is in the low coverage pilot experiment"
-}
-```
-(We need a separate index because there's no place to put BigQuery column
-descriptions in the main index.)
 
 ### One-time setup
 
