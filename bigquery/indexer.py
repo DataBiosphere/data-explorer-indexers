@@ -74,6 +74,18 @@ def _parse_args():
     return parser.parse_args()
 
 
+def _encode_tsv(tsv, num_type=str):
+    if tsv == None:
+        return 'unknown'
+    else:
+        # Say time series value is 4.5. If the field name ended with
+        # "4.5", then when we lookup this field in Elasticsearch,
+        # Elasticsearch thinks we are looking for a field "5" inside
+        # a nested object named "4".  Use _ instead of . to avoid this
+        # confusion.
+        return str(num_type(tsv)).replace('.', '_')
+
+
 def get_time_series_vals(bq_client, time_series_column, table_name, table):
     if time_series_column not in [field.name for field in table.schema]:
         return []
@@ -81,9 +93,10 @@ def get_time_series_vals(bq_client, time_series_column, table_name, table):
     sql = 'SELECT DISTINCT %s from `%s`' % (time_series_column, table_name)
     query_job = bq_client.query(sql)
     query_job.result()
-    return [
-        str(row[time_series_column]).replace('.', '_') for row in query_job
-    ]
+    if None in [row[time_series_column] for row in query_job]:
+        logger.warning('Table %s has null values in time series column %s' %
+                       (table_name, time_series_column))
+    return [_encode_tsv(row[time_series_column]) for row in query_job]
 
 
 def _table_name_from_table(table):
@@ -222,13 +235,11 @@ def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                  export_obj_prefix):
         participant_id = row[participant_id_column]
         del row[participant_id_column]
-        # Say time series value is 4.5. If the field name ended with
-        # "4.5", then when we lookup this field in Elasticsearch,
-        # Elasticsearch thinks we are looking for a field "5" inside
-        # a nested object named "4".  Use _ instead of . to avoid this
-        # confusion.
-        tsv = str(time_series_type(row[time_series_column])).replace('.', '_')
-        del row[time_series_column]
+        if time_series_column in row:
+            tsv = _encode_tsv(row[time_series_column], time_series_type)
+            del row[time_series_column]
+        else:
+            tsv = _encode_tsv(None, time_series_type)
         row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
         script = UPDATE_TSV_SCRIPT
         yield participant_id, {
@@ -307,7 +318,12 @@ def index_table(es, bq_client, storage_client, index_name, table,
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     elif time_series_vals:
         assert time_series_column in [f.name for f in table.schema]
-        time_series_type = (float if '_' in time_series_vals[0] else int)
+        if time_series_vals[0] == 'unknown' and len(time_series_vals) == 1:
+            time_series_type = type(None)
+        elif '_' in ''.join(time_series_vals):
+            time_series_type = float
+        else:
+            time_series_type = int
         scripts_by_id = _tsv_scripts_by_id_from_export(
             storage_client, bucket_name, export_obj_prefix, table_name,
             participant_id_column, time_series_column, time_series_type)
