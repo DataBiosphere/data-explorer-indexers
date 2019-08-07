@@ -76,7 +76,7 @@ def _parse_args():
 
 def _encode_tsv(tsv, num_type=str):
     if tsv == None:
-        return 'unknown'
+        return 'Unknown'
     else:
         # Say time series value is 4.5. If the field name ended with
         # "4.5", then when we lookup this field in Elasticsearch,
@@ -318,7 +318,7 @@ def index_table(es, bq_client, storage_client, index_name, table,
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     elif time_series_vals:
         assert time_series_column in [f.name for f in table.schema]
-        if time_series_vals[0] == 'unknown' and len(time_series_vals) == 1:
+        if time_series_vals[0] == 'Unknown' and len(time_series_vals) == 1:
             time_series_type = type(None)
         elif '_' in ''.join(time_series_vals):
             time_series_type = float
