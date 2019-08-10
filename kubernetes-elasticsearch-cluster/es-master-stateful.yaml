@@ -70,7 +70,7 @@ spec:
         - name: HTTP_ENABLE
           value: "false"
         - name: ES_JAVA_OPTS
-          value: -Xms500m -Xmx500m
+          value: -Xms250m -Xmx250m
         - name: PROCESSORS
           valueFrom:
             resourceFieldRef:
