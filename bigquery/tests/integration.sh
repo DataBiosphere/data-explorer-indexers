@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash -x
 #
 # Run Data Explorer Indexer integration tests.
 #
