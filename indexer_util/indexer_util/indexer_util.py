@@ -93,7 +93,7 @@ def get_es_client(elasticsearch_url):
     es = Elasticsearch([elasticsearch_url],
                        retry_on_timeout=True,
                        max_retries=10,
-                       timeout=120)
+                       timeout=30)
 
     _wait_elasticsearch_healthy(es)
     return es
