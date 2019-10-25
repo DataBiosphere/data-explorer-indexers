@@ -1,7 +1,7 @@
 # When running this Dockerfile context must be project root, in order to pick
 # up indexer_util and dataset_config
 
-FROM python:2
+FROM python:3
 
 WORKDIR /app
 COPY indexer_util /app/indexer_util
