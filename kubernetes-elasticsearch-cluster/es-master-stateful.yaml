@@ -13,6 +13,7 @@ spec:
       component: elasticsearch
       role: master
   serviceName: elasticsearch-master
+  podManagementPolicy: "Parallel"
   replicas: 3
   template:
     metadata:
@@ -38,7 +39,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       initContainers:
       - name: init-sysctl
-        image: busybox:1.27.2
+        image: gcr.io/ukb-itt-data-explorer-test/busybox:1.27.2
         command:
         - sysctl
         - -w
@@ -47,7 +48,7 @@ spec:
           privileged: true
       containers:
       - name: es-master
-        image: quay.io/pires/docker-elasticsearch-kubernetes:6.2.4
+        image: gcr.io/ukb-itt-data-explorer-test/docker-elasticsearch-kubernetes:6.2.4
         env:
         - name: NAMESPACE
           valueFrom:
@@ -70,14 +71,14 @@ spec:
         - name: HTTP_ENABLE
           value: "false"
         - name: ES_JAVA_OPTS
-          value: -Xms250m -Xmx250m
+          value: -Xms1000m -Xmx1000m
         - name: PROCESSORS
           valueFrom:
             resourceFieldRef:
               resource: limits.cpu
         resources:
           requests:
-            cpu: 0.25
+            cpu: 1
           limits:
             cpu: 1
         ports:

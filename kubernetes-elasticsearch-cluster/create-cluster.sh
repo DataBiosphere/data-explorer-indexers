@@ -72,7 +72,17 @@ if [ "$node_pool_num_nodes" == "null" ] || [ -z "$node_pool_num_nodes" ]; then
 	node_pool_num_nodes="3"
 fi
 
-gcloud container clusters create "${cluster_name}" --num-nodes=${node_pool_num_nodes} --machine-type=${node_pool_machine_type} --service-account=indexer@${project_id}.iam.gserviceaccount.com --zone=${zone} --enable-autoupgrade
+gcloud container clusters create "${cluster_name}" \
+  --enable-private-nodes \
+  --master-ipv4-cidr 172.16.0.16/28 \
+  --enable-ip-alias \
+  --create-subnetwork "" \
+  --num-nodes=${node_pool_num_nodes} \
+  --machine-type=${node_pool_machine_type} \
+  --service-account=indexer@${project_id}.iam.gserviceaccount.com \
+  --zone=${zone} \
+  --enable-autoupgrade \
+  --disk-size=10GB
 echo "Successfully created Kubernetes cluster ${bold}$cluster_name${normal} for" \
   "${bold}dataset" "$dataset${normal} in ${bold}project $project_id${normal}"
 echo "Please remember to run 'gcloud container clusters delete [CLUSTER_NAME]' to delete older clusters."

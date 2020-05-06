@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-es-data-7
+  labels:
+    type: local
+spec:
+  storageClassName: faster
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"

@@ -19,8 +19,9 @@ services:
     environment:
       # Needed to keep the samples file name unique across users.
       - USER
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      # For convenience, include 1000 Genomes by default.
+      #- ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_URL=http://10.81.56.55
+        # For convenience, include 1000 Genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/1000_genomes}
     volumes:
       # Expose gcloud credentials. This is only needed for
@@ -28,9 +29,9 @@ services:
       # GKE runs, which are authenticated as service account. (The service
       # account credentials are automatically picked up.)
       - ~/.config/gcloud:/root/.config/gcloud
-networks:
-  default:
-    external:
+        #networks:
+        # default:
+        #external:
       # This is only needed for indexing data into an Elasticsearch container
       # from the data-explorer repo. Use the network from that repo.
-      name: data-explorer_default
+      #name: data-explorer_default

@@ -5,13 +5,18 @@ import logging
 import os
 import time
 import uuid
+import warnings
 
 from elasticsearch_dsl import Search
+from elasticsearch.helpers import bulk
 from google.cloud import bigquery
 from google.cloud import exceptions
 from google.cloud import storage
 
 from indexer_util import indexer_util
+
+import multiprocessing
+from multiprocessing import Pool
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,40 +24,6 @@ logging.basicConfig(
     datefmt='%Y%m%d%H:%M:%S')
 logger = logging.getLogger('indexer.bigquery')
 
-UPDATE_SAMPLES_SCRIPT = """
-if (!ctx._source.containsKey('samples')) {
-   ctx._source.samples = [params.sample]
-} else {
-   // If this sample already exists, merge it with the new one.
-   int removeIdx = -1;
-   for (int i = 0; i < ctx._source.samples.size(); i++) {
-      if (ctx._source.samples.get(i).get('%s').equals(params.sample.get('%s'))) {
-         removeIdx = i;
-      }
-   }
-
-   if (removeIdx >= 0) {
-      Map merged = ctx._source.samples.remove(removeIdx);
-      merged.putAll(params.sample);
-      ctx._source.samples.add(merged);
-   } else {
-      ctx._source.samples.add(params.sample);
-   }
-}
-"""
-
-UPDATE_TSV_SCRIPT = """
-for (Map.Entry entry : params.row.entrySet()) {
-   if (!ctx._source.containsKey(entry.getKey())) {
-      ctx._source.put(entry.getKey(), new HashMap());
-      ctx._source.get(entry.getKey()).put('_is_time_series', true);
-   }
-   ctx._source.get(entry.getKey()).put(params.tsv, entry.getValue());
-}
-"""
-
-
-# Copied from https://stackoverflow.com/a/45392259
 def _environ_or_required(key):
     if os.environ.get(key):
         return {'default': os.environ.get(key)}
@@ -72,8 +43,13 @@ def _parse_args():
         help='Directory containing config files. Can be relative or absolute.',
         default=os.environ.get('DATASET_CONFIG_DIR'))
     return parser.parse_args()
-
-
+def _table_name_from_table(table):
+    # table.full_table_id is the legacy format: project id:dataset id.table name
+    # Convert to Standard SQL format: project id.dataset id.table name
+    # Use rsplit instead of split because project id may have ":", eg
+    # "google.com:api-project-123".
+    project_id, dataset_table_id = table.full_table_id.rsplit(':', 1)
+    return project_id + '.' + dataset_table_id
 def _encode_tsv(tsv, num_type=str):
     if tsv == None:
         return 'Unknown'
@@ -97,16 +73,6 @@ def get_time_series_vals(bq_client, time_series_column, table_name, table):
         logger.warning('Table %s has null values in time series column %s' %
                        (table_name, time_series_column))
     return [_encode_tsv(row[time_series_column]) for row in query_job]
-
-
-def _table_name_from_table(table):
-    # table.full_table_id is the legacy format: project id:dataset id.table name
-    # Convert to Standard SQL format: project id.dataset id.table name
-    # Use rsplit instead of split because project id may have ":", eg
-    # "google.com:api-project-123".
-    project_id, dataset_table_id = table.full_table_id.rsplit(':', 1)
-    return project_id + '.' + dataset_table_id
-
 
 def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
                       sample_id_column):
@@ -132,11 +98,36 @@ def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
                                                sample_id_column):
                 yield field_doc
         else:
-            field_dict = {'name': field_name}
-            if field.description:
-                field_dict['description'] = field.description
-            yield field_id, field_dict
+            if 'array_phenotypes' in field_id and 'instanceId' not in field_id and 'arrayId' not in field_id and 'eid' not in field_id:
+                for i in range(0, 5):
+                    array_field_id = field_id + '-{}'.format(i)
+                    array_field_name = field_name + '-{}'.format(i)
+                    array_field_dict = {'name': array_field_name}
+                    if field.description:
+                        field_dict['description'] = field.description
+                    yield array_field_id, array_field_dict
+            else:
+                #logger.info('name is {}'.format(field_name))
+                #logger.info('id is {}'.format(field_id))
+                field_dict = {'name': field_name}
+                if field.description:
+                    field_dict['description'] = field.description
+                yield field_id, field_dict
 
+def _rows_from_specific_export(
+    storage_client,
+    bucket_name,
+    blob 
+):
+
+    logger.info('Reading sharded BigQuery JSON export file: %s' %
+                blob.path)
+    json_text = blob.download_as_string()
+    for row in json_text.split('\n'):
+        # Ignore any blank lines
+        if not row:
+            continue
+        yield json.loads(row)
 
 def _rows_from_export(
         storage_client,
@@ -144,6 +135,7 @@ def _rows_from_export(
         export_obj_prefix,
 ):
     bucket = storage_client.get_bucket(bucket_name)
+    blobs = bucket.list_blobs(prefix=export_obj_prefix)
     for blob in bucket.list_blobs(prefix=export_obj_prefix):
         logger.info('Reading sharded BigQuery JSON export file: %s' %
                     blob.path)
@@ -154,7 +146,7 @@ def _rows_from_export(
                 continue
             yield json.loads(row)
         # Remove the blob now that we're finished loading it into the index.
-        blob.delete()
+        #blob.delete()
 
 
 # Sample and participant tables need to be indexed differently.
@@ -210,6 +202,20 @@ def _sample_scripts_by_id_from_export(storage_client, bucket_name,
             }
         }
 
+def _docs_by_id_from_specific_export(storage_client, bucket_name, export_obj_prefix,
+                                     table_name, participant_id_column, blob):
+    for row in _rows_from_specific_export(storage_client, bucket_name, blob): 
+
+        participant_id = row[participant_id_column]
+        # Document id is participant id; don't need it as a field.
+        del row[participant_id_column]
+        for k in row.keys():
+            # A BigQuery FLOAT column can have Infinity. Elasticsearch float
+            # doesn't handle Infinity, so discard.
+            if row[k] != 'Infinity' and row[k] != '-Infinity':
+                row['%s.%s' % (table_name, k)] = row[k]
+            del row[k]
+        yield participant_id, row
 
 def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
                             table_name, participant_id_column):
@@ -226,6 +232,29 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
             del row[k]
         yield participant_id, row
 
+
+def _tsv_scripts_by_id_from_specific_export(storage_client, bucket_name,
+                                   export_obj_prefix, table_name,
+                                   participant_id_column, time_series_column,
+                                   time_series_type, blob):
+    for row in _rows_from_specific_export(storage_client, bucket_name, blob):
+        participant_id = row[participant_id_column]
+        del row[participant_id_column]
+        if time_series_column in row:
+            tsv = _encode_tsv(row[time_series_column], time_series_type)
+            del row[time_series_column]
+        else:
+            tsv = _encode_tsv(None, time_series_type)
+        row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
+        script = UPDATE_TSV_SCRIPT
+        yield participant_id, {
+            'source': script,
+            'lang': 'painless',
+            'params': {
+                'tsv': tsv,
+                'row': row
+            }
+        }
 
 def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
                                    export_obj_prefix, table_name,
@@ -279,19 +308,20 @@ def _create_table_from_view(bq_client, view):
 
 def index_table(es, bq_client, storage_client, index_name, table,
                 participant_id_column, sample_id_column, sample_file_columns,
-                time_series_column, time_series_vals, deploy_project_id):
+                time_series_column, time_series_vals, deploy_project_id, elasticsearch_ip):
     table_name = _table_name_from_table(table)
     bucket_name = '%s-table-export' % deploy_project_id
     table_export_bucket = storage_client.lookup_bucket(bucket_name)
     if not table_export_bucket:
         table_export_bucket = storage_client.create_bucket(bucket_name)
 
-    unique_id = str(uuid.uuid4())
-    export_obj_prefix = 'export-%s' % unique_id
-    job_config = bigquery.job.ExtractJobConfig()
-    job_config.destination_format = (
-        bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
-    logger.info('Running extract table job for: %s' % table_name)
+    #unique_id = str(uuid.uuid4())
+    #export_obj_prefix = 'export-%s' % unique_id
+    export_obj_prefix = 'export-%s' % table_name
+    #job_config = bigquery.job.ExtractJobConfig()
+    #job_config.destination_format = (
+    #    bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON)
+    #logger.info('Running extract table job for: %s' % table_name)
 
     table_is_view = table.table_type == 'VIEW'
     if table_is_view:
@@ -301,14 +331,14 @@ def index_table(es, bq_client, storage_client, index_name, table,
                     table_name)
         table = _create_table_from_view(bq_client, table)
 
-    job = bq_client.extract_table(
-        table,
-        # The '*'' enables file sharding, which is required for larger datasets.
-        'gs://%s/%s*.json' % (bucket_name, export_obj_prefix),
-        job_id=unique_id,
-        job_config=job_config)
-    # Wait up to 10 minutes for the resulting export files to be created.
-    job.result(timeout=600)
+    #job = bq_client.extract_table(
+    #    table,
+    #    # The '*'' enables file sharding, which is required for larger datasets.
+    #    'gs://%s/%s*.json' % (bucket_name, export_obj_prefix),
+    #    job_id=unique_id,
+    #    job_config=job_config)
+    ## Wait up to 10 minutes for the resulting export files to be created.
+    #job.result(timeout=600)
     if sample_id_column in [f.name for f in table.schema]:
         # Cannot have time series data for samples.
         assert not time_series_vals
@@ -317,22 +347,38 @@ def index_table(es, bq_client, storage_client, index_name, table,
             participant_id_column, sample_id_column, sample_file_columns)
         indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
     elif time_series_vals:
-        assert time_series_column in [f.name for f in table.schema]
-        if time_series_vals[0] == 'Unknown' and len(time_series_vals) == 1:
-            time_series_type = type(None)
-        elif '_' in ''.join(time_series_vals):
-            time_series_type = float
-        else:
-            time_series_type = int
-        scripts_by_id = _tsv_scripts_by_id_from_export(
-            storage_client, bucket_name, export_obj_prefix, table_name,
-            participant_id_column, time_series_column, time_series_type)
-        indexer_util.bulk_index_scripts(es, index_name, scripts_by_id)
+        bucket = storage_client.get_bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=export_obj_prefix)
+        for blob in bucket.list_blobs(prefix=export_obj_prefix):
+            assert time_series_column in [f.name for f in table.schema]
+            if time_series_vals[0] == 'Unknown' and len(time_series_vals) == 1:
+                time_series_type = type(None)
+            elif '_' in ''.join(time_series_vals):
+                time_series_type = float
+            else:
+                time_series_type = int
+            scripts_by_id = _tsv_scripts_by_id_from_specific_export(
+                storage_client, bucket_name, export_obj_prefix, table_name,
+                participant_id_column, time_series_column, time_series_type, blob)
+            d = {}
+            logger.info('Beginning to iterate over sharded dict...')
+            for _id, script in scripts_by_id:
+                d[_id] = script
+            logger.info('Iteration complete')
+            indexer_util.bulk_index_scripts_in_parallel(elasticsearch_ip, index_name, d)
     else:
-        docs_by_id = _docs_by_id_from_export(storage_client, bucket_name,
-                                             export_obj_prefix, table_name,
-                                             participant_id_column)
-        indexer_util.bulk_index_docs(es, index_name, docs_by_id)
+        bucket = storage_client.get_bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=export_obj_prefix)
+        for blob in bucket.list_blobs(prefix=export_obj_prefix):
+            docs_by_id = _docs_by_id_from_specific_export(storage_client, bucket_name,
+                                                 export_obj_prefix, table_name,
+                                                 participant_id_column, blob)
+            d = {}
+            logger.info('Beginning to iterate over sharded dict...')
+            for _id, doc in docs_by_id:
+                d[_id] = doc
+            logger.info('Iteration complete')
+            indexer_util.bulk_index_docs_in_parallel(elasticsearch_ip, index_name, d)
 
     if table_is_view:
         # Delete the temporary copy table we created
@@ -343,6 +389,7 @@ def index_table(es, bq_client, storage_client, index_name, table,
 
 def index_fields(es, index_name, table, participant_id_column,
                  sample_id_column):
+    logger.info("Starting to index fields...")
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -386,6 +433,7 @@ def index_fields(es, index_name, table, participant_id_column,
     field_docs = _field_docs_by_id(id_prefix, '', fields,
                                    participant_id_column, sample_id_column)
     es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+    logger.info('bulk indexing fields...')
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
@@ -435,17 +483,32 @@ def _get_has_file_field_name(field_name, sample_file_columns):
 
 def _add_field_to_mapping(properties, field_name, entry, time_series_vals):
     if time_series_vals:
-        properties[field_name] = {
-            'type': 'object',
-            'properties': {tsv: entry
-                           for tsv in time_series_vals}
-        }
-        # _is_time_series should only ever be set to true; its
-        # existence in the mapping is used by the data explorer to
-        # determine which fields have time series data
-        properties[field_name]['properties']['_is_time_series'] = {
-            'type': 'boolean'
-        }
+        if 'array_phenotypes' in field_name and 'arrayId' not in field_name and 'instanceId' not in field_name and 'eid' not in field_name:
+            for i in range(0, 5):
+                array_field_name = field_name + '-{}'.format(i)
+                properties[array_field_name] = {
+                    'type': 'object',
+                    'properties': {tsv: entry
+                                   for tsv in time_series_vals}
+                }
+                # _is_time_series should only ever be set to true; its
+                # existence in the mapping is used by the data explorer to
+                # determine which fields have time series data
+                properties[array_field_name]['properties']['_is_time_series'] = {
+                    'type': 'boolean'
+                }
+        else:
+            properties[field_name] = {
+                'type': 'object',
+                'properties': {tsv: entry
+                               for tsv in time_series_vals}
+            }
+            # _is_time_series should only ever be set to true; its
+            # existence in the mapping is used by the data explorer to
+            # determine which fields have time series data
+            properties[field_name]['properties']['_is_time_series'] = {
+                'type': 'boolean'
+            }
     else:
         properties[field_name] = entry
 
@@ -456,6 +519,7 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
     # By default, Elasticsearch dynamically determines mappings while it ingests data.
     # Instead, we tell Elasticsearch the mappings before ingesting data; and we turn
     # dynamic mapping to false. For large datasets, this dramatically speeds up indexing.
+    logger.info('Starting create mapings...')
     mappings = {'dynamic': False, 'properties': {}}
     properties = mappings['properties']
 
@@ -525,7 +589,13 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                                   {'type': 'boolean'}, time_series_vals)
 
     # Default limit on total number of fields is too small for some datasets.
-    es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
+    logger.info('Put mapping...')
+    es.indices.put_settings({"index.mapping.total_fields.limit": 1000000})
+    c = storage.Client(project='ukb-itt-data-explorer-42992')
+    bucket = c.get_bucket('mbookman-k8-test')
+    blob = bucket.blob('test_files/fixed_phenotypes/{}_mappings.json'.format(table_name))
+    import json
+    blob.upload_from_string(json.dumps(mappings, indent=2))
     es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
 
 
@@ -593,7 +663,94 @@ def create_samples_json_export_file(es, storage_client, index_name,
     logger.info('Wrote gs://%s/%s' % (bucket_name, samples_file_name))
 
 
+def rs_id_field_docs_by_id(rsids):
+    for rsid in rsids:
+        field_dict = {'name': 'ukb-itt-demo-data.application_42992.genotypes.{}'.format(rsid)}
+        yield rsid, field_dict
+def put_rsid_slice_mapping(rsid_slice, index_name, es):
+    for rsid in rsid_slice:
+        mappings = {
+            'dynamic': False,
+            'properties': {
+                'name': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    },
+                    'analyzer': 'simple'
+                },
+                'description': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {
+                            'type': 'keyword',
+                            'ignore_above': 256
+                        }
+                    },
+                    'analyzer': 'simple'
+                },
+            }
+        }
+        mappings['properties']['ukb-itt-demo-data.application_42992.genotypes.{}'.format(rsid)] = {
+                'type': 'text',
+                'analyzer': 'simple',
+                'fields': {
+                    'keyword': {
+                        'type': 'keyword',
+                        'ignore_above': 256
+                    }
+                }
+                }
+    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+
+def prep_rsid_fields(fields_index_name, index_name, es):
+    logger.info("Starting to index rsid fields")
+    with open('rsids.csv') as f:
+       rsids = f.read().splitlines()
+    rsid_field_docs = rs_id_field_docs_by_id(rsids)
+    mappings = {
+        'dynamic': False,
+        'properties': {
+            'name': {
+                'type': 'text',
+                'fields': {
+                    'keyword': {
+                        'type': 'keyword',
+                        'ignore_above': 256
+                    }
+                },
+                'analyzer': 'simple'
+            },
+            'description': {
+                'type': 'text',
+                'fields': {
+                    'keyword': {
+                        'type': 'keyword',
+                        'ignore_above': 256
+                    }
+                },
+                'analyzer': 'simple'
+            },
+        }
+    }
+    es.indices.put_mapping(doc_type='type', index=fields_index_name, body=mappings)
+    indexer_util.bulk_index_docs(es, fields_index_name, rsid_field_docs)
+    logger.info('now creating rsid mappings')
+    es.indices.put_settings({'index.mapping.total_fields.limit': 1000000})
+    put_rsid_slice_mapping(rsids[:100000], index_name, es)
+    put_rsid_slice_mapping(rsids[100000:200000], index_name, es)
+    put_rsid_slice_mapping(rsids[200000:300000], index_name, es)
+    put_rsid_slice_mapping(rsids[300000:400000], index_name, es)
+    put_rsid_slice_mapping(rsids[400000:500000], index_name, es)
+    put_rsid_slice_mapping(rsids[500000:600000], index_name, es)
+    put_rsid_slice_mapping(rsids[600000:700000], index_name, es)
+    put_rsid_slice_mapping(rsids[700000:], index_name, es)
+
 def main():
+    warnings.filterwarnings('ignore', 'No project ID could be determined')
     args = _parse_args()
     # Read dataset config files
     index_name = indexer_util.get_index_name(args.dataset_config_dir)
@@ -617,7 +774,13 @@ def main():
     bq_client = bigquery.Client(project=deploy_project_id)
     storage_client = storage.Client(project=deploy_project_id)
 
+    #prep_rsid_fields(fields_index_name, index_name, es)
+    #rsid_field_docs_2 = rs_id_field_docs_by_id(rsids)
+    #indexer_util.bulk_index_docs(es, index_name, rsid_field_docs_2)
+    #indexer_util._complete_indexing(es)
+    #exit()
     for table_name in bigquery_config['table_names']:
+        break
         table = read_table(bq_client, table_name)
         time_series_vals = get_time_series_vals(bq_client, time_series_column,
                                                 table_name, table)
@@ -627,16 +790,54 @@ def main():
                         participant_id_column, sample_id_column,
                         sample_file_columns, time_series_column,
                         time_series_vals)
-        index_table(es, bq_client, storage_client, index_name, table,
-                    participant_id_column, sample_id_column,
-                    sample_file_columns, time_series_column, time_series_vals,
-                    deploy_project_id)
+    pool = Pool(processes=multiprocessing.cpu_count())
+    #bucket = storage_client.bucket('ukb-itt-data-explorer-test-table-export')
+    #blobs = bucket.list_blobs(prefix='outputs_42992_20200429/segmentD')
+    logger.info('Begin iterating over blob')
+    indexer_util._prepare_for_indexing(es)
+    results = []
+    #with open('paths_to_index.txt', 'r') as f:
+    #    lines = f.read().splitlines()
+    #for blob in blobs:
+    for line in [
+            'gs://ukb-itt-data-explorer-test-table-export/outputs_42992_20200429/segmentC/9757851.json',
+            'gs://ukb-itt-data-explorer-test-table-export/outputs_42992_20200429/segmentC/9758347.json',
+            'gs://ukb-itt-data-explorer-test-table-export/outputs_42992_20200429/segmentC/9758608.json']:
+        tokens = line.split('/')
+        segment = tokens[-2]
+        filename = tokens[-1]
+        blob_name = 'outputs_42992_20200429/{}/{}'.format(segment, filename)
+        results.append(
+            pool.apply_async(
+                #download_json_file_and_index, (blob.name, deploy_project_id, args.elasticsearch_url)
+                download_json_file_and_index, (blob_name, deploy_project_id, args.elasticsearch_url)
+            )
+        )
 
-    # Ensure all of the newly indexed documents are loaded into ES.
+    logger.info('Completed iterating over blobs. Now spawning processes')
+    for res in results:
+        res.wait(timeout=600)
+    pool.close()
+    pool.join()
+    indexer_util._complete_indexing(es)
     time.sleep(5)
-    create_samples_json_export_file(es, storage_client, index_name,
-                                    deploy_project_id, sample_id_column)
-
+    # Ensure all of the newly indexed documents are loaded into ES.
+    #create_samples_json_export_file(es, storage_client, index_name,
+    #                                deploy_project_id, sample_id_column)
+def download_json_file_and_index(blob_name, deploy_project_id, es_url):
+    try:
+        es = indexer_util.get_es_client(es_url)
+        storage_client=storage.Client(project=deploy_project_id)
+        bucket = storage_client.bucket('ukb-itt-data-explorer-test-table-export')
+        blob = bucket.blob(blob_name)
+        data = str(blob.download_as_string())
+        j = json.loads(data)
+        def es_actions(d):
+            yield d
+        bulk(es, es_actions(j), request_timeout=1200, filter_path='-*')
+    except Exception as e:
+        print(e)
+        raise e
 
 if __name__ == '__main__':
     main()

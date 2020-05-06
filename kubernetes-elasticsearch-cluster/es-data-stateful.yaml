@@ -101,8 +101,8 @@ spec:
   - metadata:
       name: storage
     spec:
-      storageClassName: standard
+      storageClassName: faster
       accessModes: [ ReadWriteOnce ]
       resources:
         requests:
-          storage: 12Gi
+          storage: 2000Gi

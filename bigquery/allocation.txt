@@ -1,0 +1,457 @@
+{
+  "index" : "ukb-itt-demo:_test",
+  "shard" : 22,
+  "primary" : true,
+  "current_state" : "unassigned",
+  "unassigned_info" : {
+    "reason" : "NODE_LEFT",
+    "at" : "2020-05-02T00:02:57.383Z",
+    "details" : "node_left[2CwNezt8RM-As71OBOX35A]",
+    "last_allocation_status" : "no_valid_shard_copy"
+  },
+  "can_allocate" : "no_valid_shard_copy",
+  "allocate_explanation" : "cannot allocate because a previous copy of the primary shard existed but can no longer be found on the nodes in the cluster",
+  "node_allocation_decisions" : [
+    {
+      "node_id" : "-HUmlRbUQqWkrtBxACeqsw",
+      "node_name" : "es-data-33",
+      "transport_address" : "10.16.19.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "0GsNcQZSSK28pEBvswH3xg",
+      "node_name" : "es-data-35",
+      "transport_address" : "10.16.33.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "0seQT8hFRGC9Nglwk1LTEA",
+      "node_name" : "es-data-45",
+      "transport_address" : "10.16.8.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "36347gxYSLi5pZg20VgKUQ",
+      "node_name" : "es-data-7",
+      "transport_address" : "10.16.0.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "3AKQQkBrR0eDM-yOkVrP3w",
+      "node_name" : "es-data-19",
+      "transport_address" : "10.16.47.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "3bUJvM70SnGhk_16jmq3hQ",
+      "node_name" : "es-data-43",
+      "transport_address" : "10.16.22.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "4wNj7dFzQayBMY5I3RTrUw",
+      "node_name" : "es-data-30",
+      "transport_address" : "10.16.41.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "6pDRZon6RQmJjIJ4Uyh78w",
+      "node_name" : "es-data-41",
+      "transport_address" : "10.16.3.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "7vagkKoSSa6NqxJdHHxSwg",
+      "node_name" : "es-data-38",
+      "transport_address" : "10.16.23.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "9TRJjdZEQ2uOqZN2yxZ7QA",
+      "node_name" : "es-data-23",
+      "transport_address" : "10.16.12.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "9gHx_64YT5emRi0A4G27ZQ",
+      "node_name" : "es-data-44",
+      "transport_address" : "10.16.49.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "A0N5otKLSyWmS6xrdRAROQ",
+      "node_name" : "es-data-37",
+      "transport_address" : "10.16.27.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "CRO8DyzJTk-U5pSf9Bty5Q",
+      "node_name" : "es-data-16",
+      "transport_address" : "10.16.9.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "FIpD9O9fQT6lsVNDgWUevg",
+      "node_name" : "es-data-47",
+      "transport_address" : "10.16.52.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "Gacyo-uRSw6bJUMjk8zAQg",
+      "node_name" : "es-data-4",
+      "transport_address" : "10.16.7.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "GvAuMLrDSDO3zHju6AnOOQ",
+      "node_name" : "es-data-46",
+      "transport_address" : "10.16.50.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "IH90rfynSwWuSlrNVuqBNA",
+      "node_name" : "es-data-6",
+      "transport_address" : "10.16.10.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "Ivrf6ln5R8SVPIgBmzd2Eg",
+      "node_name" : "es-data-15",
+      "transport_address" : "10.16.21.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "JdyQV_lQRpGfvgshsE2okQ",
+      "node_name" : "es-data-2",
+      "transport_address" : "10.16.13.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "L8VZzf8RTs6VGgAZpmCHyQ",
+      "node_name" : "es-data-34",
+      "transport_address" : "10.16.28.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "LPTc46ZGTRey75Rp4sDyMg",
+      "node_name" : "es-data-32",
+      "transport_address" : "10.16.39.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "LxlqM-oRTzCEcRRC8HTEzg",
+      "node_name" : "es-data-14",
+      "transport_address" : "10.16.16.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "MELnjGK_TaqPRXA-CrIniw",
+      "node_name" : "es-data-40",
+      "transport_address" : "10.16.15.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "MdJr6MOoRPen2YCVHU9IjQ",
+      "node_name" : "es-data-1",
+      "transport_address" : "10.16.30.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "R7Nj1XubQuyZEhc-DrkcTg",
+      "node_name" : "es-data-25",
+      "transport_address" : "10.16.35.5:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "S74UubTBQOybDBpnFIKBGQ",
+      "node_name" : "es-data-49",
+      "transport_address" : "10.16.11.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "XUpRUuPhQwOpwOeXmz5BWA",
+      "node_name" : "es-data-18",
+      "transport_address" : "10.16.45.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "YPdZY-pjTKa_2YUBuF87Cw",
+      "node_name" : "es-data-17",
+      "transport_address" : "10.16.4.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "Yplmy3RvR62-fHa4q14cxg",
+      "node_name" : "es-data-31",
+      "transport_address" : "10.16.51.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "_e-1e_QaQHORaP6zlNdvuA",
+      "node_name" : "es-data-28",
+      "transport_address" : "10.16.18.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "_qkqDI3UT-uk_-NYDruvdA",
+      "node_name" : "es-data-0",
+      "transport_address" : "10.16.31.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "_zC3hE-MQ5WBq8OHd4t1oA",
+      "node_name" : "es-data-12",
+      "transport_address" : "10.16.44.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "aV2ANPMEQ1WaqluK1HNbmw",
+      "node_name" : "es-data-9",
+      "transport_address" : "10.16.5.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "b5KQJ4DCSJKSCRFbMucegA",
+      "node_name" : "es-data-42",
+      "transport_address" : "10.16.40.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "h0gny5S7Q5-kGRAfkGwZwA",
+      "node_name" : "es-data-13",
+      "transport_address" : "10.16.37.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "jCUIuRYaSm-xy36xgpWzCg",
+      "node_name" : "es-data-39",
+      "transport_address" : "10.16.29.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "jIcOe1sMSryJ9kMRFN1vWA",
+      "node_name" : "es-data-26",
+      "transport_address" : "10.16.34.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "mNVXSa3SRV2efFZiI2j58w",
+      "node_name" : "es-data-36",
+      "transport_address" : "10.16.2.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "noA05rT8RYmKV0djNqtk8A",
+      "node_name" : "es-data-3",
+      "transport_address" : "10.16.20.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "nxl8pxgzQlO6EHemfDRbbg",
+      "node_name" : "es-data-20",
+      "transport_address" : "10.16.42.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "oiBkZvxyRrurOkAutdU-_w",
+      "node_name" : "es-data-48",
+      "transport_address" : "10.16.38.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "qhDiy3uFRZuFBAk3lTwW3A",
+      "node_name" : "es-data-10",
+      "transport_address" : "10.16.17.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "r9JG7lOASP6SE_0xDVevYA",
+      "node_name" : "es-data-8",
+      "transport_address" : "10.16.1.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "tGsiZLmAQVK3kmreML7GNQ",
+      "node_name" : "es-data-29",
+      "transport_address" : "10.16.14.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "uxHaeUfQRouaqjv2kGxG7Q",
+      "node_name" : "es-data-24",
+      "transport_address" : "10.16.24.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "wdCmmCRTT_a6lwtjPT1UpQ",
+      "node_name" : "es-data-27",
+      "transport_address" : "10.16.46.3:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "wgJbU2FVQY2MWX3Hu60d4g",
+      "node_name" : "es-data-5",
+      "transport_address" : "10.16.25.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "yYgDTc4vRW2IYHyM6pIIRQ",
+      "node_name" : "es-data-22",
+      "transport_address" : "10.16.32.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    },
+    {
+      "node_id" : "zGuwe9avRP6B8bZdQsEVrw",
+      "node_name" : "es-data-21",
+      "transport_address" : "10.16.26.2:9300",
+      "node_decision" : "no",
+      "store" : {
+        "found" : false
+      }
+    }
+  ]
+}
