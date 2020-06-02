@@ -385,13 +385,13 @@ def index_fields(es, index_name, table, participant_id_column,
 
     field_docs = _field_docs_by_id(id_prefix, '', fields,
                                    participant_id_column, sample_id_column)
-    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+    es.indices.put_mapping(index=index_name, body=mappings)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
 
 def _get_es_field_type(bq_type, bq_mode):
     if bq_type == 'STRING':
-        return 'text'
+        return 'keyword'
     elif bq_type == 'INTEGER' or bq_type == 'INT64':
         return 'long'
     elif bq_type == 'FLOAT' or bq_type == 'FLOAT64':
@@ -495,13 +495,13 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
                                              time_series_column,
                                              time_series_vals)
             properties[field_name]['properties'] = inner_mappings['properties']
-        elif es_field_type == 'text':
+        elif es_field_type == 'keyword':
             entry = {
                 'type': es_field_type,
                 # Use simple analyzer so underscores are treated as a word delimiter.
                 # Underscores in BQ column contents are not as common as underscores in column names, but
                 # some datasets have them (such as Baseline).
-                'analyzer': 'simple',
+                #'analyzer': 'simple',
                 'fields': {
                     'keyword': {
                         'type': 'keyword',
@@ -526,7 +526,7 @@ def create_mappings(es, index_name, table_name, fields, participant_id_column,
 
     # Default limit on total number of fields is too small for some datasets.
     es.indices.put_settings({"index.mapping.total_fields.limit": 100000})
-    es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
+    es.indices.put_mapping(index=index_name, body=mappings)
 
 
 def read_table(bq_client, table_name):

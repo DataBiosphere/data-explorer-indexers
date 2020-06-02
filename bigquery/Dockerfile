@@ -11,4 +11,6 @@ RUN pip install -r /app/requirements.txt
 COPY dataset_config /app/dataset_config
 COPY bigquery /app
 
+COPY tls.crt /app
+
 CMD python indexer.py

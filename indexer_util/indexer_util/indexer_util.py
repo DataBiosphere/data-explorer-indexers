@@ -1,10 +1,14 @@
 """Utilities for Data Explorer indexers"""
 
+import base64
 import jsmin
 import json
 import logging
 import os
+import sys
 import time
+
+import kubernetes
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
@@ -19,6 +23,11 @@ logger = logging.getLogger('indexer.util')
 
 ES_TIMEOUT_SEC = 20
 
+def get_kubernetes_password():
+    kubernetes.config.load_kube_config()
+    v1 = kubernetes.client.CoreV1Api()
+    secret_dict = v1.read_namespaced_secret("quickstart-es-elastic-user", "default").data
+    return base64.b64decode(secret_dict['elastic'])
 
 def parse_json_file(json_path):
     """Opens and returns JSON contents.
@@ -80,8 +89,9 @@ def _wait_elasticsearch_healthy(es):
             print('Elasticsearch took %d seconds to come up.' %
                   (time.time() - start))
             break
-        except ConnectionError:
+        except ConnectionError as e:
             print('Elasticsearch not up yet, will try again.')
+            print(e)
             time.sleep(1)
     else:
         raise EnvironmentError("Elasticsearch failed to start.")
@@ -91,6 +101,9 @@ def _wait_elasticsearch_healthy(es):
 def get_es_client(elasticsearch_url):
     # Retry flags needed for large datasets.
     es = Elasticsearch([elasticsearch_url],
+                       http_auth=('elastic', get_kubernetes_password()),
+                       use_ssl=True,
+                       ca_certs='tls.crt',
                        retry_on_timeout=True,
                        max_retries=10,
                        timeout=30)
@@ -141,9 +154,6 @@ def bulk_index_scripts(es, index_name, scripts_by_id):
             yield ({
                 '_op_type': 'update',
                 '_index': index_name,
-                # type will go away in future versions of Elasticsearch. Just
-                # use any string here.
-                '_type': 'type',
                 '_id': _id,
                 'scripted_upsert': True,
                 'script': script,
@@ -164,9 +174,6 @@ def bulk_index_docs(es, index_name, docs_by_id):
             yield ({
                 '_op_type': 'update',
                 '_index': index_name,
-                # type will go away in future versions of Elasticsearch. Just
-                # use any string here.
-                '_type': 'type',
                 '_id': _id,
                 'doc': doc,
                 'doc_as_upsert': True
