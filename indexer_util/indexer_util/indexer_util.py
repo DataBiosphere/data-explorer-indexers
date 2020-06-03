@@ -22,12 +22,27 @@ logging.basicConfig(
 logger = logging.getLogger('indexer.util')
 
 ES_TIMEOUT_SEC = 20
+ES_TLS_CERT_FILE = "/tmp/tls.crt"
 
 def get_kubernetes_password():
+    # Execute the equivalent of:
+    #   kubectl get secret quickstart-es-elastic-user \
+    #     -o go-template='{{.data.elastic | base64decode }}'
     kubernetes.config.load_kube_config()
     v1 = kubernetes.client.CoreV1Api()
     secret_dict = v1.read_namespaced_secret("quickstart-es-elastic-user", "default").data
     return base64.b64decode(secret_dict['elastic'])
+
+def write_tls_crt():
+    # Execute the equivalent of:
+    #   kubectl get secret "quickstart-es-http-certs-public" \
+    #     -o go-template='{{index .data "tls.crt" | base64decode }}' \
+    #     > /tmp/tls.crt
+    kubernetes.config.load_kube_config()
+    v1 = kubernetes.client.CoreV1Api()
+    secret_dict = v1.read_namespaced_secret("quickstart-es-http-certs-public", "default").data
+    with open(ES_TLS_CERT_FILE, "w") as f:
+      f.write(base64.b64decode(secret_dict['tls.crt']))
 
 def parse_json_file(json_path):
     """Opens and returns JSON contents.
@@ -100,10 +115,11 @@ def _wait_elasticsearch_healthy(es):
 
 def get_es_client(elasticsearch_url):
     # Retry flags needed for large datasets.
+    write_tls_crt()
     es = Elasticsearch([elasticsearch_url],
                        http_auth=('elastic', get_kubernetes_password()),
                        use_ssl=True,
-                       ca_certs='tls.crt',
+                       ca_certs=ES_TLS_CERT_FILE,
                        retry_on_timeout=True,
                        max_retries=10,
                        timeout=30)
