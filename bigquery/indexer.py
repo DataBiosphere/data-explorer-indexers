@@ -143,9 +143,9 @@ def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
 
 
 def _rows_from_export(
-        storage_client,
-        bucket_name,
-        export_obj_prefix,
+    storage_client,
+    bucket_name,
+    export_obj_prefix,
 ):
     bucket = storage_client.get_bucket(bucket_name)
     for blob in bucket.list_blobs(prefix=export_obj_prefix):
