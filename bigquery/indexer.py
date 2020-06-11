@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 import time
 import uuid
 
@@ -12,6 +13,9 @@ from google.cloud import exceptions
 from google.cloud import storage
 
 from indexer_util import indexer_util
+
+if sys.version_info.major < 3:
+    raise Exception('Python2 is deprecated. Please upgrade to Python3')
 
 logging.basicConfig(
     level=logging.INFO,
@@ -139,15 +143,15 @@ def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
 
 
 def _rows_from_export(
-        storage_client,
-        bucket_name,
-        export_obj_prefix,
+    storage_client,
+    bucket_name,
+    export_obj_prefix,
 ):
     bucket = storage_client.get_bucket(bucket_name)
     for blob in bucket.list_blobs(prefix=export_obj_prefix):
         logger.info('Reading sharded BigQuery JSON export file: %s' %
                     blob.path)
-        json_text = blob.download_as_string()
+        json_text = blob.download_as_string().decode('utf-8')
         for row in json_text.split('\n'):
             # Ignore any blank lines
             if not row:
@@ -186,12 +190,12 @@ def _sample_scripts_by_id_from_export(storage_client, bucket_name,
         del row[participant_id_column]
         row = {
             '%s.%s' % (table_name, k) if k != sample_id_column else k: v
-            for k, v in row.iteritems()
+            for k, v in row.items()
         }
 
         # Use the sample_file_columns configuration to add the internal
         # '_has_<sample_file_type>' fields to the samples index.
-        for file_type, col in sample_file_columns.iteritems():
+        for file_type, col in sample_file_columns.items():
             # Only mark as false if this sample file column is relevant to the
             # table currently being indexed.
             if table_name in col:
@@ -218,7 +222,7 @@ def _docs_by_id_from_export(storage_client, bucket_name, export_obj_prefix,
         participant_id = row[participant_id_column]
         # Document id is participant id; don't need it as a field.
         del row[participant_id_column]
-        for k in row.keys():
+        for k in list(row.keys()):
             # A BigQuery FLOAT column can have Infinity. Elasticsearch float
             # doesn't handle Infinity, so discard.
             if row[k] != 'Infinity' and row[k] != '-Infinity':
@@ -240,7 +244,7 @@ def _tsv_scripts_by_id_from_export(storage_client, bucket_name,
             del row[time_series_column]
         else:
             tsv = _encode_tsv(None, time_series_type)
-        row = {'%s.%s' % (table_name, k): v for k, v in row.iteritems()}
+        row = {'%s.%s' % (table_name, k): v for k, v in row.items()}
         script = UPDATE_TSV_SCRIPT
         yield participant_id, {
             'source': script,
@@ -427,7 +431,7 @@ def _get_datetime_formatted_string(bq_type):
 
 
 def _get_has_file_field_name(field_name, sample_file_columns):
-    for file_type, col in sample_file_columns.iteritems():
+    for file_type, col in sample_file_columns.items():
         if field_name in col:
             return '_has_%s' % file_type.lower().replace(" ", "_")
     return ''
@@ -556,7 +560,7 @@ def create_samples_json_export_file(es, storage_client, index_name,
         for sample in doc.get('samples', []):
             sample_id = sample[sample_id_column]
             export_sample = {'participant': participant_id}
-            for es_field_name, value in sample.iteritems():
+            for es_field_name, value in sample.items():
                 # es_field_name looks like "_has_chr_18_vcf", "sample_id" or
                 # "verily-public-data.human_genome_variants.1000_genomes_sample_info.In_Low_Coverage_Pilot".
                 splits = es_field_name.split('.')
