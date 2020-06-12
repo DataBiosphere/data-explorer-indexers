@@ -113,16 +113,23 @@ def _wait_elasticsearch_healthy(es):
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
-def get_es_client(elasticsearch_url):
-    # Retry flags needed for large datasets.
-    write_tls_crt()
-    es = Elasticsearch([elasticsearch_url],
-                       http_auth=('elastic', get_kubernetes_password()),
-                       use_ssl=True,
-                       ca_certs=ES_TLS_CERT_FILE,
-                       retry_on_timeout=True,
-                       max_retries=10,
-                       timeout=30)
+def get_es_client(elasticsearch_url, deploy_local):
+    logger.info('Willy, its {}: {}'.format(deploy_local, elasticsearch_url))
+    if deploy_local:
+        es = Elasticsearch([elasticsearch_url],
+                           retry_on_timeout=True,
+                           max_retries=10,
+                           timeout=30)
+    else:
+        # Retry flags needed for large datasets.
+        write_tls_crt()
+        es = Elasticsearch([elasticsearch_url],
+                           http_auth=('elastic', get_kubernetes_password()),
+                           use_ssl=True,
+                           ca_certs=ES_TLS_CERT_FILE,
+                           retry_on_timeout=True,
+                           max_retries=10,
+                           timeout=30)
 
     _wait_elasticsearch_healthy(es)
     return es

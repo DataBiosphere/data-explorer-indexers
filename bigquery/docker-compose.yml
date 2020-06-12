@@ -1,7 +1,7 @@
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
     ports:
       - 127.0.0.1:9200:9200
     environment:
@@ -19,7 +19,8 @@ services:
     environment:
       # Needed to keep the samples file name unique across users.
       - USER
-      - ELASTICSEARCH_URL=34.66.200.173:9200
+      #- ELASTICSEARCH_URL=104.197.83.121:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include 1000 Genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/1000_genomes}
     volumes:
