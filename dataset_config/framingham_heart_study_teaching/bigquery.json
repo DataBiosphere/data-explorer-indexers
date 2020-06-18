@@ -21,6 +21,9 @@
 // time_series_unit:
 //   Unit of time_series_column. If time_series_column is set, this
 //   must be set. Examples: Month, Year.
+// columns_to_ignore:
+//   An (optional) list of BigQuery column names that will not 
+//   appear in the search bar.Just the column names, 
 {
   "table_names": [
     "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching"
@@ -29,5 +32,6 @@
   "sample_id_column": "",
   "sample_file_columns": {},
   "time_series_column": "PERIOD",
-  "time_series_unit": "Period"
+  "time_series_unit": "Period",
+  "columns_to_ignore": []
 }
