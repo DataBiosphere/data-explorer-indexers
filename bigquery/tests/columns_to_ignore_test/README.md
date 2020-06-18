@@ -1,6 +1,2 @@
-The public [1000 Genomes](http://www.internationalgenome.org/about) dataset.
-
-For a live Data Explorer of this dataset, see https://test-data-explorer.appspot.com
-
-See [here](https://github.com/DataBiosphere/data-explorer/blob/master/dataset_config/1000_genomes/ui.json)
-for Data Explorer UI configuration.
+These json files are used in the integration tests in integration.sh for test_columns_to_ignore.
+These files configure a dataset like 1000 genomes, but with certain columns ignored.
