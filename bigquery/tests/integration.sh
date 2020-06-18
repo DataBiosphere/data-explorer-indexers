@@ -36,7 +36,7 @@ function wait_for_cluster_healthy() {
 readonly -f wait_for_cluster_healthy
 
 
-function delete_indexes() {
+function delete_indices() {
   curl -XDELETE localhost:9200/1000_genomes
   curl -XDELETE localhost:9200/1000_genomes_fields
   curl -XDELETE localhost:9200/framingham_heart_study_teaching_dataset
@@ -44,7 +44,7 @@ function delete_indexes() {
   curl -XDELETE localhost:9200/columns_to_ignore_test
   curl -XDELETE localhost:9200/columns_to_ignore_test_fields
 }
-readonly -f delete_indexes
+readonly -f delete_indices
 
 
 function set_up_es() {
@@ -54,18 +54,18 @@ function set_up_es() {
   # Run Elasticsearch in the background with the indexer in the foreground to prevent blocking the main thread.
   docker-compose up -d elasticsearch
   wait_for_cluster_healthy
-  delete_indexes
+  delete_indices
 }
 readonly -f set_up_es
 
 
-function set_up_indexes(){
+function set_up_indices(){
   docker-compose up --build indexer
   DATASET_CONFIG_DIR=dataset_config/framingham_heart_study_teaching docker-compose up --build indexer
   # For some reason index isn't available right after indexer terminates, so sleep.
   sleep 5
 }
-readonly -f set_up_indexes
+readonly -f set_up_indices
 
 
 function validate_framingham_heart_study_teaching_dataset() {
@@ -76,7 +76,7 @@ function validate_framingham_heart_study_teaching_dataset() {
     exit 1
   fi
 
-  # Write the indexes out to a file in order to diff.
+  # Write the indices out to a file in order to diff.
   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/type/9334261' | jq -rS '._source' > 'tests/framingham_heart_study_teaching_dataset.json'
   DIFF=$(diff tests/framingham_heart_study_teaching_dataset_golden.json tests/framingham_heart_study_teaching_dataset.json)
   if [ "$DIFF" != "" ]; then
@@ -94,7 +94,7 @@ function validate_framingham_heart_study_teaching_dataset() {
     exit 1
   fi
 
-  # Write the fields indexes out to files in order to diff.
+  # Write the fields indices out to files in order to diff.
   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/framingham_heart_study_teaching_dataset_fields.json'
   DIFF=$(diff tests/framingham_heart_study_teaching_dataset_fields_golden.json tests/framingham_heart_study_teaching_dataset_fields.json)
   if [ "$DIFF" != "" ]; then
@@ -114,7 +114,7 @@ function validate_1000_genomes() {
     exit 1
   fi
 
-  # Write the indexes out to a file in order to diff.
+  # Write the indices out to a file in order to diff.
   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes.json'
   DIFF=$(diff tests/1000_genomes_golden.json tests/1000_genomes.json)
   if [ "$DIFF" != "" ]; then
@@ -132,7 +132,7 @@ function validate_1000_genomes() {
     exit 1
   fi
 
-  # Write the fields indexes out to files in order to diff.
+  # Write the fields indices out to files in order to diff.
   curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields.json'
   DIFF=$(diff tests/1000_genomes_fields_golden.json tests/1000_genomes_fields.json)
   if [ "$DIFF" != "" ]; then
@@ -152,6 +152,7 @@ function test_columns_to_ignore() {
 
   DATASET_CONFIG_DIR=tests/columns_to_ignore_test docker-compose up --build indexer
 
+  # For some reason index isn't available right after indexer terminates, so sleep.
   sleep 5
 
   es_id_in_index='samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_1_vcf'
@@ -173,7 +174,7 @@ readonly -f test_columns_to_ignore
 # Run integration tests that validate that the base 1000 genomes
 # and framingham heart study data explorers still work
 set_up_es
-set_up_indexes
+set_up_indices
 validate_1000_genomes
 validate_framingham_heart_study_teaching_dataset
 
