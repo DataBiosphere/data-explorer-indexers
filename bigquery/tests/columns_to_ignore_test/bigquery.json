@@ -43,5 +43,8 @@
     },
     "time_series_column": "",
     "time_series_unit": "",
-    "columns_to_ignore": []
+    "columns_to_ignore": [
+        "chr_3_vcf",
+        "chr_4_vcf"
+    ]
 }

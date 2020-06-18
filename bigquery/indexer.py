@@ -113,12 +113,13 @@ def _table_name_from_table(table):
 
 
 def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
-                      sample_id_column):
+                      sample_id_column, columns_to_ignore):
     # This method is recursive to handle nested fields (BigQuery RECORD columns).
     # For nested fields, field name includes all levels of nesting, eg "addresses.city".
     for field in fields:
         if (field.name == participant_id_column
-                or field.name == sample_id_column):
+                or field.name == sample_id_column
+                or field.name in columns_to_ignore):
             continue
         field_name = field.name
         field_id = field.name
@@ -133,7 +134,8 @@ def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
             for field_doc in _field_docs_by_id(field_id, field_name,
                                                field.fields,
                                                participant_id_column,
-                                               sample_id_column):
+                                               sample_id_column,
+                                               columns_to_ignore):
                 yield field_doc
         else:
             field_dict = {'name': field_name}
@@ -346,7 +348,7 @@ def index_table(es, bq_client, storage_client, index_name, table,
 
 
 def index_fields(es, index_name, table, participant_id_column,
-                 sample_id_column):
+                 sample_id_column, columns_to_ignore):
     table_name = _table_name_from_table(table)
     logger.info('Indexing %s into %s.' % (table_name, index_name))
 
@@ -388,7 +390,8 @@ def index_fields(es, index_name, table, participant_id_column,
     }
 
     field_docs = _field_docs_by_id(id_prefix, '', fields,
-                                   participant_id_column, sample_id_column)
+                                   participant_id_column, sample_id_column,
+                                   columns_to_ignore)
     es.indices.put_mapping(doc_type='type', index=index_name, body=mappings)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 
@@ -618,6 +621,7 @@ def main():
     sample_id_column = bigquery_config.get('sample_id_column', None)
     sample_file_columns = bigquery_config.get('sample_file_columns', {})
     time_series_column = bigquery_config.get('time_series_column', None)
+    columns_to_ignore = bigquery_config.get('columns_to_ignore', [])
     bq_client = bigquery.Client(project=deploy_project_id)
     storage_client = storage.Client(project=deploy_project_id)
 
@@ -626,7 +630,7 @@ def main():
         time_series_vals = get_time_series_vals(bq_client, time_series_column,
                                                 table_name, table)
         index_fields(es, fields_index_name, table, participant_id_column,
-                     sample_id_column)
+                     sample_id_column, columns_to_ignore)
         create_mappings(es, index_name, table_name, table.schema,
                         participant_id_column, sample_id_column,
                         sample_file_columns, time_series_column,
