@@ -21,7 +21,7 @@ jobs:
             # Needed to create samples file
             echo '{"project_id": "ci-test-data-explorer"}' > dataset_config/1000_genomes/deploy.json
             echo '{"project_id": "ci-test-data-explorer"}' > dataset_config/framingham_heart_study_teaching/deploy.json
-            echo '{"project_id": "ci-test-data-explorer"}' > tests/columns_to_ignore_test/deploy.json
+            echo '{"project_id": "ci-test-data-explorer"}' > bigquery/tests/columns_to_ignore_test/deploy.json
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
             cd bigquery && tests/integration.sh ${GOOGLE_PROJECT_ID}
       - save_cache:
