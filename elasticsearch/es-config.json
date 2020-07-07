@@ -1,0 +1,77 @@
+# Allocating memory and RAM for VMs and nodes can be difficult if you want
+# to try to manage it closely.
+#
+# First, you need to explicitly specify the amount of memory for your VM.
+# Then a chunk of that is taken by OS overhead plus K8 services on the VM.
+# Second, you need to explicitly specify the amount of memory for the K8 pod
+# that will contain elasticsearch. That pod is a container with OS overhead
+# plus K8 services.
+# Thrid, you need to explicitly specify the amount of JVM memory for the
+# Elasticsearch process.
+
+# The easiest thing is to give yourself plenty of buffer, but given that
+# the cluster is long-lived, and a real-world cluster is going to have multiple
+# nodes, over-allocations can add up over time.
+
+# Each node type (master and data) below allows for easily setting the
+# CPU and Memory allocations.
+#
+# Each of the memory values here is expressed in the format native to the respective
+# system ("GB" for Compute Engine, "Gi" for Kubernetes, "g" for Java)
+#
+# Allocate a VM (vm_cpu, vm_ram)
+# https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-machine-type#memory_units
+#
+# On the VM
+# - Kubernetes + system uses some CPU and memory
+# - Allocate a node (node_cpu, node_ram)
+#   https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory
+
+#   In the node container
+#   - Node Kubernetes + system uses some memory
+#   - Allocate a JVM for ES (es_ram)
+#     https://docs.oracle.com/cd/E13150_01/jrockit_jvm/jrockit/jrdocs/refman/optionX.html
+#
+
+# Kubernetes machine overhead is documented here:
+#
+# https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture
+
+[
+{
+  "name": "my-1000g-small",
+
+  "project": "my-project",
+  "zone": "us-central1-f",
+
+  # The master/data vm_ram and k8_node_ram values cut allocations *very* close and
+  # may stop working with new versions of kubernetes.
+  # Sometimes a small configuration change adds a bit of overhead that makes these
+  # stop working.
+  # For now we set at least 3 GB of overhead between VM and k8 node.
+  "master": {
+    "count":  1,            # Number of master nodes; 1 per VM
+
+    "vm_cpu": 2,            # Number of cores for the VM
+    "vm_ram": "7GB",        # Amount of VM memory
+
+    "k8_node_cpu": "1100m", # Amount of cpu for kubernetes node (1000m == 1 core)
+    "k8_node_ram": "4Gi",   # Amount of ram for kubernetes node (docker container system services)
+    "k8_disk_size": "30Gi", # Amount of persistent disk
+
+    "es_jvm_ram": "3g"      # Amount of Elasticsearch JVM memory
+  },
+  "data": {
+    "count":  1,
+
+    "vm_cpu": 2,
+    "vm_ram": "13GB",
+
+    "k8_node_cpu": "1300m",
+    "k8_node_ram": "9.75Gi",
+    "k8_disk_size": "100Gi",
+
+    "es_jvm_ram": "9g"
+  }
+}
+]
