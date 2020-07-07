@@ -47,7 +47,7 @@ def _vm_memory(ram_string):
 
 def _machine_type(node_config):
   cpu = node_config.get('vm_cpu', 2)
-  mem = _vm_memory(node_config.get('vm_ram', '6gb'))
+  mem = _vm_memory(node_config.get('vm_ram', '6GB'))
 
   # Default to e2 for now; might want to make this configurable
   return f"e2-custom-{cpu}-{mem}"
@@ -125,10 +125,6 @@ def get_loadbalancer_ip(config):
 
   attempt_max = 12
   for attempt in range(attempt_max):
-    # NOTE: The hard-coded service name "elasticsearch-es-http" likely
-    # limits deployments to one per cloud project. This limitation
-    # should be lifted (by changing the es-template.yaml).
-
     time.sleep(5)
 
     exit_on_error = (attempt >= attempt_max-1)
