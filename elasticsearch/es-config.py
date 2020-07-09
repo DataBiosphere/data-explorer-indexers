@@ -177,7 +177,7 @@ def es_deploy(config):
 
   print()
   print("*** Preparing cluster")
-  es_util.prepare_cluster(config)
+  es_util.prepare_cluster(config, runtime)
 
   print()
   print("*** Formatting configuration")

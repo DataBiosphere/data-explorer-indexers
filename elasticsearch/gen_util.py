@@ -96,6 +96,10 @@ def get_netrc_file(config):
   return f"./deployments/{config['name']}.netrc"
 
 
+def get_all_in_one_config_file(config):
+  return f"./deployments/{config['name']}.all-in-one.yaml"
+
+
 def write_runtime_file(config, runtime):
   # Since this file will contain the password, make sure to open with
   # it being only visible to user.
@@ -153,6 +157,7 @@ def format_cluster_yaml(config, runtime):
   # Prepare the configuration values
   values = {
     'ELASTICSEARCH_IP': runtime['loadbalancer_ip'],
+    'ELASTICSEARCH_IMAGE': runtime['elasticsearch_image'],
 
     'MASTER_COUNT': config['master']['count'],
     'MASTER_K8_NODE_CPU': config['master']['k8_node_cpu'],
