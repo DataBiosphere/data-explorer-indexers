@@ -53,7 +53,7 @@
     "count":  1,            # Number of master nodes; 1 per VM
 
     "vm_cpu": 2,            # Number of cores for the VM
-    "vm_ram": "7GB",        # Amount of VM memory
+    "vm_ram": "6.5GB",      # Amount of VM memory
 
     "k8_node_cpu": "1100m", # Amount of cpu for kubernetes node (1000m == 1 core)
     "k8_node_ram": "4Gi",   # Amount of ram for kubernetes node (docker container system services)
@@ -63,6 +63,37 @@
   },
   "data": {
     "count":  1,
+
+    "vm_cpu": 2,
+    "vm_ram": "13GB",
+
+    "k8_node_cpu": "1300m",
+    "k8_node_ram": "9.75Gi",
+    "k8_disk_size": "100Gi",
+
+    "es_jvm_ram": "9g"
+  }
+},
+{
+  "name": "my-1000g-medium",
+
+  "project": "my-project",
+  "zone": "us-central1-f",
+
+  "master": {
+    "count":  3,
+
+    "vm_cpu": 2,
+    "vm_ram": "6.5GB",
+
+    "k8_node_cpu": "1100m",
+    "k8_node_ram": "4Gi",
+    "k8_disk_size": "30Gi",
+
+    "es_jvm_ram": "3g"
+  },
+  "data": {
+    "count":  3,
 
     "vm_cpu": 2,
     "vm_ram": "13GB",

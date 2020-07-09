@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # gen_util.py
 #
 # Generic utility functions for various operations, including
