@@ -41,7 +41,7 @@
 {
   "name": "my-1000g-small",
 
-  "project": "mbookman-k8-test",
+  "project": "my-project",
   "zone": "us-central1-f",
 
   # The master/data vm_ram and k8_node_ram values cut allocations *very* close and
@@ -77,7 +77,7 @@
 {
   "name": "my-1000g-medium",
 
-  "project": "mbookman-k8-test",
+  "project": "my-project",
   "zone": "us-central1-f",
 
   "master": {
