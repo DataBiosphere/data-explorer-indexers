@@ -37,7 +37,7 @@ def push_image(docker_image_path, cluster_config):
 def get_image_name(docker_image_path, cluster_config):
   
   if 'elasticsearch' in docker_image_path:
-    # elasticsearch image requiresd to be under a path named 'elasticsearch'
+    # elasticsearch image required to be under a path named 'elasticsearch'
     return f'elasticsearch/{os.path.basename(docker_image_path)}'
   return os.path.basename(docker_image_path)
 
@@ -59,15 +59,8 @@ def format_all_in_one_yaml(full_image_path, cluster_config):
   # Format the template with the config values
   all_in_one_config = all_in_one_template.format(ECK_OPERATOR_IMAGE=get_gcr_image_path(full_image_path, cluster_config))
 
-  # Write the results to the config directory
-  all_in_one_config_file = gen_util.get_all_in_one_config_file(cluster_config)
-  print(f"Writing {all_in_one_config_file}...")
-
-  gen_util.create_deployments_dir()
-
-  os.umask(0)
-  with open(all_in_one_config_file, "w") as f:
-    f.write(all_in_one_config)
+  # Write the results to the deployment directory
+  gen_util.write_all_in_one_file(cluster_config, all_in_one_config)
 
 
 def prepare_image(full_image_path, cluster_config):

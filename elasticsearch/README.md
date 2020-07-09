@@ -73,6 +73,10 @@ specific resources deployed:
   - One GCE VM for each data node
   - One Kubernetes Pod for each data VM
 
+The nodes are created on a Kubernetes cluster on a private cluster, meaning 
+the nodes have reserved IP addresses only. This is useful so large clusters 
+do not run quota issues for external IP addresses.
+
 The intent of this configuration is to simplify management of deployments.
 
 ## Tools
@@ -99,9 +103,10 @@ Deployment information will be stored in:
 
 ```
 deployments/
-  <MY-DEPLOYMENT>.netrc          # Can be used to `curl` commands to Elasticsearch
-  <MY-DEPLOYMENT>.runtime.json   # Runtime information (such as IP address)
-  <MY-DEPLOYMENT>.tls.crt        # ES cluster certificate
-  <MY-DEPLOYMENT>.yaml           # ECK configuration for the cluster
+  <MY-DEPLOYMENT>.netrc           # Can be used to `curl` commands to Elasticsearch
+  <MY-DEPLOYMENT>.runtime.json    # Runtime information (such as IP address)
+  <MY-DEPLOYMENT>.tls.crt         # ES cluster certificate
+  <MY-DEPLOYMENT>.yaml            # ECK configuration for the cluster
+  <MY-DEPLOYMENT>.all-in-one.yaml # elastic-operator configuration (defines ES objects)
 ```
 

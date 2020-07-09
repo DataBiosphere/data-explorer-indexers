@@ -190,5 +190,17 @@ def format_cluster_yaml(config, runtime):
     f.write(es_config)
 
 
+def write_all_in_one_file(cluster_config, all_in_one_config_contents):
+  
+  print(f"Writing {all_in_one_config_file}...")
+  create_deployments_dir()
+
+  all_in_one_config_file = get_all_in_one_config_file(cluster_config)
+
+  os.umask(0)
+  with open(all_in_one_config_file, "w") as f:
+    f.write(all_in_one_config_contents)
+
+
 if __name__ == '__main__':
   pass
