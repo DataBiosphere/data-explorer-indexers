@@ -11,7 +11,7 @@
 #
 #   es-config.py k8-delete MY-DEPLOYMENT # Delete the kubernetes cluster
 #
-#   es-config.py status MY-DEPLOYMENT # Status information about the deploymen
+#   es-config.py status MY-DEPLOYMENT # Status information about the deployment
 
 import json
 import math
@@ -25,7 +25,7 @@ import status_util
 
 
 def _usage(argv):
-  gen_util.err_exit(1, f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy|es-delete|status] DEPLOYMENT")
+  gen_util.err_exit(1, [f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy|es-delete|status] DEPLOYMENT"])
 
 
 def _vm_memory(ram_string):

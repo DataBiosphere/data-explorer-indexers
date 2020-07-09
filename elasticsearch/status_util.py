@@ -6,24 +6,11 @@ import re
 import gen_util
 import k8_util
 
-
-def print_cluster_metadata(cluster_json):
-
-  # Parse the selfLink:
-  #   https://container.googleapis.com/v1/projects/<proj>/zones/<zone>/clusters/<name>"
-  # into:
-  #   (project, zone, name)
-  cluster_elements = re.match(r'https://[^/]+/[^/]+/projects/([^/]+)/zones/([^/]+)/clusters/([^/]+)',
-                              cluster_json['selfLink']).groups()
-
-  # Parse the createTime ('2020-07-07T21:33:02+00:00')
-  create_time = datetime.datetime.fromisoformat(cluster_json['createTime'])
-
-  # Get the status
-  status = cluster_json['status']
-
-  print(f"Cluster: {cluster_elements}")
-  print(f"  Created: {create_time}, Status: {status}")
+# status_util.py
+#
+# Utility functions for the es-config "status" command including for:
+# - printing resources (disks, cpu, memory, vms, k8 nodes, etc.)
+# - getting resources (clusters, managed instance groups, nodes, pods)
 
 
 def _printable_disk(disk_type, disk_size_gb):
@@ -31,6 +18,69 @@ def _printable_disk(disk_type, disk_size_gb):
     return f"{os.path.basename(disk_type)}, {disk_size_gb} GB"
 
   return None
+
+
+def _printable_cpu(millis):
+  if millis < 1000:
+    return f"{int(millis)} mCPU"
+  return f"{millis/1000:.2f}"
+
+
+def _printable_mem(bytes):
+  if bytes / 1024 < 1:
+    return f"{bytes}"
+  if bytes / (1024**2) < 1:
+    return f"{bytes/1024:.2f} Ki"
+  if bytes / (1024**3) < 1:
+    return f"{bytes/(1024**2):.2f} Mi"
+  if bytes / (1024**4) < 1:
+    return f"{bytes/(1024**3):.2f} Gi"
+
+  return f"{bytes/(1024**4):.2f} Ti"
+
+
+def _cpu_str_to_millis(cpu):
+  if cpu.endswith('m'):
+    return float(cpu[:-1])
+
+  return int(float(cpu) * 1000)
+
+
+def _mem_str_to_bytes(mem):
+  if mem.endswith('Ki'):
+    return float(mem[:-2]) * 1024
+  elif mem.endswith('Mi'):
+    return float(mem[:-2]) * 1024**2
+  elif mem.endswith('Gi'):
+    return float(mem[:-2]) * 1024**3
+  elif mem.endswith('Ti'):
+    return float(mem[:-2]) * 1024**4
+  else:
+    assert False, mem  # So we can discover and add more cases
+
+
+def _sum_cpu_requested(pods):
+  sum_millis = 0
+  for pod in pods:
+    for container in pod.get('spec', {}).get('containers', []):
+      cpu = container.get('resources', {}).get('requests', {}).get('cpu')
+      if cpu:
+        sum_millis += _cpu_str_to_millis(cpu)
+
+  return sum_millis
+
+
+def _sum_mem_requested(pods):
+
+  sum_bytes = 0
+  for pod in pods:
+    for container in pod.get('spec', {}).get('containers', []):
+      mem = container.get('resources', {}).get('requests', {}).get('memory')
+      # print(f"{pod['metadata']['name']}: {mem}")
+      if mem:
+        sum_bytes += _mem_str_to_bytes(mem)
+
+  return sum_bytes
 
 
 def print_node_pool(pool, mig, disks, nodes, pods):
@@ -114,6 +164,25 @@ def print_node_pool(pool, mig, disks, nodes, pods):
       data_disk = next((d for d in node_disks if not d.get('sourceImage')),
                        {'type': None, 'sizeGb': None})
       print(f"      boot: {_printable_disk(boot_disk['type'], boot_disk['sizeGb'])}, data: {_printable_disk(data_disk['type'], data_disk['sizeGb'])}")
+
+
+def print_cluster_metadata(cluster_json):
+
+  # Parse the selfLink:
+  #   https://container.googleapis.com/v1/projects/<proj>/zones/<zone>/clusters/<name>"
+  # into:
+  #   (project, zone, name)
+  cluster_elements = re.match(r'https://[^/]+/[^/]+/projects/([^/]+)/zones/([^/]+)/clusters/([^/]+)',
+                              cluster_json['selfLink']).groups()
+
+  # Parse the createTime ('2020-07-07T21:33:02+00:00')
+  create_time = datetime.datetime.fromisoformat(cluster_json['createTime'])
+
+  # Get the status
+  status = cluster_json['status']
+
+  print(f"Cluster: {cluster_elements}")
+  print(f"  Created: {create_time}, Status: {status}")
 
 
 def _check_found(ret, output):
@@ -233,72 +302,6 @@ def get_node_pool_pod_details(all_pods, nodes):
   node_names = [n['metadata']['name'] for n in nodes]
 
   return [pod for pod in all_pods if pod.get('spec', {}).get('nodeName') in node_names]
-
-
-def _cpu_str_to_millis(cpu):
-  if cpu.endswith('m'):
-    return float(cpu[:-1])
-
-  return int(float(cpu) * 1000)
-
-
-def _sum_cpu_requested(pods):
-  sum_millis = 0
-  for pod in pods:
-    for container in pod.get('spec', {}).get('containers', []):
-      cpu = container.get('resources', {}).get('requests', {}).get('cpu')
-      if cpu:
-        sum_millis += _cpu_str_to_millis(cpu)
-
-  return sum_millis
-
-
-def _mem_str_to_bytes(mem):
-  if mem.endswith('Ki'):
-    return float(mem[:-2]) * 1024
-  elif mem.endswith('Mi'):
-    return float(mem[:-2]) * 1024**2
-  elif mem.endswith('Gi'):
-    return float(mem[:-2]) * 1024**3
-  elif mem.endswith('Ti'):
-    return float(mem[:-2]) * 1024**4
-  else:
-    assert False, mem  # So we can discover and add more cases
-
-
-def _sum_mem_requested(pods):
-
-  sum_bytes = 0
-  for pod in pods:
-    for container in pod.get('spec', {}).get('containers', []):
-      mem = container.get('resources', {}).get('requests', {}).get('memory')
-      # print(f"{pod['metadata']['name']}: {mem}")
-      if mem:
-        sum_bytes += _mem_str_to_bytes(mem)
-
-  return sum_bytes
-
-
-
-def _printable_cpu(millis):
-  if millis < 1000:
-    return f"{int(millis)} mCPU"
-  return f"{millis/1000:.2f}"
-
-
-def _printable_mem(bytes):
-  if bytes / 1024 < 1:
-    return f"{bytes}"
-  if bytes / (1024**2) < 1:
-    return f"{bytes/1024:.2f} Ki"
-  if bytes / (1024**3) < 1:
-    return f"{bytes/(1024**2):.2f} Mi"
-  if bytes / (1024**4) < 1:
-    return f"{bytes/(1024**3):.2f} Gi"
-
-  return f"{bytes/(1024**4):.2f} Ti"
-
-
 
 
 if __name__ == '__main__':
