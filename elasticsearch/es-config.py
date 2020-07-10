@@ -11,18 +11,20 @@
 #
 #   es-config.py k8-delete MY-DEPLOYMENT # Delete the kubernetes cluster
 #
+#   es-config.py status MY-DEPLOYMENT # Status information about the deployment
 
 import math
 import sys
 import time
 
+import es_util
 import gen_util
 import k8_util
-import es_util
+import status_util
 
 
 def _usage(argv):
-  gen_util.err_exit(1, [f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy] DEPLOYMENT"])
+  gen_util.err_exit(1, [f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy|es-delete|status] DEPLOYMENT"])
 
 
 def _vm_memory(ram_string):
@@ -115,7 +117,7 @@ def k8_delete(config):
   gen_util.timestamp()
 
 
-def get_loadbalancer_ip(config):
+def _get_loadbalancer_ip(config):
 
   print("Getting elasticsearch loadbalancer IP address")
 
@@ -124,13 +126,13 @@ def get_loadbalancer_ip(config):
 
   attempt_max = 12
   for attempt in range(attempt_max):
-    time.sleep(5)
+    time.sleep(10)
 
     exit_on_error = (attempt >= attempt_max-1)
     exitcode, value = k8_util.kubectl_command(config, f"""\
       get service elasticsearch-es-http""" + """\
         -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
-    """, exit_on_error)
+    """, exit_on_error=exit_on_error)
 
     if value and not exitcode:
       break
@@ -141,7 +143,7 @@ def get_loadbalancer_ip(config):
   return value
 
 
-def get_es_user_password(config):
+def _get_es_user_password(config):
 
   print("Getting elasticsearch user password")
 
@@ -153,7 +155,7 @@ def get_es_user_password(config):
   return value
 
 
-def get_tls_crt(config):
+def _get_tls_crt(config):
   print("Getting elasticsearch TLS certificate")
 
   ignore, value = k8_util.kubectl_command(config, f"""\
@@ -187,7 +189,7 @@ def es_deploy(config):
   print("*** Applying configuration")
   es_util.apply_cluster_yaml(config)
 
-  runtime['loadbalancer_ip'] = get_loadbalancer_ip(config)
+  runtime['loadbalancer_ip'] = _get_loadbalancer_ip(config)
 
   print()
   print("*** Formatting configuration")
@@ -197,13 +199,13 @@ def es_deploy(config):
   print("*** Applying configuration")
   es_util.apply_cluster_yaml(config)
 
-  runtime['password'] = get_es_user_password(config)
+  runtime['password'] = _get_es_user_password(config)
 
   print()
   print("*** Writing deployment information")
   gen_util.write_runtime_file(config, runtime)
   gen_util.write_netrc_file(config, runtime)
-  gen_util.write_tls_crt_file(config, get_tls_crt(config))
+  gen_util.write_tls_crt_file(config, _get_tls_crt(config))
 
   gen_util.timestamp()
 
@@ -217,6 +219,40 @@ def es_delete(config):
   es_util.delete_cluster(config)
 
 
+def status(config):
+
+  # Get cluster information
+  cluster = status_util.describe_cluster(config)
+  if not cluster:
+    print(f"Cluster {config['name']} not running.")
+    return
+
+  # Get node pool information
+  master_pool, master_pool_mig, master_pool_nodes = status_util.get_node_pool_details(config, cluster, 'master-pool')
+  data_pool, data_pool_mig, data_pool_nodes = status_util.get_node_pool_details(config, cluster, 'data-pool')
+
+  # Get node pool disk information
+  all_disks = status_util.get_all_disks(config)
+  master_pool_disks = status_util.get_node_pool_disks(all_disks, master_pool_nodes)
+  data_pool_disks = status_util.get_node_pool_disks(all_disks, data_pool_nodes)
+
+  # Get node pool pod information
+  all_pods = status_util.get_all_pods(config)
+  master_pool_pods = status_util.get_node_pool_pod_details(all_pods, master_pool_nodes)
+  data_pool_pods = status_util.get_node_pool_pod_details(all_pods, data_pool_nodes)
+
+  # Print details
+  print()
+  status_util.print_cluster_metadata(cluster)
+  if master_pool:
+    print()
+    status_util.print_node_pool(master_pool, master_pool_mig, master_pool_disks, master_pool_nodes, master_pool_pods)
+  if data_pool:
+    print()
+    status_util.print_node_pool(data_pool, data_pool_mig, data_pool_disks, data_pool_nodes, data_pool_pods)
+  print()
+
+
 ### MAIN
 
 def main(argv):
@@ -226,7 +262,7 @@ def main(argv):
   command = argv[1]
   deployment = argv[2]
 
-  if not command in ['k8-create', 'k8-delete', 'es-deploy', 'es-delete']:
+  if not command in ['k8-create', 'k8-delete', 'es-deploy', 'es-delete', 'status']:
     _usage(argv)
 
   config = gen_util.load_config(deployment)
@@ -242,6 +278,9 @@ def main(argv):
   if command == 'es-delete':
     es_delete(config)
 
+
+  if command == 'status':
+    status(config)
 
 if __name__ == '__main__':
   main(sys.argv)

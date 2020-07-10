@@ -99,6 +99,10 @@ To delete the Kubernetes cluster:
 
 `es-config.py k8-delete MY-DEPLOYMENT`
 
+To get information about the deployment:
+
+`es-config.py status MY-DEPLOYMENT`
+
 ## Deployment state
 
 Deployment information will be stored in:

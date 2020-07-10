@@ -56,6 +56,37 @@ def create_cluster(cluster_config):
   gen_util.run_command(command)
 
 
+def describe_cluster(cluster_config):
+
+  project = cluster_config['project']
+  zone = cluster_config['zone']
+  cluster_name = cluster_config['name']
+
+  command=f"""
+    gcloud container clusters describe "{cluster_name}" \
+      --project "{project}" \
+      --zone "{zone}" \
+      --format json
+  """
+
+  return gen_util.get_command_output(command, exit_on_error=False)
+
+
+def delete_cluster(cluster_config):
+
+  cluster_name = cluster_config['name']
+  project = cluster_config['project']
+  zone = cluster_config['zone']
+
+  command=f"""
+    gcloud beta container clusters delete "{cluster_name}" \
+      --project "{project}" \
+      --zone "{zone}"
+  """
+
+  gen_util.run_command(command)
+
+
 def create_node_pool(cluster_config, node_pool_config):
 
   project = cluster_config['project']
@@ -91,21 +122,6 @@ def create_node_pool(cluster_config, node_pool_config):
   gen_util.run_command(command)
 
 
-def delete_cluster(cluster_config):
-
-  cluster_name = cluster_config['name']
-  project = cluster_config['project']
-  zone = cluster_config['zone']
-
-  command=f"""
-    gcloud beta container clusters delete "{cluster_name}" \
-      --project "{project}" \
-      --zone "{zone}"
-  """
-
-  gen_util.run_command(command)
-
-
 def delete_node_pool(cluster_config, node_pool_config, force):
 
   project = cluster_config['project']
@@ -126,6 +142,27 @@ def delete_node_pool(cluster_config, node_pool_config, force):
   gen_util.run_command(command)
 
 
+def describe_managed_instance_group(group_uri):
+  command = f"""
+    gcloud compute instance-groups managed describe {group_uri} \
+        --format json
+  """
+
+  return gen_util.get_command_output(command, exit_on_error=False)
+
+
+def get_disks(project, zone):
+  command = f"""
+    gcloud compute disks list \
+        --project {project} \
+        --filter '(zone:{zone})' \
+        --format json
+  """
+
+  ignore, output = gen_util.get_command_output(command)
+  return output
+
+
 def get_cluster_context(config):
   """Return the name of the kubeconfig cluster context"""
 
@@ -142,13 +179,14 @@ def kubectl_run_command(config, command):
   gen_util.run_command(command)
 
 
-def kubectl_command(config, command, exit_on_error=True):
+def kubectl_command(config, command, emit_command=True, exit_on_error=True):
   context = get_cluster_context(config)
 
   command = f"kubectl --context {context} {command}"
-  print(f"Running: {command}")
+  if emit_command:
+    print(f"Running: {command}")
 
-  return gen_util.get_command_output(command, exit_on_error)
+  return gen_util.get_command_output(command, exit_on_error=exit_on_error)
 
 
 if __name__ == '__main__':
