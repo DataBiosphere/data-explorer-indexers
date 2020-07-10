@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # docker_util.py
 #
 # Utility functions for interacting with Docker
