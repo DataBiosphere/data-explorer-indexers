@@ -73,11 +73,10 @@ specific resources deployed:
   - One GCE VM for each data node
   - One Kubernetes Pod for each data VM
 
-The nodes are created on a Kubernetes cluster on a private cluster, meaning 
-the nodes have reserved IP addresses only. This is useful so large clusters 
-do not run into quota issues for external IP addresses.
-See https://cloud.google.com/kubernetes-engine/docs/concepts/private-cluster-concept
-https://cloud.google.com/compute/quotas#ip_addresses
+The nodes are created on a Kubernetes cluster on a 
+[private cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/private-cluster-concept), 
+meaning the nodes have reserved IP addresses only. This is useful so large clusters
+do not use up [external IP address quota](https://cloud.google.com/compute/quotas#ip_addresses).
 
 The intent of this configuration is to simplify management of deployments.
 
@@ -116,3 +115,16 @@ deployments/
   <MY-DEPLOYMENT>.yaml            # ECK configuration for the cluster
 ```
 
+## all-in-one
+At one point of the Elasticsearch deployment an all-in-one configuration is
+applied, as guided by the
+[ECK quickstart guide](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-deploy-eck.html).
+This configuration installs resource definitions such as nodesets and 
+Elasticsearch operators.
+
+Instead of applying the configration directly from the web, these tools make a
+[local copy](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one-template.yaml)
+in order to modify the image path. This is done in order to pull an image from
+gcr.io instead of docker, so that it can be run on a private cluster. The
+original file is also checked in under
+[templates/all-in-one.1.1.2.yaml](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one.1.1.2.yaml).

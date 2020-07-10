@@ -51,7 +51,7 @@ def format_all_in_one_yaml(full_image_path, cluster_config):
   # Prepare the elasticsearch operators
 
   # Read up the template
-  with open('all-in-one-template.yaml') as f:
+  with open('templates/all-in-one-template.yaml') as f:
     all_in_one_template = f.read()
 
   # Format the template with the config values

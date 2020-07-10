@@ -171,7 +171,7 @@ def format_cluster_yaml(config, runtime):
   }
 
   # Read up the template
-  with open('es-template.yaml') as f:
+  with open('templates/es-template.yaml') as f:
     es_template = f.read()
 
   # Format the template with the config values
@@ -190,10 +190,10 @@ def format_cluster_yaml(config, runtime):
 
 def write_all_in_one_file(cluster_config, all_in_one_config_contents):
   
-  print(f"Writing {all_in_one_config_file}...")
   create_deployments_dir()
 
   all_in_one_config_file = get_all_in_one_config_file(cluster_config)
+  print(f"Writing {all_in_one_config_file}...")
 
   os.umask(0)
   with open(all_in_one_config_file, "w") as f:
