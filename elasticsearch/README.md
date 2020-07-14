@@ -115,16 +115,24 @@ deployments/
   <MY-DEPLOYMENT>.yaml            # ECK configuration for the cluster
 ```
 
-## all-in-one
-At one point of the Elasticsearch deployment an all-in-one configuration is
-applied, as guided by the
-[ECK quickstart guide](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-deploy-eck.html).
-This configuration installs resource definitions such as nodesets and 
-Elasticsearch operators.
+## "all-in-one" YAML configuration
 
-Instead of applying the configration directly from the web, these tools make a
-[local copy](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one-template.yaml)
-in order to modify the image path. This is done in order to pull an image from
-gcr.io instead of docker, so that it can be run on a private cluster. The
-original file is also checked in under
-[templates/all-in-one.1.1.2.yaml](https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one.1.1.2.yaml).
+Elasticsearch on Kubernetes (ECK) deployment utilizes an "all-in-one" configuration file that installs
+Elasticsearch resource definitions. See the  [ECK quickstart guide](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-deploy-eck.html) for more details.
+
+A copy of this "all-in-one" file has been copied into this repository:
+
+- https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one.1.1.2.yaml
+
+and modified slightly to be used as a template:
+
+- https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one-template.yaml
+
+in order to modify the Docker image path. This is done in order to pull a images from
+`gcr.io` instead of Dockerhub as VMs deployed by this tool do not have access to the internet.
+
+See:
+
+- https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-custom-images.html
+
+for reference.
