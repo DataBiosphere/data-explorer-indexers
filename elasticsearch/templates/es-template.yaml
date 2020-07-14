@@ -5,6 +5,7 @@ metadata:
 
 spec:
   version: 7.7.1
+  image: {ELASTICSEARCH_IMAGE}
   http:
     service:
       spec:

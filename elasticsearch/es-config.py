@@ -13,7 +13,6 @@
 #
 #   es-config.py status MY-DEPLOYMENT # Status information about the deployment
 
-import json
 import math
 import sys
 import time
@@ -180,7 +179,7 @@ def es_deploy(config):
 
   print()
   print("*** Preparing cluster")
-  es_util.prepare_cluster(config)
+  es_util.prepare_cluster(config, runtime)
 
   print()
   print("*** Formatting configuration")

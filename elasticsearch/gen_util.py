@@ -94,6 +94,10 @@ def get_netrc_file(config):
   return f"./deployments/{config['name']}.netrc"
 
 
+def get_all_in_one_config_file(config):
+  return f"./deployments/{config['name']}.all-in-one.yaml"
+
+
 def write_runtime_file(config, runtime):
   # Since this file will contain the password, make sure to open with
   # it being only visible to user.
@@ -151,6 +155,7 @@ def format_cluster_yaml(config, runtime):
   # Prepare the configuration values
   values = {
     'ELASTICSEARCH_IP': runtime['loadbalancer_ip'],
+    'ELASTICSEARCH_IMAGE': runtime['elasticsearch_image'],
 
     'MASTER_COUNT': config['master']['count'],
     'MASTER_K8_NODE_CPU': config['master']['k8_node_cpu'],
@@ -166,7 +171,7 @@ def format_cluster_yaml(config, runtime):
   }
 
   # Read up the template
-  with open('es-template.yaml') as f:
+  with open('templates/es-template.yaml') as f:
     es_template = f.read()
 
   # Format the template with the config values
@@ -181,6 +186,18 @@ def format_cluster_yaml(config, runtime):
   os.umask(0)
   with open(output_file, "w") as f:
     f.write(es_config)
+
+
+def write_all_in_one_file(cluster_config, all_in_one_config_contents):
+  
+  create_deployments_dir()
+
+  all_in_one_config_file = get_all_in_one_config_file(cluster_config)
+  print(f"Writing {all_in_one_config_file}...")
+
+  os.umask(0)
+  with open(all_in_one_config_file, "w") as f:
+    f.write(all_in_one_config_contents)
 
 
 if __name__ == '__main__':

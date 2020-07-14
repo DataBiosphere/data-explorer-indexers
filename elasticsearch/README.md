@@ -73,6 +73,11 @@ specific resources deployed:
   - One GCE VM for each data node
   - One Kubernetes Pod for each data VM
 
+The nodes are created on a Kubernetes cluster on a 
+[private cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/private-cluster-concept), 
+meaning the nodes have reserved IP addresses only. This is useful so large clusters
+do not use up [external IP address quota](https://cloud.google.com/compute/quotas#ip_addresses).
+
 The intent of this configuration is to simplify management of deployments.
 
 ## Tools
@@ -103,9 +108,31 @@ Deployment information will be stored in:
 
 ```
 deployments/
-  <MY-DEPLOYMENT>.netrc          # Can be used to `curl` commands to Elasticsearch
-  <MY-DEPLOYMENT>.runtime.json   # Runtime information (such as IP address)
-  <MY-DEPLOYMENT>.tls.crt        # ES cluster certificate
-  <MY-DEPLOYMENT>.yaml           # ECK configuration for the cluster
+  <MY-DEPLOYMENT>.all-in-one.yaml # elastic-operator configuration (defines ES objects)
+  <MY-DEPLOYMENT>.netrc           # Can be used to `curl` commands to Elasticsearch
+  <MY-DEPLOYMENT>.runtime.json    # Runtime information (such as IP address)
+  <MY-DEPLOYMENT>.tls.crt         # ES cluster certificate
+  <MY-DEPLOYMENT>.yaml            # ECK configuration for the cluster
 ```
 
+## "all-in-one" YAML configuration
+
+Elasticsearch on Kubernetes (ECK) deployment utilizes an "all-in-one" configuration file that installs
+Elasticsearch resource definitions. See the  [ECK quickstart guide](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-deploy-eck.html) for more details.
+
+A copy of this "all-in-one" file has been copied into this repository:
+
+- https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one.1.1.2.yaml
+
+and modified slightly to be used as a template:
+
+- https://github.com/DataBiosphere/data-explorer-indexers/blob/master/elasticsearch/templates/all-in-one-template.yaml
+
+in order to modify the Docker image path. This is done in order to pull a images from
+`gcr.io` instead of Dockerhub as VMs deployed by this tool do not have access to the internet.
+
+See:
+
+- https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-custom-images.html
+
+for reference.

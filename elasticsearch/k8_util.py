@@ -48,7 +48,9 @@ def create_cluster(cluster_config):
       --enable-autoupgrade \
       --enable-autorepair \
       --max-surge-upgrade 1 \
-      --max-unavailable-upgrade 0
+      --max-unavailable-upgrade 0 \
+      --enable-private-nodes \
+      --master-ipv4-cidr 172.16.0.16/28
   """
 
   gen_util.run_command(command)
