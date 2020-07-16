@@ -139,9 +139,9 @@ def _field_docs_by_id(id_prefix, name_prefix, fields, participant_id_column,
 
 
 def _rows_from_export(
-        storage_client,
-        bucket_name,
-        export_obj_prefix,
+    storage_client,
+    bucket_name,
+    export_obj_prefix,
 ):
     bucket = storage_client.get_bucket(bucket_name)
     for blob in bucket.list_blobs(prefix=export_obj_prefix):
@@ -604,8 +604,8 @@ def main():
     deploy_config_path = os.path.join(args.dataset_config_dir, 'deploy.json')
     deploy_project_id = indexer_util.parse_json_file(
         deploy_config_path)['project_id']
-    deploy_local = indexer_util.parse_json_file(
-        deploy_config_path).get('deploy_local', False)
+    deploy_local = indexer_util.parse_json_file(deploy_config_path).get(
+        'deploy_local', False)
     es = indexer_util.get_es_client(args.elasticsearch_url, deploy_local)
     indexer_util.maybe_create_elasticsearch_index(es, args.elasticsearch_url,
                                                   index_name)
