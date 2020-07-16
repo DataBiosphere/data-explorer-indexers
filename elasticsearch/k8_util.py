@@ -25,7 +25,7 @@ def create_cluster(cluster_config):
   #
   # More could probably be removed (need to check the defaults).
 
-  command=f"""
+  command = f"""
     gcloud beta container clusters create "{cluster_name}" \
       --project "{project}" \
       --zone "{zone}" \
@@ -62,7 +62,7 @@ def describe_cluster(cluster_config):
   zone = cluster_config['zone']
   cluster_name = cluster_config['name']
 
-  command=f"""
+  command = f"""
     gcloud container clusters describe "{cluster_name}" \
       --project "{project}" \
       --zone "{zone}" \
@@ -78,7 +78,7 @@ def delete_cluster(cluster_config):
   project = cluster_config['project']
   zone = cluster_config['zone']
 
-  command=f"""
+  command = f"""
     gcloud beta container clusters delete "{cluster_name}" \
       --project "{project}" \
       --zone "{zone}"

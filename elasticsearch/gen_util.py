@@ -9,8 +9,7 @@ import os
 import subprocess
 import sys
 
-
-_CONFIG_FILE="es-config.json"
+_CONFIG_FILE = "es-config.json"
 
 
 def err_exit(code, message_list):
@@ -38,10 +37,7 @@ def get_command_output(command, exit_on_error=True):
 
   (ret, output) = subprocess.getstatusoutput(command)
   if ret and exit_on_error:
-    err_exit(ret, [
-      f"Command\n{command}:",
-      output,
-      f"Exit code: {ret}"])
+    err_exit(ret, [f"Command\n{command}:", output, f"Exit code: {ret}"])
 
   return ret, output
 
@@ -68,7 +64,8 @@ def load_config(deployment):
 
   # Return the deployment
   try:
-    return next(config for config in all_config if config['name'] == deployment)
+    return next(config for config in all_config
+                if config['name'] == deployment)
   except StopIteration:
     err_exit(1, [f"Deployment {deployment} not found in {_CONFIG_FILE}"])
 
@@ -153,6 +150,7 @@ def rm_deployment_files(cluster_name):
 
 def format_cluster_yaml(config, runtime):
   # Prepare the configuration values
+  # yapf: disable
   values = {
     'ELASTICSEARCH_IP': runtime['loadbalancer_ip'],
     'ELASTICSEARCH_IMAGE': runtime['elasticsearch_image'],
@@ -169,6 +167,7 @@ def format_cluster_yaml(config, runtime):
     'DATA_K8_DISK_SIZE': config['data']['k8_disk_size'],
     'DATA_ES_JVM_RAM': config['data']['es_jvm_ram']
   }
+  # yapf: enable
 
   # Read up the template
   with open('templates/es-template.yaml') as f:
@@ -189,7 +188,7 @@ def format_cluster_yaml(config, runtime):
 
 
 def write_all_in_one_file(cluster_config, all_in_one_config_contents):
-  
+
   create_deployments_dir()
 
   all_in_one_config_file = get_all_in_one_config_file(cluster_config)

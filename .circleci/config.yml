@@ -12,8 +12,15 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
-            pip install yapf
-            yapf -dr .
+            pip3 install yapf
+
+            # For now, the older directories use indent of 4
+            yapf -dr bigquery
+            yapf -dr indexer_util
+
+            # For new code, use indent of 2
+            yapf -dr --style='{indent_width: 2, continuation_indent_width: 2}' \
+                elasticsearch
       - run:
           name: Run the BigQuery Indexer integration test
           command: |
