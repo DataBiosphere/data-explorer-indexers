@@ -103,10 +103,14 @@ def print_node_pool(pool, mig, disks, nodes, pods):
   scaling = pool['autoscaling']
   print(f"Node pool: {pool['name']}")
   print("  Configuration:")
-  print(f"    initial: {pool['initialNodeCount']}, min: {scaling['minNodeCount']}, max: {scaling['maxNodeCount']}")
+  print(
+    f"    initial: {pool['initialNodeCount']}, min: {scaling['minNodeCount']}, max: {scaling['maxNodeCount']}"
+  )
 
   print(f"    machine type: {pool['config']['machineType']}")
-  print(f"    boot disk: {_printable_disk(pool['config']['diskType'], pool['config']['diskSizeGb'])}")
+  print(
+    f"    boot disk: {_printable_disk(pool['config']['diskType'], pool['config']['diskSizeGb'])}"
+  )
 
   if mig:
     print()
@@ -130,40 +134,53 @@ def print_node_pool(pool, mig, disks, nodes, pods):
     for node in nodes:
       pods_for_node = get_node_pool_pod_details(pods, [node])
 
-      cpu_requested[node['metadata']['name']] = _sum_cpu_requested(pods_for_node)
-      mem_requested[node['metadata']['name']] = _sum_mem_requested(pods_for_node)
+      cpu_requested[node['metadata']['name']] = _sum_cpu_requested(
+        pods_for_node)
+      mem_requested[node['metadata']['name']] = _sum_mem_requested(
+        pods_for_node)
 
     print("    cpu:")
     for node in nodes:
       status = node['status']
 
-      allocatable = _printable_cpu(_cpu_str_to_millis(status['allocatable']['cpu']))
+      allocatable = _printable_cpu(
+        _cpu_str_to_millis(status['allocatable']['cpu']))
       capacity = _printable_cpu(_cpu_str_to_millis(status['capacity']['cpu']))
       requested = _printable_cpu(cpu_requested[node['metadata']['name']])
 
-      print(f"      requested: {requested}, allocatable: {allocatable}, capacity {capacity}")
-
+      print(
+        f"      requested: {requested}, allocatable: {allocatable}, capacity {capacity}"
+      )
 
     print("    memory:")
     for node in nodes:
       status = node['status']
 
-      allocatable = _printable_mem(_mem_str_to_bytes(status['allocatable']['memory']))
-      capacity = _printable_mem(_mem_str_to_bytes(status['capacity']['memory']))
+      allocatable = _printable_mem(
+        _mem_str_to_bytes(status['allocatable']['memory']))
+      capacity = _printable_mem(_mem_str_to_bytes(
+        status['capacity']['memory']))
       requested = _printable_mem(mem_requested[node['metadata']['name']])
 
-      print(f"      requested: {requested}, allocatable: {allocatable}, capacity {capacity}")
+      print(
+        f"      requested: {requested}, allocatable: {allocatable}, capacity {capacity}"
+      )
 
     print("    disks:")
     for node in nodes:
       node_disks = _get_disks_for_node(node, disks)
       # We expect there to be one (boot) or two (boot + data) disks
       # The boot disk has a sourceImage.
-      assert len(node_disks) in (1, 2), f"Unexpected number of disks: {len(node_disks)}"
+      assert len(node_disks) in (
+        1, 2), f"Unexpected number of disks: {len(node_disks)}"
       boot_disk = next(d for d in node_disks if d.get('sourceImage'))
-      data_disk = next((d for d in node_disks if not d.get('sourceImage')),
-                       {'type': None, 'sizeGb': None})
-      print(f"      boot: {_printable_disk(boot_disk['type'], boot_disk['sizeGb'])}, data: {_printable_disk(data_disk['type'], data_disk['sizeGb'])}")
+      data_disk = next((d for d in node_disks if not d.get('sourceImage')), {
+        'type': None,
+        'sizeGb': None
+      })
+      print(
+        f"      boot: {_printable_disk(boot_disk['type'], boot_disk['sizeGb'])}, data: {_printable_disk(data_disk['type'], data_disk['sizeGb'])}"
+      )
 
 
 def print_cluster_metadata(cluster_json):
@@ -172,8 +189,9 @@ def print_cluster_metadata(cluster_json):
   #   https://container.googleapis.com/v1/projects/<proj>/zones/<zone>/clusters/<name>"
   # into:
   #   (project, zone, name)
-  cluster_elements = re.match(r'https://[^/]+/[^/]+/projects/([^/]+)/zones/([^/]+)/clusters/([^/]+)',
-                              cluster_json['selfLink']).groups()
+  cluster_elements = re.match(
+    r'https://[^/]+/[^/]+/projects/([^/]+)/zones/([^/]+)/clusters/([^/]+)',
+    cluster_json['selfLink']).groups()
 
   # Parse the createTime ('2020-07-07T21:33:02+00:00')
   create_time = datetime.datetime.fromisoformat(cluster_json['createTime'])
@@ -220,7 +238,8 @@ def _describe_managed_instance_group(uri):
 def get_node_pool_details(config, cluster, pool_name):
 
   # Get the node pool information from the cluster details
-  pool = next((p for p in cluster['nodePools'] if p['name'] == pool_name), None)
+  pool = next((p for p in cluster['nodePools'] if p['name'] == pool_name),
+              None)
   if not pool:
     return None, None, []
 
@@ -232,9 +251,12 @@ def get_node_pool_details(config, cluster, pool_name):
 
   # Get the node information from kubernetes
   print(f"Getting {pool_name} node pool information from kubernetes...")
-  ret, nodes = k8_util.kubectl_command(config, f"""\
+  ret, nodes = k8_util.kubectl_command(config,
+                                       f"""\
     get nodes -l cloud.google.com/gke-nodepool={pool_name} --output=json
-    """, emit_command=False, exit_on_error=False)
+    """,
+                                       emit_command=False,
+                                       exit_on_error=False)
   if ret:
     return pool, mig, []
   else:
@@ -261,6 +283,7 @@ def _get_disks_for_node(node, disks):
 
   return node_disks
 
+
 def get_node_pool_disks(all_disks, nodes):
   if not nodes:
     return []
@@ -280,11 +303,15 @@ def get_node_pool_disks(all_disks, nodes):
 
   return node_pool_disks
 
+
 def get_all_pods(config):
   print(f"Getting pod information from kubernetes...")
-  ret, pods = k8_util.kubectl_command(config, f"""\
+  ret, pods = k8_util.kubectl_command(config,
+                                      f"""\
     get pods --all-namespaces --output json
-    """, emit_command=False, exit_on_error=False)
+    """,
+                                      emit_command=False,
+                                      exit_on_error=False)
 
   if ret:
     return []
@@ -301,7 +328,10 @@ def get_node_pool_pod_details(all_pods, nodes):
   # In the future, we might want to cut down on the information returned.
   node_names = [n['metadata']['name'] for n in nodes]
 
-  return [pod for pod in all_pods if pod.get('spec', {}).get('nodeName') in node_names]
+  return [
+    pod for pod in all_pods
+    if pod.get('spec', {}).get('nodeName') in node_names
+  ]
 
 
 if __name__ == '__main__':

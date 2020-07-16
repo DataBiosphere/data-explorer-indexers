@@ -24,7 +24,9 @@ import status_util
 
 
 def _usage(argv):
-  gen_util.err_exit(1, [f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy|es-delete|status] DEPLOYMENT"])
+  gen_util.err_exit(1, [
+    f"Usage: {argv[0]} [k8-create|k8-delete|es-deploy|es-delete|status] DEPLOYMENT"
+  ])
 
 
 def _vm_memory(ram_string):
@@ -41,9 +43,8 @@ def _vm_memory(ram_string):
   if ram_string.endswith('GB'):
     return int(float(ram_string[:-2]) * 1024)
   else:
-    gen_util.err_exit(1, [
-      "Invalid 'ram' value: '{ram_string}'",
-      "Must end in 'GB'"])
+    gen_util.err_exit(
+      1, ["Invalid 'ram' value: '{ram_string}'", "Must end in 'GB'"])
 
 
 def _machine_type(node_config):
@@ -96,7 +97,7 @@ def k8_create(config):
   k8_util.create_node_pool(cluster_config, data_pool_config)
 
   gen_util.timestamp()
-  k8_util.delete_node_pool(cluster_config, { 'name': 'default-pool' }, True)
+  k8_util.delete_node_pool(cluster_config, {'name': 'default-pool'}, True)
 
   gen_util.timestamp()
 
@@ -128,17 +129,20 @@ def _get_loadbalancer_ip(config):
   for attempt in range(attempt_max):
     time.sleep(10)
 
-    exit_on_error = (attempt >= attempt_max-1)
-    exitcode, value = k8_util.kubectl_command(config, f"""\
+    exit_on_error = (attempt >= attempt_max - 1)
+    exitcode, value = k8_util.kubectl_command(config,
+                                              f"""\
       get service elasticsearch-es-http""" + """\
         -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
-    """, exit_on_error=exit_on_error)
+    """,
+                                              exit_on_error=exit_on_error)
 
     if value and not exitcode:
       break
 
     if exit_on_error:
-      gen_util.err_exit(1, ["loadbalancer IP address not found after {attempt_max} attempts"])
+      gen_util.err_exit(
+        1, ["loadbalancer IP address not found after {attempt_max} attempts"])
 
   return value
 
@@ -147,7 +151,8 @@ def _get_es_user_password(config):
 
   print("Getting elasticsearch user password")
 
-  ignore, value = k8_util.kubectl_command(config, f"""\
+  ignore, value = k8_util.kubectl_command(
+    config, f"""\
     get secret elasticsearch-es-elastic-user""" + """\
       -o go-template='{{.data.elastic | base64decode }}'
     """)
@@ -158,12 +163,14 @@ def _get_es_user_password(config):
 def _get_tls_crt(config):
   print("Getting elasticsearch TLS certificate")
 
-  ignore, value = k8_util.kubectl_command(config, f"""\
+  ignore, value = k8_util.kubectl_command(
+    config, f"""\
     get secret elasticsearch-es-http-certs-public""" + """\
       -o go-template='{{index .data "tls.crt" | base64decode }}'
     """)
 
   return value
+
 
 def es_deploy(config):
   # There is a multi-pass process for configuration, driven by
@@ -171,9 +178,11 @@ def es_deploy(config):
   # the load balancer. We then get the IP address of the load
   # balancer and include it in the TLS configuration.
 
+  # yapf: disable
   runtime = {
     'loadbalancer_ip': ""
   }
+  # yapf: enable
 
   gen_util.timestamp()
 
@@ -228,32 +237,41 @@ def status(config):
     return
 
   # Get node pool information
-  master_pool, master_pool_mig, master_pool_nodes = status_util.get_node_pool_details(config, cluster, 'master-pool')
-  data_pool, data_pool_mig, data_pool_nodes = status_util.get_node_pool_details(config, cluster, 'data-pool')
+  master_pool, master_pool_mig, master_pool_nodes = status_util.get_node_pool_details(
+    config, cluster, 'master-pool')
+  data_pool, data_pool_mig, data_pool_nodes = status_util.get_node_pool_details(
+    config, cluster, 'data-pool')
 
   # Get node pool disk information
   all_disks = status_util.get_all_disks(config)
-  master_pool_disks = status_util.get_node_pool_disks(all_disks, master_pool_nodes)
+  master_pool_disks = status_util.get_node_pool_disks(all_disks,
+                                                      master_pool_nodes)
   data_pool_disks = status_util.get_node_pool_disks(all_disks, data_pool_nodes)
 
   # Get node pool pod information
   all_pods = status_util.get_all_pods(config)
-  master_pool_pods = status_util.get_node_pool_pod_details(all_pods, master_pool_nodes)
-  data_pool_pods = status_util.get_node_pool_pod_details(all_pods, data_pool_nodes)
+  master_pool_pods = status_util.get_node_pool_pod_details(
+    all_pods, master_pool_nodes)
+  data_pool_pods = status_util.get_node_pool_pod_details(
+    all_pods, data_pool_nodes)
 
   # Print details
   print()
   status_util.print_cluster_metadata(cluster)
   if master_pool:
     print()
-    status_util.print_node_pool(master_pool, master_pool_mig, master_pool_disks, master_pool_nodes, master_pool_pods)
+    status_util.print_node_pool(master_pool, master_pool_mig,
+                                master_pool_disks, master_pool_nodes,
+                                master_pool_pods)
   if data_pool:
     print()
-    status_util.print_node_pool(data_pool, data_pool_mig, data_pool_disks, data_pool_nodes, data_pool_pods)
+    status_util.print_node_pool(data_pool, data_pool_mig, data_pool_disks,
+                                data_pool_nodes, data_pool_pods)
   print()
 
 
 ### MAIN
+
 
 def main(argv):
   if len(argv) != 3:
@@ -262,7 +280,9 @@ def main(argv):
   command = argv[1]
   deployment = argv[2]
 
-  if not command in ['k8-create', 'k8-delete', 'es-deploy', 'es-delete', 'status']:
+  if not command in [
+      'k8-create', 'k8-delete', 'es-deploy', 'es-delete', 'status'
+  ]:
     _usage(argv)
 
   config = gen_util.load_config(deployment)
@@ -272,15 +292,14 @@ def main(argv):
   if command == 'k8-delete':
     k8_delete(config)
 
-
   if command == 'es-deploy':
     es_deploy(config)
   if command == 'es-delete':
     es_delete(config)
 
-
   if command == 'status':
     status(config)
+
 
 if __name__ == '__main__':
   main(sys.argv)
