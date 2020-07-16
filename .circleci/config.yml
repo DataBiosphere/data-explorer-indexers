@@ -12,6 +12,8 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
+            pyenv shell 3.5.2
+
             pip3 install yapf
 
             # For now, the older directories use indent of 4
