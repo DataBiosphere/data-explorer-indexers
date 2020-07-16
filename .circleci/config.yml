@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:202007-01
     environment:
       GOOGLE_PROJECT_ID: ci-test-data-explorer
     steps:
@@ -12,8 +12,6 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
-            pyenv local 3.5.2
-
             pip3 install yapf
 
             # For now, the older directories use indent of 4
