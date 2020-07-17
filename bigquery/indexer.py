@@ -390,7 +390,8 @@ def index_fields(es, index_name, table, participant_id_column,
     }
 
     field_docs = _field_docs_by_id(id_prefix, '', fields,
-                                   participant_id_column, sample_id_column)
+                                   participant_id_column, sample_id_column,
+                                   columns_to_ignore)
     es.indices.put_mapping(index=index_name, body=mappings)
     indexer_util.bulk_index_docs(es, index_name, field_docs)
 

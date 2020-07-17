@@ -119,7 +119,6 @@ def _wait_elasticsearch_healthy(es):
 
 
 def get_es_client(elasticsearch_url, deploy_local):
-    logger.info('Willy, its {}: {}'.format(deploy_local, elasticsearch_url))
     if deploy_local:
         es = Elasticsearch([elasticsearch_url],
                            retry_on_timeout=True,

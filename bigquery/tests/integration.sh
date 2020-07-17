@@ -9,13 +9,13 @@
 #
 #   curl -XDELETE localhost:9200/1000_genomes && curl -XDELETE localhost:9200/1000_genomes_fields
 #   docker-compose up --build indexer
-#   curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes_golden.json'
+#   curl -s 'http://localhost:9200/1000_genomes/_doc/HG02924' | jq -rS '._source' > 'tests/1000_genomes_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes/_mappings?pretty' | jq -rS '.' > 'tests/1000_genomes_mappings_golden.json'
 #   curl -s 'http://localhost:9200/1000_genomes_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/1000_genomes_fields_golden.json'
 #
 #   curl -XDELETE localhost:9200/framingham_heart_study_teaching_dataset && curl -XDELETE localhost:9200/framingham_heart_study_teaching_dataset_fields
 #   DATASET_CONFIG_DIR=dataset_config/framingham_heart_study_teaching docker-compose up --build indexer
-#   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/type/9334261' | jq -rS '._source' > 'tests/framingham_heart_study_teaching_dataset_golden.json'
+#   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/_doc/9334261' | jq -rS '._source' > 'tests/framingham_heart_study_teaching_dataset_golden.json'
 #   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/_mappings?pretty' | jq -rS '.' > 'tests/framingham_heart_study_teaching_dataset_mappings_golden.json'
 #   curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset_fields/_search?size=200' | jq -rS '.hits.hits' > 'tests/framingham_heart_study_teaching_dataset_fields_golden.json'
 
@@ -70,14 +70,14 @@ readonly -f set_up_indices
 
 function validate_framingham_heart_study_teaching_dataset() {
   # Validate the correct number of documents were indexed.
-  DOC_COUNT_FRAMINGHAM=$(curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/_search' | jq -r '.hits.total')
+  DOC_COUNT_FRAMINGHAM=$(curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/_search' | jq -r '.hits.total.value')
   if [ "$DOC_COUNT_FRAMINGHAM" != "4434" ]; then
     echo "Number of documents is incorrect, expected 4434, got $DOC_COUNT_FRAMINGHAM"
     exit 1
   fi
 
   # Write the indices out to a file in order to diff.
-  curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/type/9334261' | jq -rS '._source' > 'tests/framingham_heart_study_teaching_dataset.json'
+  curl -s 'http://localhost:9200/framingham_heart_study_teaching_dataset/_doc/9334261' | jq -rS '._source' > 'tests/framingham_heart_study_teaching_dataset.json'
   DIFF=$(diff tests/framingham_heart_study_teaching_dataset_golden.json tests/framingham_heart_study_teaching_dataset.json)
   if [ "$DIFF" != "" ]; then
     echo "Index does not match golden json file, diff:"
@@ -108,14 +108,14 @@ readonly -f validate_framingham_heart_study_teaching_dataset
 
 function validate_1000_genomes() {
   # Validate the correct number of documents were indexed.
-  DOC_COUNT_GENOMES=$(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total')
+  DOC_COUNT_GENOMES=$(curl -s 'http://localhost:9200/1000_genomes/_search' | jq -r '.hits.total.value')
   if [ "$DOC_COUNT_GENOMES" != "3500" ]; then
     echo "Number of documents is incorrect, expected 3500, got $DOC_COUNT_GENOMES"
     exit 1
   fi
 
   # Write the indices out to a file in order to diff.
-  curl -s 'http://localhost:9200/1000_genomes/type/HG02924' | jq -rS '._source' > 'tests/1000_genomes.json'
+  curl -s 'http://localhost:9200/1000_genomes/_doc/HG02924' | jq -rS '._source' > 'tests/1000_genomes.json'
   DIFF=$(diff tests/1000_genomes_golden.json tests/1000_genomes.json)
   if [ "$DIFF" != "" ]; then
     echo "Index does not match golden json file, diff:"
@@ -156,18 +156,20 @@ function test_columns_to_ignore() {
   sleep 5
 
   es_id_in_index='samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_1_vcf'
-  FOUND=$(curl -s "localhost:9200/1000_genomes_test_columns_to_ignore_fields/type/${es_id_in_index}" | jq -rS '.found')
+  FOUND=$(curl -s "localhost:9200/1000_genomes_test_columns_to_ignore_fields/_doc/${es_id_in_index}" | jq -rS '.found')
   if [ "$FOUND" == "false" ]; then
     echo "${es_id_in_index} was not found in fields when it should have been."
     exit 1
   fi
 
   es_id_not_in_index='samples.verily-public-data.human_genome_variants.1000_genomes_sample_info.chr_3_vcf'
-  FOUND=$(curl -s "localhost:9200/1000_genomes_test_columns_to_ignore_fields/type/${es_id_not_in_index}" | jq -rS '.found')
+  FOUND=$(curl -s "localhost:9200/1000_genomes_test_columns_to_ignore_fields/_doc/${es_id_not_in_index}" | jq -rS '.found')
   if [ "$FOUND" == "true" ]; then
     echo "${es_id_not_in_index} was found in fields when it should NOT have been."
     exit 1
   fi
+
+  echo "columns_to_ignore test ran successfully."
 }
 readonly -f test_columns_to_ignore
 
@@ -188,3 +190,5 @@ rm tests/framingham_heart_study_teaching_dataset.json
 rm tests/framingham_heart_study_teaching_dataset_mappings.json
 rm tests/framingham_heart_study_teaching_dataset_fields.json
 docker-compose stop
+
+echo "All tests ran successfully."
