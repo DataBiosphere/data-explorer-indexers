@@ -4,8 +4,10 @@
 FROM python:3
 
 WORKDIR /app
+
 COPY indexer_util /app/indexer_util
 COPY bigquery/requirements.txt /app
+
 RUN pip install -r /app/requirements.txt
 
 COPY dataset_config /app/dataset_config

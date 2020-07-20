@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:202007-01
     environment:
       GOOGLE_PROJECT_ID: ci-test-data-explorer
     steps:
@@ -12,16 +12,23 @@ jobs:
       - run:
           name: Run the yapf python linter
           command: |
-            pip install yapf
-            yapf -dr .
+            pip3 install yapf
+
+            # For now, the older directories use indent of 4
+            yapf -dr bigquery
+            yapf -dr indexer_util
+
+            # For new code, use indent of 2
+            yapf -dr --style='{indent_width: 2, continuation_indent_width: 2}' \
+                elasticsearch
       - run:
           name: Run the BigQuery Indexer integration test
           command: |
             # TODO(bryancrampton): Refactor interaction with BigQuery / elasticsearch to support unit testing
             # Needed to create samples file
-            echo '{"project_id": "ci-test-data-explorer"}' > dataset_config/1000_genomes/deploy.json
-            echo '{"project_id": "ci-test-data-explorer"}' > dataset_config/framingham_heart_study_teaching/deploy.json
-            echo '{"project_id": "ci-test-data-explorer"}' > bigquery/tests/columns_to_ignore_test/deploy.json
+            echo '{"project_id": "ci-test-data-explorer", "deploy_local": true}' > dataset_config/1000_genomes/deploy.json
+            echo '{"project_id": "ci-test-data-explorer", "deploy_local": true}' > dataset_config/framingham_heart_study_teaching/deploy.json
+            echo '{"project_id": "ci-test-data-explorer", "deploy_local": true}' > bigquery/tests/columns_to_ignore_test/deploy.json
             echo ${GOOGLE_SERVICE_KEY} | base64 --decode > ${HOME}/.config/gcloud/application_default_credentials.json
             cd bigquery && tests/integration.sh ${GOOGLE_PROJECT_ID}
       - save_cache:

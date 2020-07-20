@@ -1,637 +1,635 @@
 {
   "framingham_heart_study_teaching_dataset": {
     "mappings": {
-      "type": {
-        "dynamic": "false",
-        "properties": {
-          "verily-public-data": {
-            "properties": {
-              "framingham_heart_study_teaching": {
-                "properties": {
-                  "framingham_heart_study_teaching": {
-                    "properties": {
-                      "AGE": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+      "dynamic": "false",
+      "properties": {
+        "verily-public-data": {
+          "properties": {
+            "framingham_heart_study_teaching": {
+              "properties": {
+                "framingham_heart_study_teaching": {
+                  "properties": {
+                    "AGE": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "ANGINA": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "ANGINA": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "ANYCHD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "ANYCHD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "BMI": {
-                        "properties": {
-                          "1": {
-                            "type": "float"
-                          },
-                          "2": {
-                            "type": "float"
-                          },
-                          "3": {
-                            "type": "float"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "BMI": {
+                      "properties": {
+                        "1": {
+                          "type": "float"
+                        },
+                        "2": {
+                          "type": "float"
+                        },
+                        "3": {
+                          "type": "float"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "BPMEDS": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "BPMEDS": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "CIGPDAY": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "CIGPDAY": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "CURSMOKE": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "CURSMOKE": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "CVD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "CVD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "DEATH": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "DEATH": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "DIABETES": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "DIABETES": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "DIABP": {
-                        "properties": {
-                          "1": {
-                            "type": "float"
-                          },
-                          "2": {
-                            "type": "float"
-                          },
-                          "3": {
-                            "type": "float"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "DIABP": {
+                      "properties": {
+                        "1": {
+                          "type": "float"
+                        },
+                        "2": {
+                          "type": "float"
+                        },
+                        "3": {
+                          "type": "float"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "GLUCOSE": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "GLUCOSE": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "HDLC": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "HDLC": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "HEARTRTE": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "HEARTRTE": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "HOSPMI": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "HOSPMI": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "HYPERTEN": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "HYPERTEN": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "LDLC": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "LDLC": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "MI_FCHD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "MI_FCHD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PERIOD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PERIOD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PREVAP": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PREVAP": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PREVCHD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PREVCHD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PREVHYP": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PREVHYP": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PREVMI": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PREVMI": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "PREVSTRK": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "PREVSTRK": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "RANDID": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "RANDID": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "SEX": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "SEX": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "STROKE": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "STROKE": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "SYSBP": {
-                        "properties": {
-                          "1": {
-                            "type": "float"
-                          },
-                          "2": {
-                            "type": "float"
-                          },
-                          "3": {
-                            "type": "float"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "SYSBP": {
+                      "properties": {
+                        "1": {
+                          "type": "float"
+                        },
+                        "2": {
+                          "type": "float"
+                        },
+                        "3": {
+                          "type": "float"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIME": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIME": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMEAP": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMEAP": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMECHD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMECHD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMECVD": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMECVD": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMEDTH": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMEDTH": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMEHYP": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMEHYP": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMEMI": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMEMI": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMEMIFC": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMEMIFC": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TIMESTRK": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TIMESTRK": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "TOTCHOL": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "TOTCHOL": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
-                      },
-                      "educ": {
-                        "properties": {
-                          "1": {
-                            "type": "long"
-                          },
-                          "2": {
-                            "type": "long"
-                          },
-                          "3": {
-                            "type": "long"
-                          },
-                          "_is_time_series": {
-                            "type": "boolean"
-                          }
+                      }
+                    },
+                    "educ": {
+                      "properties": {
+                        "1": {
+                          "type": "long"
+                        },
+                        "2": {
+                          "type": "long"
+                        },
+                        "3": {
+                          "type": "long"
+                        },
+                        "_is_time_series": {
+                          "type": "boolean"
                         }
                       }
                     }

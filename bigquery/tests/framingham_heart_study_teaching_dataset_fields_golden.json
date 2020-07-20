@@ -1,63 +1,13 @@
 [
   {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CURSMOKE",
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SEX",
     "_index": "framingham_heart_study_teaching_dataset_fields",
     "_score": 1,
     "_source": {
-      "description": "Current cigarette smoking at exam",
-      "name": "CURSMOKE"
+      "description": "Participant sex",
+      "name": "SEX"
     },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Casual serum glucose (mg/dL)",
-      "name": "GLUCOSE"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIME",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days since baseline exam",
-      "name": "TIME"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.MI_FCHD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Hospitalized Myocardial Infarction or Fatal Coronary Heart Disease",
-      "name": "MI_FCHD"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANYCHD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Angina Pectoris, Myocardial infarction (Hospitalized and silent or unrecognized), Coronary Insufficiency (Unstable Angina), or Fatal Coronary Heart Disease",
-      "name": "ANYCHD"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMESTRK",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first STROKE event during followup",
-      "name": "TIMESTRK"
-    },
-    "_type": "type"
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TOTCHOL",
@@ -67,7 +17,7 @@
       "description": "Serum Total Cholesterol (mg/dL)",
       "name": "TOTCHOL"
     },
-    "_type": "type"
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.AGE",
@@ -77,237 +27,7 @@
       "description": "Age at exam (years)",
       "name": "AGE"
     },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABP",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Diastolic Blood Pressure (mean of last two of three measurements) (mmHg)",
-      "name": "DIABP"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BMI",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Body Mass Index, weight in kilograms/height meters squared",
-      "name": "BMI"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABETES",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Diabetic according to criteria of first exam treated or first exam with casual glucose of 200 mg/dL or more",
-      "name": "DIABETES"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Heart rate (Ventricular rate) in beats/min",
-      "name": "HEARTRTE"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVAP",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Prevalent Angina Pectoris at exam",
-      "name": "PREVAP"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVMI",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Prevalent Myocardial Infarction",
-      "name": "PREVMI"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVSTRK",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Prevalent Stroke",
-      "name": "PREVSTRK"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVHYP",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Prevalent Hypertensive. Subject was defined as hypertensive if treated or if second exam at which mean systolic was >=140 mmHg or mean Diastolic >=90 mmHg",
-      "name": "PREVHYP"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.LDLC",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Low Density Lipoprotein Cholesterol (mg/dL)",
-      "name": "LDLC"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMIFC",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first MI_FCHD event during followup",
-      "name": "TIMEMIFC"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECVD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first CVD event during followup",
-      "name": "TIMECVD"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEDTH",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to death if occurring during followup or Number of days from Baseline to censor date. Censor date may be end of followup, or last known contact date if subject is lost to followup",
-      "name": "TIMEDTH"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEHYP",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first HYPERTEN event during followup",
-      "name": "TIMEHYP"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SEX",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Participant sex",
-      "name": "SEX"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CIGPDAY",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of cigarettes smoked each day",
-      "name": "CIGPDAY"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.educ",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Attained Education",
-      "name": "educ"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PERIOD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Examination Cycle",
-      "name": "PERIOD"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HDLC",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "High Density Lipoprotein Cholesterol (mg/dL)",
-      "name": "HDLC"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HYPERTEN",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Hypertensive. Defined as the first exam treated for high blood pressure or second exam in which either Systolic is >= 140 mmHg or Diastolic >= 90mmHg",
-      "name": "HYPERTEN"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMI",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first HOSPMI event during followup",
-      "name": "TIMEMI"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVCHD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Prevalent Coronary Heart Disease defined as pre-existing Angina Pectoris, Myocardial Infarction (hospitalized, silent or unrecognized), or Coronary Insufficiency (unstable angina)",
-      "name": "PREVCHD"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANGINA",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Angina Pectoris",
-      "name": "ANGINA"
-    },
-    "_type": "type"
-  },
-  {
-    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECHD",
-    "_index": "framingham_heart_study_teaching_dataset_fields",
-    "_score": 1,
-    "_source": {
-      "description": "Number of days from Baseline exam to first ANYCHD event during followup",
-      "name": "TIMECHD"
-    },
-    "_type": "type"
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.SYSBP",
@@ -317,7 +37,57 @@
       "description": "Systolic Blood Pressure (mean of last two of three measurements) (mmHg)",
       "name": "SYSBP"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABP",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Diastolic Blood Pressure (mean of last two of three measurements) (mmHg)",
+      "name": "DIABP"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CURSMOKE",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Current cigarette smoking at exam",
+      "name": "CURSMOKE"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CIGPDAY",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of cigarettes smoked each day",
+      "name": "CIGPDAY"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BMI",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Body Mass Index, weight in kilograms/height meters squared",
+      "name": "BMI"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DIABETES",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Diabetic according to criteria of first exam treated or first exam with casual glucose of 200 mg/dL or more",
+      "name": "DIABETES"
+    },
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.BPMEDS",
@@ -327,7 +97,127 @@
       "description": "Use of Anti-hypertensive medication at exam",
       "name": "BPMEDS"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HEARTRTE",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Heart rate (Ventricular rate) in beats/min",
+      "name": "HEARTRTE"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.GLUCOSE",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Casual serum glucose (mg/dL)",
+      "name": "GLUCOSE"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.educ",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Attained Education",
+      "name": "educ"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVCHD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Prevalent Coronary Heart Disease defined as pre-existing Angina Pectoris, Myocardial Infarction (hospitalized, silent or unrecognized), or Coronary Insufficiency (unstable angina)",
+      "name": "PREVCHD"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVAP",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Prevalent Angina Pectoris at exam",
+      "name": "PREVAP"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVMI",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Prevalent Myocardial Infarction",
+      "name": "PREVMI"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVSTRK",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Prevalent Stroke",
+      "name": "PREVSTRK"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PREVHYP",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Prevalent Hypertensive. Subject was defined as hypertensive if treated or if second exam at which mean systolic was >=140 mmHg or mean Diastolic >=90 mmHg",
+      "name": "PREVHYP"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIME",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days since baseline exam",
+      "name": "TIME"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.PERIOD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Examination Cycle",
+      "name": "PERIOD"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HDLC",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "High Density Lipoprotein Cholesterol (mg/dL)",
+      "name": "HDLC"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.LDLC",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Low Density Lipoprotein Cholesterol (mg/dL)",
+      "name": "LDLC"
+    },
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.DEATH",
@@ -337,7 +227,17 @@
       "description": "Death from any cause",
       "name": "DEATH"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANGINA",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Angina Pectoris",
+      "name": "ANGINA"
+    },
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HOSPMI",
@@ -347,7 +247,27 @@
       "description": "Hospitalized Myocardial Infarction",
       "name": "HOSPMI"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.MI_FCHD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Hospitalized Myocardial Infarction or Fatal Coronary Heart Disease",
+      "name": "MI_FCHD"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.ANYCHD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Angina Pectoris, Myocardial infarction (Hospitalized and silent or unrecognized), Coronary Insufficiency (Unstable Angina), or Fatal Coronary Heart Disease",
+      "name": "ANYCHD"
+    },
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.STROKE",
@@ -357,7 +277,7 @@
       "description": "Atherothrombotic infarction, Cerebral Embolism, Intracerebral Hemorrhage, or Subarachnoid Hemorrhage or Fatal Cerebrovascular Disease",
       "name": "STROKE"
     },
-    "_type": "type"
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.CVD",
@@ -367,7 +287,17 @@
       "description": "Myocardial infarction (Hospitalized and silent or unrecognized), Fatal Coronary Heart Disease, Atherothrombotic infarction, Cerebral Embolism, Intracerebral Hemorrhage, or Subarachnoid Hemorrhage or Fatal Cerebrovascular Disease",
       "name": "CVD"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.HYPERTEN",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Hypertensive. Defined as the first exam treated for high blood pressure or second exam in which either Systolic is >= 140 mmHg or Diastolic >= 90mmHg",
+      "name": "HYPERTEN"
+    },
+    "_type": "_doc"
   },
   {
     "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEAP",
@@ -377,6 +307,76 @@
       "description": "Number of days from Baseline exam to first Angina during the followup or Number of days from Baseline to censor date. Censor date may be end of followup, death or last known contact date if subject is lost to followup",
       "name": "TIMEAP"
     },
-    "_type": "type"
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMI",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first HOSPMI event during followup",
+      "name": "TIMEMI"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEMIFC",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first MI_FCHD event during followup",
+      "name": "TIMEMIFC"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECHD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first ANYCHD event during followup",
+      "name": "TIMECHD"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMESTRK",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first STROKE event during followup",
+      "name": "TIMESTRK"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMECVD",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first CVD event during followup",
+      "name": "TIMECVD"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEDTH",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to death if occurring during followup or Number of days from Baseline to censor date. Censor date may be end of followup, or last known contact date if subject is lost to followup",
+      "name": "TIMEDTH"
+    },
+    "_type": "_doc"
+  },
+  {
+    "_id": "verily-public-data.framingham_heart_study_teaching.framingham_heart_study_teaching.TIMEHYP",
+    "_index": "framingham_heart_study_teaching_dataset_fields",
+    "_score": 1,
+    "_source": {
+      "description": "Number of days from Baseline exam to first HYPERTEN event during followup",
+      "name": "TIMEHYP"
+    },
+    "_type": "_doc"
   }
 ]

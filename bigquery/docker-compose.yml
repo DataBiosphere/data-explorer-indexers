@@ -1,7 +1,7 @@
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
     ports:
       - 127.0.0.1:9200:9200
     environment:
@@ -19,6 +19,7 @@ services:
     environment:
       # Needed to keep the samples file name unique across users.
       - USER
+      #- ELASTICSEARCH_URL=104.197.83.121:9200
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       # For convenience, include 1000 Genomes by default.
       - DATASET_CONFIG_DIR=${DATASET_CONFIG_DIR:-dataset_config/1000_genomes}
@@ -28,6 +29,7 @@ services:
       # GKE runs, which are authenticated as service account. (The service
       # account credentials are automatically picked up.)
       - ~/.config/gcloud:/root/.config/gcloud
+      - ~/.kube/config:/root/.kube/config
 networks:
   default:
     external:

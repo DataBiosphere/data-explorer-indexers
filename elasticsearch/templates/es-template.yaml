@@ -1,0 +1,99 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+
+spec:
+  version: 7.7.1
+  image: {ELASTICSEARCH_IMAGE}
+  http:
+    service:
+      spec:
+        type: LoadBalancer
+    tls:
+      selfSignedCertificate:
+        subjectAltNames:
+        - ip: "{ELASTICSEARCH_IP}"
+
+  nodeSets:
+
+  - name: master
+    count: {MASTER_COUNT}
+    config:
+      node.master: true
+      node.data: false
+      node.ingest: false
+      cluster.remote.connect: false
+
+    podTemplate:
+      spec:
+        nodeSelector:
+          node-type: es-master
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+        - name: elasticsearch
+          # specify resource limits and requests
+          # Values below are very tight for deplyment to n1-standard-2
+          resources:
+            limits:
+              cpu: {MASTER_K8_NODE_CPU}
+              memory: {MASTER_K8_NODE_RAM}
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms{MASTER_ES_JVM_RAM} -Xmx{MASTER_ES_JVM_RAM}"
+
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {MASTER_K8_DISK_SIZE}
+        storageClassName: standard
+
+  - name: data
+    count: {DATA_COUNT}
+
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      cluster.remote.connect: false
+
+    podTemplate:
+      spec:
+        nodeSelector:
+          node-type: es-data
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+        - name: elasticsearch
+          # specify resource limits and requests
+          # Values below are very tight for deplyment to n1-highmem-2
+          resources:
+            limits:
+              cpu: {DATA_K8_NODE_CPU}
+              memory: {DATA_K8_NODE_RAM}
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms{DATA_ES_JVM_RAM} -Xmx{DATA_ES_JVM_RAM}"
+
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {DATA_K8_DISK_SIZE}
+        storageClassName: standard
