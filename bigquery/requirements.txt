@@ -14,7 +14,7 @@ idna==2.9
 ./indexer_util
 ipaddress==1.0.23
 jsmin==2.2.2
-protobuf==3.12.2
+protobuf==3.18.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 python-dateutil==2.8.1
